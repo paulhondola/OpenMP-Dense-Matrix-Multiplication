@@ -1,6 +1,6 @@
 LOOP_IMPL = src/loop_permutations/serial/mm_serial.c src/loop_permutations/parallel/mm_parallel.c
 TILED_IMPL = src/tiled/serial/mm_blocked_serial.c src/tiled/parallel/mm_blocked_omp.c
-TEST_SRC = src/test/validate.c
+TEST_SRC = src/test/test.c
 COMMON_SRC = src/common/matrix.c
 
 LOOP_TARGET = bin/loop_permutations
