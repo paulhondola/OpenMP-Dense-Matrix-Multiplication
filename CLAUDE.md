@@ -11,25 +11,22 @@ Dense square matrix multiplication implementations in C using OpenMP. The projec
 
 ## Build System
 
-The project uses a Makefile (currently empty/to be implemented). Expected build commands:
+The project uses a Makefile with the following commands:
 
 ```bash
-# Build all implementations
-make
+# Build and run loop permutations benchmark
+make run_loop
 
-# Build specific targets
-make loop_permutations  # Entry point: src/main/loop_permutations.c
-make tiled              # Entry point: src/main/tiled.c
-
-# Clean build artifacts
-make clean
+# Build and run tiled/blocked benchmark
+make run_tiled
 ```
 
 **Compiler requirements:**
 
 - gcc-15 with OpenMP support
-- Must use `-fopenmp` flag
-- Output binaries should go to `bin/` directory
+- Compiler flags: `-O3 -march=native -Wall -Wextra -fopenmp`
+- Output binaries go to `bin/` directory
+- Entry points: `src/main/loop_permutations.c` and `src/main/tiled.c`
 
 ## Architecture
 
@@ -44,7 +41,7 @@ make clean
 **Validation** (`src/test/validate.{c,h}`):
 
 - Compares results against reference i-j-k implementation
-- Uses epsilon comparison for floating-point values (see EPSILON in docs/omp_matrix_mult.c)
+- Uses epsilon comparison for floating-point values (`EPSILON = 0.000001` from reference implementation)
 
 ### Loop Permutation Implementations
 
@@ -125,7 +122,8 @@ Both should:
 - Use `default(none)` to force explicit variable scoping
 - Properly declare private vs shared variables
 - Schedule type (static/dynamic) and chunk size affect performance
-- Validation: Use epsilon comparison for floating-point results (not exact equality)
+- Use `omp_get_wtime()` for accurate timing measurements
+- Validation: Use epsilon comparison for floating-point results (`fabs(mat1[i][j] - mat2[i][j]) > EPSILON`)
 
 **Matrix storage:**
 
