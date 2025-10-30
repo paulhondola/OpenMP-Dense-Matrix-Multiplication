@@ -5,10 +5,11 @@
 #define TEST_H
 
 #include "../common/matrix.h"
-#include <stdbool.h>
+
 
 #define EPSILON 1e-6
 
-bool validate(Matrix *matrix1, Matrix *matrix2);
+int validate(Matrix *a, Matrix *b);
+int test_loop_permutations(Matrix *a, Matrix *b);
 
 #endif // TEST_H

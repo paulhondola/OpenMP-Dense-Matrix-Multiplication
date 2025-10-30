@@ -55,4 +55,8 @@ void matrix_destroy(Matrix *matrix) {
     free(matrix->data[i]);
   }
   free(matrix->data);
+
+#ifdef DEBUG
+  printf("Matrix destroyed\n");
+#endif
 }

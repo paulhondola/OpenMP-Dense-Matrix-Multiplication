@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#define DEBUG 1
 #define SEED 42
 #define UNIFORM_MIN -100
 #define UNIFORM_MAX 100
