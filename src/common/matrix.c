@@ -12,6 +12,17 @@ void matrix_create(Matrix *matrix, int rows, int cols) {
   matrix->cols = cols;
 }
 
+void matrix_fill_zero(Matrix *matrix) {
+  if (matrix->data == NULL) {
+    return;
+  }
+  for (int i = 0; i < matrix->rows; i++) {
+    for (int j = 0; j < matrix->cols; j++) {
+      matrix->data[i][j] = 0;
+    }
+  }
+}
+
 void matrix_fill_random(Matrix *matrix) {
   if (matrix->data == NULL) {
     return;
@@ -19,8 +30,7 @@ void matrix_fill_random(Matrix *matrix) {
   for (int i = 0; i < matrix->rows; i++) {
     for (int j = 0; j < matrix->cols; j++) {
       matrix->data[i][j] = UNIFORM_MIN + (UNIFORM_MAX - UNIFORM_MIN) *
-                                             (double)rand() /
-                                             (double)RAND_MAX;
+                                             (double)rand() / (double)RAND_MAX;
     }
   }
 }

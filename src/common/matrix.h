@@ -18,6 +18,7 @@ typedef struct {
 
 void matrix_create(Matrix *matrix, int rows, int cols);
 void matrix_fill_random(Matrix *matrix);
+void matrix_fill_zero(Matrix *matrix);
 void matrix_print(Matrix *matrix);
 void matrix_destroy(Matrix *matrix);
 
