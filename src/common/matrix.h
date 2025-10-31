@@ -15,9 +15,12 @@
 #define N 1000
 #define PERMUTATIONS 6
 
-typedef double** Matrix;
+typedef struct {
+  double** data;
+  int size;
+} Matrix;
 
-Matrix matrix_create(void);
+void matrix_create(Matrix* matrix, int size);
 void matrix_fill_random(Matrix matrix);
 void matrix_fill_zero(Matrix matrix);
 int validate(Matrix a, Matrix b);

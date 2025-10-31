@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(test:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(python3:*)",
+      "Bash(./bin/loop_permutations.exe:*)"
     ],
     "deny": [],
     "ask": []

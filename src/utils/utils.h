@@ -14,7 +14,9 @@ typedef struct {
 extern CSV_DATA csv_serial_permutations;
 extern CSV_DATA csv_parallel_permutations;
 extern CSV_DATA csv_classic_vs_improved;
+extern CSV_DATA csv_tiled;
 
 FILE *open_csv_file(CSV_DATA csv_data);
+void clear_csv_file(CSV_DATA csv_data);
 
 #endif // UTILS_H

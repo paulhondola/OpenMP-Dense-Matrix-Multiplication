@@ -6,7 +6,8 @@
 int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
                                 int permutation, double times[]) {
 
-  Matrix c = matrix_create();
+  Matrix c;
+  matrix_create(&c, a.size);
   times[permutation] = serial_f[permutation](a, b, c);
   int result = validate(reference, c);
   matrix_destroy(c);
@@ -31,7 +32,8 @@ int test_serial_loop_permutations(Matrix a, Matrix b, double times[]) {
          "permutations\n------------------------------------------\n");
 #endif
 
-  Matrix reference = matrix_create();
+  Matrix reference;
+  matrix_create(&reference, a.size);
   times[0] = serial_f[0](a, b, reference);
 
 #ifdef DEBUG
@@ -59,10 +61,11 @@ int test_serial_loop_permutations(Matrix a, Matrix b, double times[]) {
 }
 
 int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
-                                  int permutation, int thread_count, int chunk,
-                                  double times[]) {
+                                  int thread_count, int chunk, double times[],
+                                  int permutation) {
 
-  Matrix c = matrix_create();
+  Matrix c;
+  matrix_create(&c, a.size);
   times[permutation] = parallel_f[permutation](a, b, c, thread_count, chunk);
   int result = validate(reference, c);
   matrix_destroy(c);
@@ -89,7 +92,8 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 #endif
 
   // set the IJK permutation as reference
-  Matrix reference = matrix_create();
+  Matrix reference;
+  matrix_create(&reference, a.size);
   times[0] = parallel_f[0](a, b, reference, thread_count, chunk);
 
 #ifdef DEBUG
@@ -99,8 +103,8 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 
   int correct_count = 0;
   for (int i = 1; i < PERMUTATIONS; i++) {
-    if (run_parallel_loop_permutation(a, b, reference, i, thread_count, chunk,
-                                      times)) {
+    if (run_parallel_loop_permutation(a, b, reference, thread_count, chunk,
+                                      times, i)) {
       correct_count++;
     }
   }
@@ -117,9 +121,10 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   return correct_count == PERMUTATIONS - 1;
 }
 
-int test_classic_vs_improved(Matrix a, Matrix b, double times[], int chunk) {
+int test_classic_vs_improved(Matrix a, Matrix b, int chunk, double times[]) {
 
-  Matrix c = matrix_create();
+  Matrix c;
+  matrix_create(&c, a.size);
   times[0] = serial_multiply_ijk(a, b, c);
   times[1] = parallel_multiply_ijk(a, b, c, 2, chunk);
   times[2] = parallel_multiply_ijk(a, b, c, 4, chunk);

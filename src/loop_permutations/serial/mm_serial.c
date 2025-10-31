@@ -13,10 +13,10 @@ double serial_multiply_ijk(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int i = 0; i < N; i++)
-    for (int j = 0; j < N; j++)
-      for (int k = 0; k < N; k++) {
-        c[i][j] += a[i][k] * b[k][j];
+  for (int i = 0; i < a.size; i++)
+    for (int j = 0; j < a.size; j++)
+      for (int k = 0; k < a.size; k++) {
+        c.data[i][j] += a.data[i][k] * b.data[k][j];
       }
 
   double end = omp_get_wtime();
@@ -34,11 +34,11 @@ double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int i = 0; i < N; i++) {
-    for (int k = 0; k < N; k++) {
-      temp = a[i][k];
-      for (int j = 0; j < N; j++) {
-        c[i][j] += temp * b[k][j];
+  for (int i = 0; i < a.size; i++) {
+    for (int k = 0; k < a.size; k++) {
+      temp = a.data[i][k];
+      for (int j = 0; j < a.size; j++) {
+        c.data[i][j] += temp * b.data[k][j];
       }
     }
   }
@@ -57,10 +57,10 @@ double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int j = 0; j < N; j++) {
-    for (int i = 0; i < N; i++) {
-      for (int k = 0; k < N; k++) {
-        c[i][j] += a[i][k] * b[k][j];
+  for (int j = 0; j < a.size; j++) {
+    for (int i = 0; i < a.size; i++) {
+      for (int k = 0; k < a.size; k++) {
+        c.data[i][j] += a.data[i][k] * b.data[k][j];
       }
     }
   }
@@ -80,11 +80,11 @@ double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int j = 0; j < N; j++) {
-    for (int k = 0; k < N; k++) {
-      temp = b[k][j];
-      for (int i = 0; i < N; i++) {
-        c[i][j] += a[i][k] * temp;
+  for (int j = 0; j < a.size; j++) {
+    for (int k = 0; k < a.size; k++) {
+      temp = b.data[k][j];
+      for (int i = 0; i < a.size; i++) {
+        c.data[i][j] += a.data[i][k] * temp;
       }
     }
   }
@@ -104,11 +104,11 @@ double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int k = 0; k < N; k++) {
-    for (int i = 0; i < N; i++) {
-      temp = a[i][k];
-      for (int j = 0; j < N; j++) {
-        c[i][j] += temp * b[k][j];
+  for (int k = 0; k < a.size; k++) {
+    for (int i = 0; i < a.size; i++) {
+      temp = a.data[i][k];
+      for (int j = 0; j < a.size; j++) {
+        c.data[i][j] += temp * b.data[k][j];
       }
     }
   }
@@ -128,11 +128,11 @@ double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
 
   double start = omp_get_wtime();
 
-  for (int k = 0; k < N; k++) {
-    for (int j = 0; j < N; j++) {
-      temp = b[k][j];
-      for (int i = 0; i < N; i++) {
-        c[i][j] += a[i][k] * temp;
+  for (int k = 0; k < a.size; k++) {
+    for (int j = 0; j < a.size; j++) {
+      temp = b.data[k][j];
+      for (int i = 0; i < a.size; i++) {
+        c.data[i][j] += a.data[i][k] * temp;
       }
     }
   }

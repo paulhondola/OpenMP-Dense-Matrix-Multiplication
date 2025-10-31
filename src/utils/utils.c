@@ -42,3 +42,12 @@ FILE *open_csv_file(CSV_DATA csv_data) {
 
   return csv_file;
 }
+
+void clear_csv_file(CSV_DATA csv_data) {
+  FILE *csv_file = fopen(csv_data.filename, "w");
+  if (csv_file == NULL) {
+    printf("Error opening file %s\n", csv_data.filename);
+    exit(1);
+  }
+  fclose(csv_file);
+}

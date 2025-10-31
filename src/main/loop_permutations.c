@@ -13,7 +13,7 @@ void benchmark_serial_loop_permutations(Matrix a, Matrix b,
   }
 
   test_serial_loop_permutations(a, b, time_results);
-  fprintf(csv_file, "%d,%f,%f,%f,%f,%f,%f\n", N, time_results[0],
+  fprintf(csv_file, "%d,%f,%f,%f,%f,%f,%f\n", a.size, time_results[0],
           time_results[1], time_results[2], time_results[3], time_results[4],
           time_results[5]);
 
@@ -30,7 +30,7 @@ void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   }
 
   test_parallel_loop_permutations(a, b, thread_count, chunk, time_results);
-  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", N, thread_count, chunk,
+  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", a.size, thread_count, chunk,
           time_results[0], time_results[1], time_results[2], time_results[3],
           time_results[4], time_results[5]);
 
@@ -45,26 +45,41 @@ void benchmark_classic_vs_improved(Matrix a, Matrix b, int chunk,
     exit(1);
   }
 
-  test_classic_vs_improved(a, b, time_results, chunk);
-  fprintf(csv_file, "%d,%d,%f,%f,%f,%f,%f,%f,%f,%f\n", N, chunk,
+  test_classic_vs_improved(a, b, chunk, time_results);
+  fprintf(csv_file, "%d,%d,%f,%f,%f,%f,%f,%f,%f,%f\n", a.size, chunk,
           time_results[0], time_results[1], time_results[2], time_results[3],
           time_results[4], time_results[5], time_results[6], time_results[7]);
 
   fclose(csv_file);
 }
 
+void usage(char *program_name) {
+  printf("Usage: %s <matrix_size> <threads> <chunk>\n", program_name);
+  printf("Chunk: The chunk size for the parallel loop permutations\n");
+  exit(1);
+}
+
 int main(int argc, char *argv[]) {
 
   srand(SEED);
 
+  if (argc != 4) {
+    usage(argv[0]);
+  }
+
+  int matrix_size = atoi(argv[1]);
+  int thread_count = atoi(argv[2]);
+  int chunk = atoi(argv[3]);
+
   double time_results[PERMUTATIONS] = {0};
-  Matrix a = matrix_create();
-  Matrix b = matrix_create();
+  Matrix a, b;
+  matrix_create(&a, matrix_size);
+  matrix_create(&b, matrix_size);
   matrix_fill_random(a);
   matrix_fill_random(b);
-  // benchmark_serial_loop_permutations(a, b, times);
-  //   benchmark_parallel_loop_permutations(a, b, 10, 100, times);
-  benchmark_classic_vs_improved(a, b, 100, time_results);
+  benchmark_serial_loop_permutations(a, b, time_results);
+  benchmark_parallel_loop_permutations(a, b, thread_count, chunk, time_results);
+  benchmark_classic_vs_improved(a, b, chunk, time_results);
   matrix_destroy(a);
   matrix_destroy(b);
   return 0;

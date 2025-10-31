@@ -17,10 +17,10 @@ double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
     private(i, j, k), shared(a, b, c, chunk)
   {
 #pragma omp for schedule(static, chunk)
-    for (i = 0; i < N; i++) {
-      for (j = 0; j < N; j++) {
-        for (k = 0; k < N; k++) {
-          c[i][j] += a[i][k] * b[k][j];
+    for (i = 0; i < a.size; i++) {
+      for (j = 0; j < a.size; j++) {
+        for (k = 0; k < a.size; k++) {
+          c.data[i][j] += a.data[i][k] * b.data[k][j];
         }
       }
     }
@@ -48,11 +48,11 @@ double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
   {
 
 #pragma omp for schedule(static, chunk)
-    for (i = 0; i < N; i++) {
-      for (k = 0; k < N; k++) {
-        temp = a[i][k];
-        for (j = 0; j < N; j++) {
-          c[i][j] += temp * b[k][j];
+    for (i = 0; i < a.size; i++) {
+      for (k = 0; k < a.size; k++) {
+        temp = a.data[i][k];
+        for (j = 0; j < a.size; j++) {
+          c.data[i][j] += temp * b.data[k][j];
         }
       }
     }
@@ -78,10 +78,10 @@ double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
     private(i, j, k), shared(a, b, c, chunk)
   {
 #pragma omp for schedule(static, chunk)
-    for (j = 0; j < N; j++) {
-      for (i = 0; i < N; i++) {
-        for (k = 0; k < N; k++) {
-          c[i][j] += a[i][k] * b[k][j];
+    for (j = 0; j < a.size; j++) {
+      for (i = 0; i < a.size; i++) {
+        for (k = 0; k < a.size; k++) {
+          c.data[i][j] += a.data[i][k] * b.data[k][j];
         }
       }
     }
@@ -108,11 +108,11 @@ double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
 #pragma omp for schedule(static, chunk)
-    for (j = 0; j < N; j++) {
-      for (k = 0; k < N; k++) {
-        temp = b[k][j];
-        for (i = 0; i < N; i++) {
-          c[i][j] += a[i][k] * temp;
+    for (j = 0; j < a.size; j++) {
+      for (k = 0; k < a.size; k++) {
+        temp = b.data[k][j];
+        for (i = 0; i < a.size; i++) {
+          c.data[i][j] += a.data[i][k] * temp;
         }
       }
     }
@@ -138,12 +138,12 @@ double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
-    for (k = 0; k < N; k++) {
+    for (k = 0; k < a.size; k++) {
 #pragma omp for schedule(static, chunk)
-      for (i = 0; i < N; i++) {
-        temp = a[i][k];
-        for (j = 0; j < N; j++) {
-          c[i][j] += temp * b[k][j];
+      for (i = 0; i < a.size; i++) {
+        temp = a.data[i][k];
+        for (j = 0; j < a.size; j++) {
+          c.data[i][j] += temp * b.data[k][j];
         }
       }
     }
@@ -169,12 +169,12 @@ double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
-    for (k = 0; k < N; k++) {
+    for (k = 0; k < a.size; k++) {
 #pragma omp for schedule(static, chunk)
-      for (j = 0; j < N; j++) {
-        temp = b[k][j];
-        for (i = 0; i < N; i++) {
-          c[i][j] += a[i][k] * temp;
+      for (j = 0; j < a.size; j++) {
+        temp = b.data[k][j];
+        for (i = 0; i < a.size; i++) {
+          c.data[i][j] += a.data[i][k] * temp;
         }
       }
     }

@@ -14,12 +14,12 @@ CFLAGS = -O3 -march=native -Wall -Wextra -fopenmp
 
 main:
 	$(CC) $(CFLAGS) $(MAIN_SRC) $(SRC) -o $(MAIN_TARGET)
-	./$(MAIN_TARGET)
+	./$(MAIN_TARGET) 1000 10 100
 
 loop:
 	$(CC) $(CFLAGS) $(LOOP_SRC) $(SRC) -o $(LOOP_TARGET)
-	./$(LOOP_TARGET)
+	./$(LOOP_TARGET) 1000 10 100
 
 tiled:
 	$(CC) $(CFLAGS) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
-	./$(TILED_TARGET)
+	./$(TILED_TARGET) 1000 10 100

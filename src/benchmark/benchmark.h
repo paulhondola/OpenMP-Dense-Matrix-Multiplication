@@ -9,7 +9,7 @@
 int test_serial_loop_permutations(Matrix a, Matrix b, double times[]);
 int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
                                     int chunk, double times[]);
-int test_classic_vs_improved(Matrix a, Matrix b, double times[], int chunk);
-int test_tiled(Matrix a, Matrix b, double times[], int block_size);
+int test_classic_vs_improved(Matrix a, Matrix b, int chunk, double times[]);
+int test_tiled(Matrix a, Matrix b, int block_size, double times[]);
 
 #endif // TEST_H
