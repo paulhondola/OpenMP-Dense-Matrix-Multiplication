@@ -117,18 +117,18 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   return correct_count == PERMUTATIONS - 1;
 }
 
-int test_classic_vs_improved(Matrix a, Matrix b, double times[]) {
+int test_classic_vs_improved(Matrix a, Matrix b, double times[], int chunk) {
 
   Matrix c = matrix_create();
   times[0] = serial_multiply_ijk(a, b, c);
-  times[1] = parallel_multiply_ijk(a, b, c, 2, 1);
-  times[2] = parallel_multiply_ijk(a, b, c, 4, 1);
-  times[3] = parallel_multiply_ijk(a, b, c, 8, 1);
+  times[1] = parallel_multiply_ijk(a, b, c, 2, chunk);
+  times[2] = parallel_multiply_ijk(a, b, c, 4, chunk);
+  times[3] = parallel_multiply_ijk(a, b, c, 8, chunk);
 
   times[4] = serial_multiply_ikj(a, b, c);
-  times[5] = parallel_multiply_ikj(a, b, c, 2, 1);
-  times[6] = parallel_multiply_ikj(a, b, c, 4, 1);
-  times[7] = parallel_multiply_ikj(a, b, c, 8, 1);
+  times[5] = parallel_multiply_ikj(a, b, c, 2, chunk);
+  times[6] = parallel_multiply_ikj(a, b, c, 4, chunk);
+  times[7] = parallel_multiply_ikj(a, b, c, 8, chunk);
 
   matrix_destroy(c);
 

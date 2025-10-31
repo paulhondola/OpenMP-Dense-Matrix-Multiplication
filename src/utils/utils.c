@@ -18,12 +18,16 @@ CSV_DATA csv_parallel_permutations = {
 };
 
 CSV_DATA csv_classic_vs_improved = {
-    .header = "MATRIX_SIZE,THREADS,CHUNK,SERIAL_TIME,P2T,P4T,P8T,IMPROVED_"
+    .header = "MATRIX_SIZE,CHUNK,SERIAL_TIME,P2T,P4T,P8T,IMPROVED_"
               "SERIAL,IP2T,IP4T,IP8T",
     .filename = "benchmark/data/classic_vs_improved.csv",
 };
 
-// if csv file is empty, add the header
+CSV_DATA csv_tiled = {
+    .header = "MATRIX_SIZE,BLOCK_SIZE,SERIAL_TIME,P2T,P4T,P8T",
+    .filename = "benchmark/data/tiled.csv",
+};
+
 FILE *open_csv_file(CSV_DATA csv_data) {
   FILE *csv_file = fopen(csv_data.filename, "a");
 
@@ -38,5 +42,3 @@ FILE *open_csv_file(CSV_DATA csv_data) {
 
   return csv_file;
 }
-
-// CSV saving functions will be implemented here
