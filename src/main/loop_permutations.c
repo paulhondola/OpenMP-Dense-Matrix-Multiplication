@@ -1,5 +1,5 @@
+#include "../benchmark/benchmark.h"
 #include "../common/matrix.h"
-#include "../test/test.h"
 #include "../utils/utils.h"
 #include <omp.h>
 

@@ -1,4 +1,4 @@
-#include "test.h"
+#include "benchmark.h"
 #include "../common/matrix.h"
 #include "../loop_permutations/parallel/mm_parallel.h"
 #include "../loop_permutations/serial/mm_serial.h"
