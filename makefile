@@ -3,9 +3,9 @@ TILED_IMPL = src/tiled/serial/mm_blocked_serial.c src/tiled/parallel/mm_blocked_
 TEST_SRC = src/test/test.c
 COMMON_SRC = src/common/matrix.c
 
-LOOP_TARGET = bin/loop_permutations
-TILED_TARGET = bin/tiled
-MAIN_TARGET = bin/main
+LOOP_TARGET = bin/loop_permutations.exe
+TILED_TARGET = bin/tiled.exe
+MAIN_TARGET = bin/main.exe
 
 CC = gcc-15
 CFLAGS = -O3 -march=native -Wall -Wextra -fopenmp

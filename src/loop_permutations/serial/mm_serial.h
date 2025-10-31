@@ -6,11 +6,11 @@
 
 #include "../../common/matrix.h"
 
-void serial_multiply_ijk(Matrix *a, Matrix *b, Matrix *c);
-void serial_multiply_ikj(Matrix *a, Matrix *b, Matrix *c);
-void serial_multiply_jik(Matrix *a, Matrix *b, Matrix *c);
-void serial_multiply_jki(Matrix *a, Matrix *b, Matrix *c);
-void serial_multiply_kij(Matrix *a, Matrix *b, Matrix *c);
-void serial_multiply_kji(Matrix *a, Matrix *b, Matrix *c);
+void serial_multiply_ijk(Matrix a, Matrix b, Matrix c);
+void serial_multiply_ikj(Matrix a, Matrix b, Matrix c);
+void serial_multiply_jik(Matrix a, Matrix b, Matrix c);
+void serial_multiply_jki(Matrix a, Matrix b, Matrix c);
+void serial_multiply_kij(Matrix a, Matrix b, Matrix c);
+void serial_multiply_kji(Matrix a, Matrix b, Matrix c);
 
 #endif // MM_SERIAL_H

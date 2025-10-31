@@ -1,7 +1,4 @@
-#include <omp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include "../common/matrix.h"
 
 int main(int argc, char *argv[]) {
   printf("Hello, World!\n");

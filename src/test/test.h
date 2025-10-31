@@ -6,10 +6,8 @@
 
 #include "../common/matrix.h"
 
-
-#define EPSILON 1e-6
-
-int validate(Matrix *a, Matrix *b);
-int test_loop_permutations(Matrix *a, Matrix *b);
+int test_serial_loop_permutations(Matrix a, Matrix b);
+int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
+                                    int chunk);
 
 #endif // TEST_H
