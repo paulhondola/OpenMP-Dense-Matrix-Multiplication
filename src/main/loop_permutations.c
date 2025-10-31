@@ -58,9 +58,9 @@ int main(int argc, char *argv[]) {
   Matrix b = matrix_create();
   matrix_fill_random(a);
   matrix_fill_random(b);
-  // benchmark_serial_loop_permutations(a, b, times);
+  benchmark_serial_loop_permutations(a, b, times);
   //  benchmark_parallel_loop_permutations(a, b, 10, 100, times);
-  benchmark_classic_vs_improved(a, b, times);
+  // benchmark_classic_vs_improved(a, b, times);
   matrix_destroy(a);
   matrix_destroy(b);
   return 0;

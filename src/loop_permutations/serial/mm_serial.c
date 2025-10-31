@@ -1,6 +1,12 @@
+#include "mm_serial.h"
 #include "../../common/matrix.h"
 #include <omp.h>
 #include <stdio.h>
+
+serial_loop_permutation_function serial_f[PERMUTATIONS] = {
+    serial_multiply_ijk, serial_multiply_ikj, serial_multiply_jik,
+    serial_multiply_jki, serial_multiply_kij, serial_multiply_kji,
+};
 
 double serial_multiply_ijk(Matrix a, Matrix b, Matrix c) {
   matrix_fill_zero(c);

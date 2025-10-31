@@ -7,25 +7,7 @@ int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
                                 int permutation, double times[]) {
 
   Matrix c = matrix_create();
-  switch (permutation) {
-  case 1:
-    times[1] = serial_multiply_ikj(a, b, c);
-    break;
-  case 2:
-    times[2] = serial_multiply_jik(a, b, c);
-    break;
-  case 3:
-    times[3] = serial_multiply_jki(a, b, c);
-    break;
-  case 4:
-    times[4] = serial_multiply_kij(a, b, c);
-    break;
-  case 5:
-    times[5] = serial_multiply_kji(a, b, c);
-    break;
-  default:
-    return 0;
-  }
+  times[permutation] = serial_f[permutation](a, b, c);
   int result = validate(reference, c);
   matrix_destroy(c);
 
@@ -50,7 +32,7 @@ int test_serial_loop_permutations(Matrix a, Matrix b, double times[]) {
 #endif
 
   Matrix reference = matrix_create();
-  times[0] = serial_multiply_ijk(a, b, reference);
+  times[0] = serial_f[0](a, b, reference);
 
 #ifdef DEBUG
   printf("Time: %f seconds\n", times[0]);
@@ -81,26 +63,7 @@ int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
                                   double times[]) {
 
   Matrix c = matrix_create();
-  switch (permutation) {
-  case 1:
-    times[1] = parallel_multiply_ikj(a, b, c, thread_count, chunk);
-    break;
-  case 2:
-    times[2] = parallel_multiply_jik(a, b, c, thread_count, chunk);
-    break;
-  case 3:
-    times[3] = parallel_multiply_jki(a, b, c, thread_count, chunk);
-    break;
-  case 4:
-    times[4] = parallel_multiply_kij(a, b, c, thread_count, chunk);
-    break;
-  case 5:
-    times[5] = parallel_multiply_kji(a, b, c, thread_count, chunk);
-    break;
-  default:
-    return 0;
-  }
-
+  times[permutation] = parallel_f[permutation](a, b, c, thread_count, chunk);
   int result = validate(reference, c);
   matrix_destroy(c);
 
@@ -127,7 +90,7 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 
   // set the IJK permutation as reference
   Matrix reference = matrix_create();
-  times[0] = parallel_multiply_ijk(a, b, reference, thread_count, chunk);
+  times[0] = parallel_f[0](a, b, reference, thread_count, chunk);
 
 #ifdef DEBUG
   printf("Time: %f seconds\n", times[0]);

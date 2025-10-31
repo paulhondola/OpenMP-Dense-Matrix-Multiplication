@@ -1,8 +1,13 @@
 #include "mm_parallel.h"
 #include <omp.h>
 
+parallel_loop_permutation_function parallel_f[PERMUTATIONS] = {
+    parallel_multiply_ijk, parallel_multiply_ikj, parallel_multiply_jik,
+    parallel_multiply_jki, parallel_multiply_kij, parallel_multiply_kji,
+};
+
 double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
 
@@ -31,7 +36,7 @@ double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
 }
 
 double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
@@ -63,7 +68,7 @@ double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
 }
 
 double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
 
@@ -92,7 +97,7 @@ double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
 }
 
 double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
@@ -123,7 +128,7 @@ double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
 }
 
 double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
@@ -154,7 +159,7 @@ double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
 }
 
 double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
-                              int chunk) {
+                             int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
