@@ -14,11 +14,14 @@ Dense square matrix multiplication implementations in C using OpenMP. The projec
 The project uses a Makefile with the following commands:
 
 ```bash
+# Build and run main entry point
+make main
+
 # Build and run loop permutations benchmark
-make run_loop
+make loop
 
 # Build and run tiled/blocked benchmark
-make run_tiled
+make tiled
 ```
 
 **Compiler requirements:**
@@ -26,7 +29,7 @@ make run_tiled
 - gcc-15 with OpenMP support
 - Compiler flags: `-O3 -march=native -Wall -Wextra -fopenmp`
 - Output binaries go to `bin/` directory
-- Entry points: `src/main/loop_permutations.c` and `src/main/tiled.c`
+- Entry points: `src/main/main.c`, `src/main/loop_permutations.c`, and `src/main/tiled.c`
 
 ## Architecture
 
@@ -35,13 +38,17 @@ make run_tiled
 **Matrix utilities** (`src/common/matrix.{c,h}`):
 
 - Matrix allocation, initialization, deallocation
-- Random value generation
+- Random value generation with configurable seed (default: `SEED = 42`)
 - Helper functions used across all implementations
+- Uses `Matrix` typedef for `double**` pointer-to-pointer representation
+- Default matrix size: `N = 1000` (compile-time constant)
 
-**Validation** (`src/test/validate.{c,h}`):
+**Validation and testing** (`src/test/test.{c,h}`):
 
 - Compares results against reference i-j-k implementation
-- Uses epsilon comparison for floating-point values (`EPSILON = 0.000001` from reference implementation)
+- Uses epsilon comparison for floating-point values (`EPSILON = 0.000001`)
+- `test_serial_loop_permutations()`: Validates all serial permutations against serial i-j-k
+- `test_parallel_loop_permutations()`: Validates all parallel permutations against parallel i-j-k
 
 ### Loop Permutation Implementations
 
@@ -56,8 +63,18 @@ Six permutations for each variant (serial and parallel):
 - **k-i-j**: K outer loop, updates entire C
 - **k-j-i**: K outer loop variant
 
-**Serial** (`serial/mm_serial.{c,h}`): Baseline implementations
-**Parallel** (`parallel/mm_parallel.{c,h}`): OpenMP versions with `#pragma omp for`
+**Serial** (`serial/mm_serial.{c,h}`):
+
+- Baseline implementations without parallelization
+- Functions: `serial_multiply_ijk()`, `serial_multiply_ikj()`, `serial_multiply_jik()`, `serial_multiply_jki()`, `serial_multiply_kij()`, `serial_multiply_kji()`
+- All functions return execution time in seconds (using `omp_get_wtime()`)
+
+**Parallel** (`parallel/mm_parallel.{c,h}`):
+
+- OpenMP versions with `#pragma omp for`
+- Functions: `parallel_multiply_ijk()`, `parallel_multiply_ikj()`, `parallel_multiply_jik()`, `parallel_multiply_jki()`, `parallel_multiply_kij()`, `parallel_multiply_kji()`
+- All functions accept `thread_count` and `chunk` parameters
+- All functions return execution time in seconds
 
 Reference: `docs/omp_matrix_mult.c` shows example i-j-k and i-k-j implementations
 
@@ -76,11 +93,16 @@ Key considerations:
 
 ### Entry Points
 
+**`src/main/main.c`**:
+
+- Simple test driver for basic functionality
+- Creates test matrices and runs basic validation
+
 **`src/main/loop_permutations.c`**:
 
-- Benchmarks all six loop permutations
-- Validates serial vs parallel results
-- Outputs timing data for performance comparison
+- Benchmarks all six loop permutations (serial and parallel)
+- Calls `test_serial_loop_permutations()` and `test_parallel_loop_permutations()`
+- Validates serial vs parallel results using i-j-k as reference
 
 **`src/main/tiled.c`**:
 
@@ -88,7 +110,7 @@ Key considerations:
 - Tests different block sizes
 - Validates against serial version
 
-Both should:
+Entry points should:
 
 - Accept matrix size N as argument (typical range: 1000-3000)
 - Accept number of threads for OpenMP parallel regions
@@ -127,9 +149,9 @@ Both should:
 
 **Matrix storage:**
 
-- Use dynamically allocated 1D arrays accessed as 2D: `matrix[i*N + j]`
-- OR use pointer-to-pointer for true 2D arrays
-- Reference implementation uses static 2D arrays (less flexible for large N)
+- This codebase uses pointer-to-pointer (`double**`) via the `Matrix` typedef
+- Accessed as `matrix[i][j]`
+- Reference implementation (`docs/omp_matrix_mult.c`) uses static 2D arrays `double a[N][N]`
 
 **Typical matrix sizes:**
 
