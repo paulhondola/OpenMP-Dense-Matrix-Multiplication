@@ -3,32 +3,50 @@
 #include "../utils/utils.h"
 #include <omp.h>
 
+void benchmark_serial_loop_permutations(Matrix a, Matrix b,
+                                        double times[PERMUTATIONS]) {
+
+  FILE *csv_file = open_csv_file(csv_serial_permutations);
+  if (csv_file == NULL) {
+    perror(csv_serial_permutations.filename);
+    exit(1);
+  }
+
+  test_serial_loop_permutations(a, b, times);
+  fprintf(csv_file, "%d,%f,%f,%f,%f,%f,%f\n", N, times[0], times[1], times[2],
+          times[3], times[4], times[5]);
+
+  fclose(csv_file);
+}
+
+void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
+                                          int chunk,
+                                          double times[PERMUTATIONS]) {
+  FILE *csv_file = open_csv_file(csv_parallel_permutations);
+  if (csv_file == NULL) {
+    perror(csv_parallel_permutations.filename);
+    exit(1);
+  }
+
+  test_parallel_loop_permutations(a, b, thread_count, chunk, times);
+  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", N, thread_count, chunk,
+          times[0], times[1], times[2], times[3], times[4], times[5]);
+
+  fclose(csv_file);
+}
+
 int main(int argc, char *argv[]) {
 
-  // Access CSV_DATA variables from utils.h:
-  // - compare_serial_loop_permutations_data (CSV_DATA type)
-  // - compare_parallel_loop_permutations_data (CSV_DATA type)
-  
-  // Example usage:
-  // FILE *csv = open_csv_file(compare_serial_loop_permutations_data);
-  // fprintf(csv, "1000,2.345,1.18,0.67,0.57,0.41,0.38\n");
-  // fclose(csv);
-  
-  // Access fields:
-  // printf("Filename: %s\n", compare_serial_loop_permutations_data.filename);
-  // printf("Header: %s\n", compare_serial_loop_permutations_data.header);
+  srand(SEED);
 
-  Matrix a, b;
-  a = matrix_create();
-  b = matrix_create();
+  double times[PERMUTATIONS] = {0};
+  Matrix a = matrix_create();
+  Matrix b = matrix_create();
   matrix_fill_random(a);
   matrix_fill_random(b);
-
-  test_serial_loop_permutations(a, b);
-  test_parallel_loop_permutations(a, b, omp_get_num_threads(), 1);
-
+  // benchmark_serial_loop_permutations(a, b, times);
+  benchmark_parallel_loop_permutations(a, b, 10, 100, times);
   matrix_destroy(a);
   matrix_destroy(b);
-
   return 0;
 }

@@ -11,9 +11,9 @@ typedef struct {
   char *filename;
 } CSV_DATA;
 
-extern CSV_DATA compare_serial_loop_permutations_data ;
-extern CSV_DATA compare_parallel_loop_permutations_data;
-extern CSV_DATA compare_classic_vs_improved_data;
+extern CSV_DATA csv_serial_permutations;
+extern CSV_DATA csv_parallel_permutations;
+extern CSV_DATA csv_classic_vs_improved;
 
 FILE *open_csv_file(CSV_DATA csv_data);
 

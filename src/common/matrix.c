@@ -1,7 +1,7 @@
 #include "matrix.h"
 #include <math.h>
 
-#define EPSILON 1e-6
+#define EPSILON 1e-9
 
 Matrix matrix_create(void) {
   Matrix matrix = (double **)malloc(N * sizeof(double *));
@@ -45,10 +45,6 @@ void matrix_destroy(Matrix matrix) {
     free(matrix[i]);
   }
   free(matrix);
-
-#ifdef DEBUG
-  printf("Matrix destroyed\n");
-#endif
 }
 
 int validate(Matrix a, Matrix b) {

@@ -2,28 +2,26 @@
 #include "../common/matrix.h"
 #include "../loop_permutations/parallel/mm_parallel.h"
 #include "../loop_permutations/serial/mm_serial.h"
-#define NUM_PERMUTATIONS 6
 
 int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
-                                int permutation) {
+                                int permutation, double times[PERMUTATIONS]) {
 
   Matrix c = matrix_create();
-  double time;
   switch (permutation) {
   case 1:
-    time = serial_multiply_ikj(a, b, c);
+    times[1] = serial_multiply_ikj(a, b, c);
     break;
   case 2:
-    time = serial_multiply_jik(a, b, c);
+    times[2] = serial_multiply_jik(a, b, c);
     break;
   case 3:
-    time = serial_multiply_jki(a, b, c);
+    times[3] = serial_multiply_jki(a, b, c);
     break;
   case 4:
-    time = serial_multiply_kij(a, b, c);
+    times[4] = serial_multiply_kij(a, b, c);
     break;
   case 5:
-    time = serial_multiply_kji(a, b, c);
+    times[5] = serial_multiply_kji(a, b, c);
     break;
   default:
     return 0;
@@ -37,14 +35,15 @@ int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
   } else {
     printf("Permutation %d is incorrect\n", permutation);
   }
-  printf("Time: %f seconds\n", time);
+  printf("Time: %f seconds\n", times[permutation]);
   printf("------------------------------------------\n");
 #endif
 
   return result;
 }
 
-int test_serial_loop_permutations(Matrix a, Matrix b) {
+int test_serial_loop_permutations(Matrix a, Matrix b,
+                                  double times[PERMUTATIONS]) {
 
 #ifdef DEBUG
   printf("Serial - Testing loop "
@@ -52,16 +51,16 @@ int test_serial_loop_permutations(Matrix a, Matrix b) {
 #endif
 
   Matrix reference = matrix_create();
-  double time = serial_multiply_ijk(a, b, reference);
+  times[0] = serial_multiply_ijk(a, b, reference);
 
 #ifdef DEBUG
-  printf("Time: %f seconds\n", time);
+  printf("Time: %f seconds\n", times[0]);
   printf("------------------------------------------\n");
 #endif
 
   int correct_count = 0;
-  for (int i = 1; i < NUM_PERMUTATIONS; i++) {
-    if (run_serial_loop_permutation(a, b, reference, i)) {
+  for (int i = 1; i < PERMUTATIONS; i++) {
+    if (run_serial_loop_permutation(a, b, reference, i, times)) {
       correct_count++;
     }
   }
@@ -71,34 +70,33 @@ int test_serial_loop_permutations(Matrix a, Matrix b) {
 #ifdef DEBUG
   printf("Serial - Test completed\n");
   printf("Correct count: %d\n", correct_count);
-  printf("Total permutations: %d\n", NUM_PERMUTATIONS - 1);
+  printf("Total permutations: %d\n", PERMUTATIONS - 1);
   printf("------------------------------------------\n");
 #endif
 
-  return correct_count == NUM_PERMUTATIONS - 1;
+  return correct_count == PERMUTATIONS - 1;
 }
 
 int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
-                                  int permutation, int thread_count,
-                                  int chunk) {
+                                  int permutation, int thread_count, int chunk,
+                                  double times[PERMUTATIONS]) {
 
   Matrix c = matrix_create();
-  double time;
   switch (permutation) {
   case 1:
-    time = parallel_multiply_ikj(a, b, c, thread_count, chunk);
+    times[1] = parallel_multiply_ikj(a, b, c, thread_count, chunk);
     break;
   case 2:
-    time = parallel_multiply_jik(a, b, c, thread_count, chunk);
+    times[2] = parallel_multiply_jik(a, b, c, thread_count, chunk);
     break;
   case 3:
-    time = parallel_multiply_jki(a, b, c, thread_count, chunk);
+    times[3] = parallel_multiply_jki(a, b, c, thread_count, chunk);
     break;
   case 4:
-    time = parallel_multiply_kij(a, b, c, thread_count, chunk);
+    times[4] = parallel_multiply_kij(a, b, c, thread_count, chunk);
     break;
   case 5:
-    time = parallel_multiply_kji(a, b, c, thread_count, chunk);
+    times[5] = parallel_multiply_kji(a, b, c, thread_count, chunk);
     break;
   default:
     return 0;
@@ -113,7 +111,7 @@ int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
   } else {
     printf("Permutation %d is incorrect\n", permutation);
   }
-  printf("Time: %f seconds\n", time);
+  printf("Time: %f seconds\n", times[permutation]);
   printf("------------------------------------------\n");
 #endif
 
@@ -121,8 +119,7 @@ int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
 }
 
 int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
-
-                                    int chunk) {
+                                    int chunk, double times[PERMUTATIONS]) {
 
 #ifdef DEBUG
   printf("Parallel - Testing loop "
@@ -131,17 +128,17 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 
   // set the IJK permutation as reference
   Matrix reference = matrix_create();
-  double time = parallel_multiply_ijk(a, b, reference, thread_count, chunk);
+  times[0] = parallel_multiply_ijk(a, b, reference, thread_count, chunk);
 
 #ifdef DEBUG
-  printf("Time: %f seconds\n", time);
+  printf("Time: %f seconds\n", times[0]);
   printf("------------------------------------------\n");
 #endif
 
   int correct_count = 0;
-  for (int i = 1; i < NUM_PERMUTATIONS; i++) {
-    if (run_parallel_loop_permutation(a, b, reference, i, thread_count,
-                                      chunk)) {
+  for (int i = 1; i < PERMUTATIONS; i++) {
+    if (run_parallel_loop_permutation(a, b, reference, i, thread_count, chunk,
+                                      times)) {
       correct_count++;
     }
   }
@@ -151,9 +148,9 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 #ifdef DEBUG
   printf("Parallel - Test completed\n");
   printf("Correct count: %d\n", correct_count);
-  printf("Total permutations: %d\n", NUM_PERMUTATIONS - 1);
+  printf("Total permutations: %d\n", PERMUTATIONS - 1);
   printf("------------------------------------------\n");
 #endif
 
-  return correct_count == NUM_PERMUTATIONS - 1;
+  return correct_count == PERMUTATIONS - 1;
 }

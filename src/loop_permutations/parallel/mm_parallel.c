@@ -133,8 +133,8 @@ double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
-#pragma omp for schedule(static, chunk)
     for (k = 0; k < N; k++) {
+#pragma omp for schedule(static, chunk)
       for (i = 0; i < N; i++) {
         temp = a[i][k];
         for (j = 0; j < N; j++) {
@@ -164,8 +164,8 @@ double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
-#pragma omp for schedule(static, chunk)
     for (k = 0; k < N; k++) {
+#pragma omp for schedule(static, chunk)
       for (j = 0; j < N; j++) {
         temp = b[k][j];
         for (i = 0; i < N; i++) {
