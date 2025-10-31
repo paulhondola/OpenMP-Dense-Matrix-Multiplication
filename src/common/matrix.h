@@ -12,7 +12,7 @@
 #define SEED 42
 #define UNIFORM_MIN -100
 #define UNIFORM_MAX 100
-#define N 5
+#define N 1000
 
 typedef double** Matrix;
 

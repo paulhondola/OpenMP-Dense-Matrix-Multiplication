@@ -1,9 +1,13 @@
 #include "mm_parallel.h"
+#include <omp.h>
 
-void parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k), shared(a, b, c, chunk)
   {
@@ -15,18 +19,25 @@ void parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
         }
       }
     }
+  }
+
+  double end = omp_get_wtime();
 
 #ifdef DEBUG
-    printf("Parallel - ijk - completed\n");
+  printf("Parallel - ijk - completed\n");
 #endif
-  }
+
+  return end - start;
 }
 
-void parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
@@ -41,16 +52,23 @@ void parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
       }
     }
   }
+
+  double end = omp_get_wtime();
 
 #ifdef DEBUG
   printf("Parallel - ikj - completed\n");
 #endif
+
+  return end - start;
 }
 
-void parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k), shared(a, b, c, chunk)
   {
@@ -64,16 +82,23 @@ void parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
+  double end = omp_get_wtime();
+
 #ifdef DEBUG
   printf("Parallel - jik - completed\n");
 #endif
+
+  return end - start;
 }
 
-void parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
@@ -88,16 +113,23 @@ void parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
+  double end = omp_get_wtime();
+
 #ifdef DEBUG
   printf("Parallel - jki - completed\n");
 #endif
+
+  return end - start;
 }
 
-void parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
@@ -112,16 +144,23 @@ void parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
+  double end = omp_get_wtime();
+
 #ifdef DEBUG
   printf("Parallel - kij - completed\n");
 #endif
+
+  return end - start;
 }
 
-void parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk) {
+double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
+                              int chunk) {
   matrix_fill_zero(c);
   int i, j, k;
   double temp;
+
+  double start = omp_get_wtime();
+
 #pragma omp parallel num_threads(thread_count), default(none),                 \
     private(i, j, k, temp), shared(a, b, c, chunk)
   {
@@ -136,7 +175,11 @@ void parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
+  double end = omp_get_wtime();
+
 #ifdef DEBUG
   printf("Parallel - kji - completed\n");
 #endif
+
+  return end - start;
 }

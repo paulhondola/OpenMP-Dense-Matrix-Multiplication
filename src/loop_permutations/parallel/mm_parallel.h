@@ -6,17 +6,17 @@
 
 #include "../../common/matrix.h"
 
-void parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
-void parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
-void parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
-void parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
-void parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
-void parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
-                           int chunk);
+double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
+double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
+double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
+double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
+double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
+double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
+                             int chunk);
 
 #endif // MM_PARALLEL_H
