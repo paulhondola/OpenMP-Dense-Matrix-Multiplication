@@ -43,12 +43,20 @@ make tiled
 - Uses `Matrix` typedef for `double**` pointer-to-pointer representation
 - Default matrix size: `N = 1000` (compile-time constant)
 
-**Validation and testing** (`src/test/test.{c,h}`):
+**Benchmarking and validation** (`src/benchmark/benchmark.{c,h}`):
 
 - Compares results against reference i-j-k implementation
-- Uses epsilon comparison for floating-point values (`EPSILON = 0.000001`)
+- Validation uses `validate()` function from `matrix.c` with epsilon comparison for floating-point values (`EPSILON = 1e-9`)
 - `test_serial_loop_permutations()`: Validates all serial permutations against serial i-j-k
 - `test_parallel_loop_permutations()`: Validates all parallel permutations against parallel i-j-k
+- `test_classic_vs_improved()`: Compares i-j-k vs i-k-j implementations
+- `test_tiled()`: Validates blocked implementations
+
+**Utilities** (`src/utils/utils.{c,h}`):
+
+- CSV file handling for benchmark data export
+- Predefined CSV structures for serial permutations, parallel permutations, and classic vs improved comparisons
+- Output files written to `benchmark/data/`
 
 ### Loop Permutation Implementations
 
@@ -68,6 +76,7 @@ Six permutations for each variant (serial and parallel):
 - Baseline implementations without parallelization
 - Functions: `serial_multiply_ijk()`, `serial_multiply_ikj()`, `serial_multiply_jik()`, `serial_multiply_jki()`, `serial_multiply_kij()`, `serial_multiply_kji()`
 - All functions return execution time in seconds (using `omp_get_wtime()`)
+- Accessed via `serial_f[]` function pointer array indexed 0-5
 
 **Parallel** (`parallel/mm_parallel.{c,h}`):
 
@@ -75,6 +84,9 @@ Six permutations for each variant (serial and parallel):
 - Functions: `parallel_multiply_ijk()`, `parallel_multiply_ikj()`, `parallel_multiply_jik()`, `parallel_multiply_jki()`, `parallel_multiply_kij()`, `parallel_multiply_kji()`
 - All functions accept `thread_count` and `chunk` parameters
 - All functions return execution time in seconds
+- Accessed via `parallel_f[]` function pointer array indexed 0-5
+
+**Function pointer pattern**: Both serial and parallel implementations use function pointer arrays (`serial_loop_permutation_function` and `parallel_loop_permutation_function` typedefs) to allow dynamic selection of loop permutations at runtime via array indexing
 
 Reference: `docs/omp_matrix_mult.c` shows example i-j-k and i-k-j implementations
 
@@ -145,7 +157,7 @@ Entry points should:
 - Properly declare private vs shared variables
 - Schedule type (static/dynamic) and chunk size affect performance
 - Use `omp_get_wtime()` for accurate timing measurements
-- Validation: Use epsilon comparison for floating-point results (`fabs(mat1[i][j] - mat2[i][j]) > EPSILON`)
+- Validation: Use epsilon comparison for floating-point results (`fabs(mat1[i][j] - mat2[i][j]) > EPSILON`, where `EPSILON = 1e-9`)
 
 **Matrix storage:**
 
