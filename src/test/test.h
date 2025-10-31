@@ -6,8 +6,8 @@
 
 #include "../common/matrix.h"
 
-int test_serial_loop_permutations(Matrix a, Matrix b, double times[PERMUTATIONS]);
+int test_serial_loop_permutations(Matrix a, Matrix b, double times[]);
 int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
-                                    int chunk, double times[PERMUTATIONS]);
-
+                                    int chunk, double times[]);
+int test_classic_vs_improved(Matrix a, Matrix b, double times[]);
 #endif // TEST_H

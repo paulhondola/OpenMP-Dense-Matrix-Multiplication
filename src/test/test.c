@@ -4,7 +4,7 @@
 #include "../loop_permutations/serial/mm_serial.h"
 
 int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
-                                int permutation, double times[PERMUTATIONS]) {
+                                int permutation, double times[]) {
 
   Matrix c = matrix_create();
   switch (permutation) {
@@ -42,8 +42,7 @@ int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
   return result;
 }
 
-int test_serial_loop_permutations(Matrix a, Matrix b,
-                                  double times[PERMUTATIONS]) {
+int test_serial_loop_permutations(Matrix a, Matrix b, double times[]) {
 
 #ifdef DEBUG
   printf("Serial - Testing loop "
@@ -79,7 +78,7 @@ int test_serial_loop_permutations(Matrix a, Matrix b,
 
 int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
                                   int permutation, int thread_count, int chunk,
-                                  double times[PERMUTATIONS]) {
+                                  double times[]) {
 
   Matrix c = matrix_create();
   switch (permutation) {
@@ -119,7 +118,7 @@ int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
 }
 
 int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
-                                    int chunk, double times[PERMUTATIONS]) {
+                                    int chunk, double times[]) {
 
 #ifdef DEBUG
   printf("Parallel - Testing loop "
@@ -153,4 +152,36 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
 #endif
 
   return correct_count == PERMUTATIONS - 1;
+}
+
+int test_classic_vs_improved(Matrix a, Matrix b, double times[]) {
+
+  Matrix c = matrix_create();
+  times[0] = serial_multiply_ijk(a, b, c);
+  times[1] = parallel_multiply_ijk(a, b, c, 2, 1);
+  times[2] = parallel_multiply_ijk(a, b, c, 4, 1);
+  times[3] = parallel_multiply_ijk(a, b, c, 8, 1);
+
+  times[4] = serial_multiply_ikj(a, b, c);
+  times[5] = parallel_multiply_ikj(a, b, c, 2, 1);
+  times[6] = parallel_multiply_ikj(a, b, c, 4, 1);
+  times[7] = parallel_multiply_ikj(a, b, c, 8, 1);
+
+  matrix_destroy(c);
+
+#ifdef DEBUG
+  printf("Classic vs Improved - Test completed\n");
+  printf("------------------------------------------\n");
+  printf("SERIAL: %f seconds\n", times[0]);
+  printf("PARALLEL 2 THREADS: %f seconds\n", times[1]);
+  printf("PARALLEL 4 THREADS: %f seconds\n", times[2]);
+  printf("PARALLEL 8 THREADS: %f seconds\n", times[3]);
+  printf("IMPROVED SERIAL: %f seconds\n", times[4]);
+  printf("IMPROVED PARALLEL 2 THREADS: %f seconds\n", times[5]);
+  printf("IMPROVED PARALLEL 4 THREADS: %f seconds\n", times[6]);
+  printf("IMPROVED PARALLEL 8 THREADS: %f seconds\n", times[7]);
+  printf("------------------------------------------\n");
+#endif
+
+  return 0;
 }
