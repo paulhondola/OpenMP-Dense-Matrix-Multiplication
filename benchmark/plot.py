@@ -10,8 +10,9 @@ from typing import List, Dict, Optional
 class BenchmarkPlotter:
 
     def __init__(self, data_dir: str = "data", plots_dir: str = "plots"):
-        self.data_dir = Path(data_dir)
-        self.plots_dir = Path(plots_dir)
+        script_dir = Path(__file__).parent
+        self.data_dir = script_dir / data_dir
+        self.plots_dir = script_dir / plots_dir
         self.plots_dir.mkdir(exist_ok=True)
 
         self.permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
@@ -85,17 +86,27 @@ class BenchmarkPlotter:
             plt.close()
 
     def plot_parallel_permutations(
-        self, threads: Optional[int] = None, save: bool = True, show: bool = False
+        self,
+        threads: Optional[int] = None,
+        chunk: Optional[int] = None,
+        save: bool = True,
+        show: bool = False,
     ):
         df = self.load_csv("parallel_permutations.csv")
 
+        title_parts = []
         if threads is not None:
             df = df[df["THREADS"] == threads]
-            title_suffix = f" ({threads} Threads)"
-        else:
-            title_suffix = " (All Thread Counts)"
+            title_parts.append(f"{threads} Threads")
 
-        groupby_cols = ["MATRIX_SIZE"] if threads else ["MATRIX_SIZE", "THREADS"]
+        title_suffix = (
+            f" ({', '.join(title_parts)})" if title_parts else " (All Configurations)"
+        )
+
+        groupby_cols = ["MATRIX_SIZE"]
+        if threads is None:
+            groupby_cols.append("THREADS")
+
         agg_df = self.aggregate_by_matrix_size(df, groupby_cols)
 
         plt.figure(figsize=(12, 7))
@@ -135,8 +146,68 @@ class BenchmarkPlotter:
         plt.tight_layout()
 
         if save:
-            suffix = f"_t{threads}" if threads else "_all"
-            output_path = self.plots_dir / f"parallel_permutations{suffix}.png"
+            output_path = self.plots_dir / f"parallel_permutations.png"
+            plt.savefig(output_path, dpi=300, bbox_inches="tight")
+            print(f"Plot saved to {output_path}")
+
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_parallel_by_chunk(self, save: bool = True, show: bool = False):
+        df = self.load_csv("parallel_permutations.csv")
+
+        chunk_sizes = sorted(df["CHUNK"].unique())
+        chunk_markers = ["o", "s", "^"]
+        chunk_linestyles = ["-", "--", "-."]
+
+        agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE", "CHUNK"])
+
+        plt.figure(figsize=(14, 8))
+
+        for idx, perm in enumerate(self.permutation_names):
+            col_name = f"{perm}_TIME"
+            base_color = self.permutation_colors[idx]
+
+            for chunk_idx, chunk in enumerate(chunk_sizes):
+                chunk_data = agg_df[agg_df["CHUNK"] == chunk]
+                mean_col = (col_name, "mean")
+                std_col = (col_name, "std")
+
+                x = chunk_data["MATRIX_SIZE"]
+                y = chunk_data[mean_col]
+                yerr = chunk_data[std_col]
+
+                label = f"{perm} (chunk={chunk})"
+                plt.errorbar(
+                    x,
+                    y,
+                    yerr=yerr,
+                    label=label,
+                    color=base_color,
+                    marker=chunk_markers[chunk_idx],
+                    linestyle=chunk_linestyles[chunk_idx],
+                    capsize=4,
+                    linewidth=2,
+                    markersize=6,
+                    alpha=0.8,
+                )
+
+        plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
+        plt.ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        plt.title(
+            f"Parallel Loop Permutations by Chunk Size",
+            fontsize=14,
+            fontweight="bold",
+            pad=20,
+        )
+        plt.legend(loc="best", framealpha=0.9, ncol=3, fontsize=9)
+        plt.grid(True, alpha=0.3, linestyle="--")
+        plt.tight_layout()
+
+        if save:
+            output_path = self.plots_dir / f"parallel_by_chunk.png"
             plt.savefig(output_path, dpi=300, bbox_inches="tight")
             print(f"Plot saved to {output_path}")
 
@@ -230,11 +301,11 @@ def main():
     print("Creating serial permutations plot...")
     plotter.plot_serial_permutations()
 
-    print("Creating parallel permutations plot (all threads)...")
+    print("Creating parallel permutations plot...")
     plotter.plot_parallel_permutations()
 
-    print("Creating parallel permutations plot (10 threads)...")
-    plotter.plot_parallel_permutations(threads=10)
+    print("Creating parallel by chunk plot...")
+    plotter.plot_parallel_by_chunk()
 
     print("Creating classic vs improved plot...")
     plotter.plot_classic_vs_improved()
