@@ -21,10 +21,10 @@ clear:
 
 loop:
 	$(CC) $(CFLAGS) $(LOOP_SRC) $(SRC) -o $(LOOP_TARGET)
-	for matrix_size in $(MATRIX_SIZES); do
-		for chunk_size in $(CHUNK_SIZES); do
-			./$(LOOP_TARGET) $$matrix_size $(THREAD_COUNT) $$chunk_size
-		done
+	for matrix_size in $(MATRIX_SIZES); do \
+		for chunk_size in $(CHUNK_SIZES); do \
+			./$(LOOP_TARGET) $$matrix_size $(THREAD_COUNT) $$chunk_size; \
+		done; \
 	done
 
 loop_plot:

@@ -75,9 +75,9 @@ int main(int argc, char *argv[]) {
   matrix_create(&b, matrix_size);
   matrix_fill_random(a);
   matrix_fill_random(b);
-  benchmark_serial_loop_permutations(a, b);
+  // benchmark_serial_loop_permutations(a, b);
   benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
-  benchmark_classic_vs_improved(a, b, chunk_size);
+  // benchmark_classic_vs_improved(a, b, chunk_size);
   matrix_destroy(a);
   matrix_destroy(b);
   return 0;

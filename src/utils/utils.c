@@ -6,27 +6,23 @@
 #include <stdlib.h>
 
 CSV_DATA csv_serial_permutations = {
-    .header = "MATRIX_SIZE,IJK_SPEEDUP,IKJ_SPEEDUP,JIK_SPEEDUP,JKI_SPEEDUP,"
-              "KIJ_SPEEDUP,KJI_SPEEDUP",
+    .header = "MATRIX_SIZE,IJK,IKJ,JIK,JKI,KIJ,KJI",
     .filename = "benchmark/data/serial_permutations.csv",
 };
 
 CSV_DATA csv_parallel_permutations = {
-    .header = "MATRIX_SIZE,THREADS,CHUNK,IJK_SPEEDUP,IKJ_SPEEDUP,JIK_"
-              "SPEEDUP,JKI_SPEEDUP,KIJ_SPEEDUP,KJI_SPEEDUP",
+    .header = "MATRIX_SIZE,THREADS,CHUNK,IJK,IKJ,JIK,JKI,KIJ,KJI",
     .filename = "benchmark/data/parallel_permutations.csv",
 };
 
 CSV_DATA csv_classic_vs_improved = {
-    .header = "MATRIX_SIZE,CHUNK,SERIAL_BASELINE,P2T_SPEEDUP,P4T_SPEEDUP,P8T_"
-              "SPEEDUP,IMPROVED_SERIAL_SPEEDUP,IP2T_SPEEDUP,IP4T_SPEEDUP,IP8T_"
-              "SPEEDUP",
+    .header = "MATRIX_SIZE,CHUNK,SERIAL_BASELINE,P2T,P4T,P8T,IMPROVED_SERIAL,"
+              "IP2T,IP4T,IP8T",
     .filename = "benchmark/data/classic_vs_improved.csv",
 };
 
 CSV_DATA csv_tiled = {
-    .header = "MATRIX_SIZE,BLOCK_SIZE,SERIAL_BASELINE,P2T_SPEEDUP,P4T_SPEEDUP,"
-              "P8T_SPEEDUP",
+    .header = "MATRIX_SIZE,BLOCK_SIZE,SERIAL_BASELINE,P2T,P4T,P8T",
     .filename = "benchmark/data/tiled.csv",
 };
 
