@@ -27,13 +27,13 @@ double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - ijk - completed\n");
+  printf("Parallel - ijk - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
@@ -58,13 +58,13 @@ double parallel_multiply_ikj(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - ikj - completed\n");
+  printf("Parallel - ikj - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
@@ -89,13 +89,13 @@ double parallel_multiply_jik(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - jik - completed\n");
+  printf("Parallel - jik - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
@@ -120,13 +120,13 @@ double parallel_multiply_jki(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - jki - completed\n");
+  printf("Parallel - jki - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
@@ -151,13 +151,13 @@ double parallel_multiply_kij(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - kij - completed\n");
+  printf("Parallel - kij - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
@@ -183,11 +183,11 @@ double parallel_multiply_kji(Matrix a, Matrix b, Matrix c, int thread_count,
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - kji - completed\n");
+  printf("Parallel - kji - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }

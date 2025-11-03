@@ -18,13 +18,13 @@ double serial_multiply_ijk(Matrix a, Matrix b, Matrix c) {
         c.data[i][j] += a.data[i][k] * b.data[k][j];
       }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ijk - completed\n");
+  printf("Serial - ijk - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
@@ -42,13 +42,13 @@ double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ikj - completed\n");
+  printf("Serial - ikj - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
@@ -64,13 +64,13 @@ double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jik - completed\n");
+  printf("Serial - jik - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
@@ -88,13 +88,13 @@ double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jki - completed\n");
+  printf("Serial - jki - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
@@ -112,13 +112,13 @@ double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kij - completed\n");
+  printf("Serial - kij - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }
 
 double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
@@ -136,11 +136,11 @@ double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
     }
   }
 
-  double end = omp_get_wtime();
+  double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kji - completed\n");
+  printf("Serial - kji - completed - time: %f\n", result);
 #endif
 
-  return end - start;
+  return result;
 }

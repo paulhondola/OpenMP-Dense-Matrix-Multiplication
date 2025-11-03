@@ -19,7 +19,6 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
   } else {
     printf("Permutation %d is incorrect\n", permutation);
   }
-  printf("Time: %f seconds\n", time_results[permutation]);
   printf("------------------------------------------\n");
 #endif
 
@@ -77,7 +76,6 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
   } else {
     printf("Permutation %d is incorrect\n", permutation);
   }
-  printf("Time: %f seconds\n", time_results[permutation]);
   printf("------------------------------------------\n");
 #endif
 
@@ -99,7 +97,6 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
                                                          thread_count, chunk);
 
 #ifdef DEBUG
-  printf("Time: %f seconds\n", time_results[0]);
   printf("------------------------------------------\n");
 #endif
 
@@ -140,15 +137,6 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
 
 #ifdef DEBUG
   printf("Classic vs Improved - Test completed\n");
-  printf("------------------------------------------\n");
-  printf("SERIAL: %f seconds\n", time_results[0]);
-  printf("PARALLEL 2 THREADS: %f seconds\n", time_results[1]);
-  printf("PARALLEL 4 THREADS: %f seconds\n", time_results[2]);
-  printf("PARALLEL 8 THREADS: %f seconds\n", time_results[3]);
-  printf("IMPROVED SERIAL: %f seconds\n", time_results[4]);
-  printf("IMPROVED PARALLEL 2 THREADS: %f seconds\n", time_results[5]);
-  printf("IMPROVED PARALLEL 4 THREADS: %f seconds\n", time_results[6]);
-  printf("IMPROVED PARALLEL 8 THREADS: %f seconds\n", time_results[7]);
   printf("------------------------------------------\n");
 #endif
 

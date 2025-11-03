@@ -6,4 +6,6 @@
 
 #include "../../common/matrix.h"
 
+double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size);
+
 #endif // MM_TILED_SERIAL_H
