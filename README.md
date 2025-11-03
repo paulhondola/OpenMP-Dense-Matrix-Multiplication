@@ -40,43 +40,44 @@ Recommended compiler: gcc-15 with OpenMP support (`-fopenmp`).
 
 ## Repository structure
 
-```text
+```
 OpenMP-Dense-Matrix-Multiplication/
-  benchmark/
-    data/                   # Input/output data for benchmarking
-    plot.py                 # Plotting script
-    plots/                  # Generated plots
-  bin/                      # Output directory for built binaries
-  docs/
-    DenseMatrix.pdf         # Problem description/background
-    omp_matrix_mult.c       # Lecture/example reference implementation
-  Makefile                  # Makefile for builds
-  src/
-    benchmark/
-      benchmark.c           # Benchmarking and validation utilities
-      benchmark.h
-    common/
-      matrix.c              # Matrix helpers (alloc/init/etc.)
-      matrix.h
-    loop_permutations/
-      parallel/
-        mm_parallel.c       # OpenMP implementations for (i,j,k) permutations
-        mm_parallel.h
-      serial/
-        mm_serial.c         # Serial implementations for (i,j,k) permutations
-        mm_serial.h
-    main/
-      main.c                # Simple test driver entry point
-      loop_permutations.c   # Entry point for loop-permutation experiments
-      tiled.c               # Entry point for blocked/tiled experiments
-    tiled/
-      parallel/
-        mm_blocked_omp.c    # OpenMP blocked/tiled implementation
-        mm_blocked_omp.h
-      serial/
-        mm_blocked_serial.c # Serial blocked/tiled implementation
-        mm_blocked_omp.h
-    utils/
-      utils.c               # CSV file handling for benchmark data export
-      utils.h
+├── benchmark/
+│   ├── data/                   # Input/output data for benchmarking
+│   ├── plot.py                 # Plotting script
+│   └── plots/                  # Generated plots
+├── bin/                        # Output directory for built binaries
+├── docs/
+│   ├── DenseMatrix.pdf         # Problem description/background
+│   └── omp_matrix_mult.c       # Lecture/example reference implementation
+├── Makefile                    # Makefile for builds
+├── src/
+│   ├── benchmark/
+│   │   ├── benchmark.c         # Benchmarking and validation utilities
+│   │   └── benchmark.h
+│   ├── common/
+│   │   ├── matrix.c            # Matrix helpers (alloc/init/etc.)
+│   │   └── matrix.h
+│   ├── loop_permutations/
+│   │   ├── parallel/
+│   │   │   ├── mm_parallel.c   # OpenMP implementations for (i,j,k) permutations
+│   │   │   └── mm_parallel.h
+│   │   └── serial/
+│   │       ├── mm_serial.c     # Serial implementations for (i,j,k) permutations
+│   │       └── mm_serial.h
+│   ├── main/
+│   │   ├── main.c              # Simple test driver entry point
+│   │   ├── loop_permutations.c # Entry point for loop-permutation experiments
+│   │   └── tiled.c             # Entry point for blocked/tiled experiments
+│   ├── tiled/
+│   │   ├── parallel/
+│   │   │   ├── mm_blocked_omp.c    # OpenMP blocked/tiled implementation
+│   │   │   └── mm_blocked_omp.h
+│   │   └── serial/
+│   │       ├── mm_blocked_serial.c # Serial blocked/tiled implementation
+│   │       └── mm_blocked_omp.h
+│   └── utils/
+│       ├── utils.c             # CSV file handling for benchmark data export
+│       └── utils.h
+└── README.md
 ```
