@@ -6,7 +6,7 @@
 
 #include "../../common/matrix.h"
 
-extern parallel_loop_benchmark p_loop_func[];
+extern parallel_loop_benchmark parallel_loop_benchmark_functions[];
 
 double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
                              int chunk);

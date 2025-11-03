@@ -40,7 +40,7 @@ Recommended compiler: gcc-15 with OpenMP support (`-fopenmp`).
 
 ## Repository structure
 
-```
+```text
 OpenMP-Dense-Matrix-Multiplication/
 ├── benchmark/
 │   ├── data/                   # Input/output data for benchmarking

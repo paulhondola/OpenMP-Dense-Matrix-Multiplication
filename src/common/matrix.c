@@ -49,7 +49,7 @@ void matrix_destroy(Matrix matrix) {
 
 int validate(Matrix a, Matrix b) {
   int result = 1;
-#pragma omp parallel for reduction(&& : result)
+#pragma omp parallel for reduction(& : result)
   for (int i = 0; i < a.size; i++) {
     for (int j = 0; j < a.size; j++) {
       if (fabs(a.data[i][j] - b.data[i][j]) > EPSILON) {

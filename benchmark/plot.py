@@ -42,7 +42,7 @@ class BenchmarkPlotter:
         plt.figure(figsize=(12, 7))
 
         for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_TIME"
+            col_name = f"{perm}_SPEEDUP"
             mean_col = (col_name, "mean")
             std_col = (col_name, "std")
 
@@ -64,9 +64,9 @@ class BenchmarkPlotter:
             )
 
         plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        plt.ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
         plt.title(
-            "Serial Loop Permutations: Performance vs Matrix Size",
+            "Serial Loop Permutations: Speedup vs Matrix Size",
             fontsize=14,
             fontweight="bold",
             pad=20,
@@ -112,7 +112,7 @@ class BenchmarkPlotter:
         plt.figure(figsize=(12, 7))
 
         for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_TIME"
+            col_name = f"{perm}_SPEEDUP"
             mean_col = (col_name, "mean")
             std_col = (col_name, "std")
 
@@ -134,9 +134,9 @@ class BenchmarkPlotter:
             )
 
         plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        plt.ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
         plt.title(
-            f"Parallel Loop Permutations: Performance vs Matrix Size{title_suffix}",
+            f"Parallel Loop Permutations: Speedup vs Matrix Size{title_suffix}",
             fontsize=14,
             fontweight="bold",
             pad=20,
@@ -167,7 +167,7 @@ class BenchmarkPlotter:
         plt.figure(figsize=(14, 8))
 
         for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_TIME"
+            col_name = f"{perm}_SPEEDUP"
             base_color = self.permutation_colors[idx]
 
             for chunk_idx, chunk in enumerate(chunk_sizes):
@@ -195,7 +195,7 @@ class BenchmarkPlotter:
                 )
 
         plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        plt.ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
         plt.title(
             f"Parallel Loop Permutations by Chunk Size",
             fontsize=14,
@@ -224,16 +224,8 @@ class BenchmarkPlotter:
         x = df["MATRIX_SIZE"]
         ax1.plot(
             x,
-            df["SERIAL_TIME"],
-            label="Classic (i-j-k)",
-            marker="o",
-            linewidth=2,
-            markersize=8,
-            color="#e41a1c",
-        )
-        ax1.plot(
-            x,
-            df["IMPROVED_SERIAL"],
+            df["SERIAL_BASELINE"],
+            df["IMPROVED_SERIAL_SPEEDUP"],
             label="Improved (i-k-j)",
             marker="s",
             linewidth=2,
@@ -242,7 +234,7 @@ class BenchmarkPlotter:
         )
 
         ax1.set_xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        ax1.set_ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        ax1.set_ylabel("Speedup", fontsize=12, fontweight="bold")
         ax1.set_title("Serial: Classic vs Improved", fontsize=13, fontweight="bold")
         ax1.legend(loc="best", framealpha=0.9)
         ax1.grid(True, alpha=0.3, linestyle="--")
@@ -254,7 +246,7 @@ class BenchmarkPlotter:
         for idx, t in enumerate(thread_counts):
             ax2.plot(
                 x,
-                df[f"P{t}T"],
+                df[f"P{t}T_SPEEDUP"],
                 label=f"Classic {t}T",
                 marker="o",
                 linewidth=2,
@@ -264,7 +256,7 @@ class BenchmarkPlotter:
             )
             ax2.plot(
                 x,
-                df[f"IP{t}T"],
+                df[f"IP{t}T_SPEEDUP"],
                 label=f"Improved {t}T",
                 marker="s",
                 linewidth=2,
@@ -274,7 +266,7 @@ class BenchmarkPlotter:
             )
 
         ax2.set_xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        ax2.set_ylabel("Time (seconds)", fontsize=12, fontweight="bold")
+        ax2.set_ylabel("Speedup", fontsize=12, fontweight="bold")
         ax2.set_title("Parallel: Classic vs Improved", fontsize=13, fontweight="bold")
         ax2.legend(loc="best", framealpha=0.9, ncol=2)
         ax2.grid(True, alpha=0.3, linestyle="--")

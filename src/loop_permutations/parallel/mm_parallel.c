@@ -1,7 +1,7 @@
 #include "mm_parallel.h"
 #include <omp.h>
 
-parallel_loop_benchmark p_loop_func[] = {
+parallel_loop_benchmark parallel_loop_benchmark_functions[] = {
     parallel_multiply_ijk, parallel_multiply_ikj, parallel_multiply_jik,
     parallel_multiply_jki, parallel_multiply_kji, parallel_multiply_kji};
 

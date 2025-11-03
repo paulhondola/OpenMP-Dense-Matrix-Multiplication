@@ -13,7 +13,7 @@
 #define UNIFORM_MIN -100
 #define UNIFORM_MAX 100
 #define N 1000
-#define PERMUTATIONS 6
+
 
 typedef struct {
   double** data;

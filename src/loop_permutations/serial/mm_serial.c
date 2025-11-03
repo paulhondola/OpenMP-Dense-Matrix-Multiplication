@@ -3,7 +3,7 @@
 #include <omp.h>
 #include <stdio.h>
 
-serial_loop_benchmark s_loop_func[] = {
+serial_loop_benchmark serial_loop_benchmark_functions[] = {
     serial_multiply_ijk, serial_multiply_ikj, serial_multiply_jik,
     serial_multiply_jki, serial_multiply_kij, serial_multiply_kji};
 

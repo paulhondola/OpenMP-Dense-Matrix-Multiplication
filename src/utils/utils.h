@@ -20,6 +20,6 @@ FILE *open_csv_file(CSV_DATA);
 void clear_csv_file(CSV_DATA);
 void usage(char *);
 void get_args(int argc, char *argv[], int *matrix_size, int *thread_count,
-  int *chunk_size);
+              int *chunk_size);
 
 #endif // UTILS_H

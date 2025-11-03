@@ -6,7 +6,7 @@
 
 #include "../../common/matrix.h"
 
-extern serial_loop_benchmark s_loop_func[];
+extern serial_loop_benchmark serial_loop_benchmark_functions[];
 
 double serial_multiply_ijk(Matrix a, Matrix b, Matrix c);
 double serial_multiply_ikj(Matrix a, Matrix b, Matrix c);
