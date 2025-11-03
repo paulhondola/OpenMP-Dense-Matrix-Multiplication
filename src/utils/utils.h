@@ -16,7 +16,10 @@ extern CSV_DATA csv_parallel_permutations;
 extern CSV_DATA csv_classic_vs_improved;
 extern CSV_DATA csv_tiled;
 
-FILE *open_csv_file(CSV_DATA csv_data);
-void clear_csv_file(CSV_DATA csv_data);
+FILE *open_csv_file(CSV_DATA);
+void clear_csv_file(CSV_DATA);
+void usage(char *);
+void get_args(int argc, char *argv[], int *matrix_size, int *thread_count,
+  int *chunk_size);
 
 #endif // UTILS_H

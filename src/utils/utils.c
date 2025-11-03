@@ -51,3 +51,24 @@ void clear_csv_file(CSV_DATA csv_data) {
   }
   fclose(csv_file);
 }
+
+void usage(char *program_name) {
+  printf("Usage: %s <matrix_size> <thread_count> <chunk_size>\n", program_name);
+  printf("Chunk: The chunk size for the parallel loop permutations\n");
+  exit(1);
+}
+
+void get_args(int argc, char *argv[], int *matrix_size, int *thread_count,
+              int *chunk_size) {
+  if (argc != 4) {
+    usage(argv[0]);
+  }
+
+  if (argc != 4) {
+    usage(argv[0]);
+  }
+
+  *matrix_size = atoi(argv[1]);
+  *thread_count = atoi(argv[2]);
+  *chunk_size = atoi(argv[3]);
+}

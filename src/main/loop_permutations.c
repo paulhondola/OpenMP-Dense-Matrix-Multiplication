@@ -53,23 +53,13 @@ void benchmark_classic_vs_improved(Matrix a, Matrix b, int chunk,
   fclose(csv_file);
 }
 
-void usage(char *program_name) {
-  printf("Usage: %s <matrix_size> <threads> <chunk>\n", program_name);
-  printf("Chunk: The chunk size for the parallel loop permutations\n");
-  exit(1);
-}
-
 int main(int argc, char *argv[]) {
 
   srand(SEED);
 
-  if (argc != 4) {
-    usage(argv[0]);
-  }
+  int matrix_size, thread_count, chunk_size;
 
-  int matrix_size = atoi(argv[1]);
-  int thread_count = atoi(argv[2]);
-  int chunk = atoi(argv[3]);
+  get_args(argc, argv, &matrix_size, &thread_count, &chunk_size);
 
   double time_results[PERMUTATIONS] = {0};
   Matrix a, b;
@@ -78,8 +68,9 @@ int main(int argc, char *argv[]) {
   matrix_fill_random(a);
   matrix_fill_random(b);
   benchmark_serial_loop_permutations(a, b, time_results);
-  benchmark_parallel_loop_permutations(a, b, thread_count, chunk, time_results);
-  benchmark_classic_vs_improved(a, b, chunk, time_results);
+  benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size,
+                                       time_results);
+  benchmark_classic_vs_improved(a, b, chunk_size, time_results);
   matrix_destroy(a);
   matrix_destroy(b);
   return 0;
