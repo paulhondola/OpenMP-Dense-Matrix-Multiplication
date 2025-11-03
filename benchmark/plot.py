@@ -159,8 +159,8 @@ class BenchmarkPlotter:
         df = self.load_csv("parallel_permutations.csv")
 
         chunk_sizes = sorted(df["CHUNK"].unique())
-        chunk_markers = ["o", "s", "^"]
-        chunk_linestyles = ["-", "--", "-."]
+        chunk_markers = ["o", "s", "^", "x", "D", "<", ">", "p", "h"]
+        chunk_linestyles = ["-", "--", "-.", ":", "-.", "--", "-", ":", "-."]
 
         agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE", "CHUNK"])
 
