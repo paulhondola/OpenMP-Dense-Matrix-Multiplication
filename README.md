@@ -26,12 +26,17 @@ Includes a blocked (tiled) algorithm in serial and with OpenMP to improve cache 
 
 ### Validation
 
-Each version can be validated by comparing against the classical i-j-k implementation inside the test directory.
+Each version can be validated by comparing against the classical i-j-k implementation using the benchmarking and validation utilities in `src/benchmark/`.
 
 ## Building and running
 
-- Recommended compiler: gcc-15 with OpenMP support (`-fopenmp`).
-- See the repository structure below for entry points under `src/main/`.
+The project uses a Makefile with the following commands:
+
+- `make main` - Build and run the main entry point
+- `make loop` - Build and run loop permutations benchmark
+- `make tiled` - Build and run tiled/blocked benchmark
+
+Recommended compiler: gcc-15 with OpenMP support (`-fopenmp`).
 
 ## Repository structure
 
@@ -41,12 +46,15 @@ OpenMP-Dense-Matrix-Multiplication/
     data/                   # Input/output data for benchmarking
     plot.py                 # Plotting script
     plots/                  # Generated plots
-  bin/                      # Suggested output directory for built binaries
+  bin/                      # Output directory for built binaries
   docs/
     DenseMatrix.pdf         # Problem description/background
     omp_matrix_mult.c       # Lecture/example reference implementation
-  makefile                  # Makefile for builds
+  Makefile                  # Makefile for builds
   src/
+    benchmark/
+      benchmark.c           # Benchmarking and validation utilities
+      benchmark.h
     common/
       matrix.c              # Matrix helpers (alloc/init/etc.)
       matrix.h
@@ -58,11 +66,9 @@ OpenMP-Dense-Matrix-Multiplication/
         mm_serial.c         # Serial implementations for (i,j,k) permutations
         mm_serial.h
     main/
+      main.c                # Simple test driver entry point
       loop_permutations.c   # Entry point for loop-permutation experiments
       tiled.c               # Entry point for blocked/tiled experiments
-    test/
-      validate.c            # Result validation utilities
-      validate.h
     tiled/
       parallel/
         mm_blocked_omp.c    # OpenMP blocked/tiled implementation
@@ -70,4 +76,7 @@ OpenMP-Dense-Matrix-Multiplication/
       serial/
         mm_blocked_serial.c # Serial blocked/tiled implementation
         mm_blocked_omp.h
+    utils/
+      utils.c               # CSV file handling for benchmark data export
+      utils.h
 ```
