@@ -1,10 +1,9 @@
 #include "mm_parallel.h"
 #include <omp.h>
 
-parallel_loop_permutation_function parallel_f[PERMUTATIONS] = {
+parallel_loop_benchmark p_loop_func[] = {
     parallel_multiply_ijk, parallel_multiply_ikj, parallel_multiply_jik,
-    parallel_multiply_jki, parallel_multiply_kij, parallel_multiply_kji,
-};
+    parallel_multiply_jki, parallel_multiply_kji, parallel_multiply_kji};
 
 double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
                              int chunk) {

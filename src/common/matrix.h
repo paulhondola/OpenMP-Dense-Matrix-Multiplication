@@ -20,6 +20,9 @@ typedef struct {
   int size;
 } Matrix;
 
+typedef double (*serial_loop_benchmark)(Matrix a, Matrix b, Matrix c);
+typedef double (*parallel_loop_benchmark)(Matrix a, Matrix b, Matrix c, int thread_count, int chunk_size);
+
 void matrix_create(Matrix* matrix, int size);
 void matrix_fill_random(Matrix matrix);
 void matrix_fill_zero(Matrix matrix);

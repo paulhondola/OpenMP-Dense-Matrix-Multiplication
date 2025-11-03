@@ -6,8 +6,7 @@
 
 #include "../../common/matrix.h"
 
-typedef double (*serial_loop_permutation_function)(Matrix a, Matrix b, Matrix c);
-extern serial_loop_permutation_function serial_f[PERMUTATIONS];
+extern serial_loop_benchmark s_loop_func[];
 
 double serial_multiply_ijk(Matrix a, Matrix b, Matrix c);
 double serial_multiply_ikj(Matrix a, Matrix b, Matrix c);

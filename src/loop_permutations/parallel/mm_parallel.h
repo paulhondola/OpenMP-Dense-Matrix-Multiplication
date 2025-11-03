@@ -6,9 +6,7 @@
 
 #include "../../common/matrix.h"
 
-typedef double (*parallel_loop_permutation_function)(Matrix a, Matrix b, Matrix c,
-                                                  int thread_count, int chunk);
-extern parallel_loop_permutation_function parallel_f[PERMUTATIONS];
+extern parallel_loop_benchmark p_loop_func[];
 
 double parallel_multiply_ijk(Matrix a, Matrix b, Matrix c, int thread_count,
                              int chunk);

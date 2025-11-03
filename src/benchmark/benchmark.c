@@ -8,7 +8,7 @@ int run_serial_loop_permutation(Matrix a, Matrix b, Matrix reference,
 
   Matrix c;
   matrix_create(&c, a.size);
-  times[permutation] = serial_f[permutation](a, b, c);
+  times[permutation] = s_loop_func[permutation](a, b, c);
   int result = validate(reference, c);
   matrix_destroy(c);
 
@@ -34,7 +34,7 @@ int test_serial_loop_permutations(Matrix a, Matrix b, double times[]) {
 
   Matrix reference;
   matrix_create(&reference, a.size);
-  times[0] = serial_f[0](a, b, reference);
+  times[0] = s_loop_func[0](a, b, reference);
 
 #ifdef DEBUG
   printf("Time: %f seconds\n", times[0]);
@@ -66,7 +66,7 @@ int run_parallel_loop_permutation(Matrix a, Matrix b, Matrix reference,
 
   Matrix c;
   matrix_create(&c, a.size);
-  times[permutation] = parallel_f[permutation](a, b, c, thread_count, chunk);
+  times[permutation] = p_loop_func[permutation](a, b, c, thread_count, chunk);
   int result = validate(reference, c);
   matrix_destroy(c);
 
@@ -94,7 +94,7 @@ int test_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   // set the IJK permutation as reference
   Matrix reference;
   matrix_create(&reference, a.size);
-  times[0] = parallel_f[0](a, b, reference, thread_count, chunk);
+  times[0] = p_loop_func[0](a, b, reference, thread_count, chunk);
 
 #ifdef DEBUG
   printf("Time: %f seconds\n", times[0]);
