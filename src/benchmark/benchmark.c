@@ -18,11 +18,12 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
 
 #ifdef DEBUG
   if (result) {
-    printf("Permutation %d is correct\n", permutation);
+    printf(GREEN "Permutation %d is correct" RESET "\n", permutation);
   } else {
-    printf("Permutation %d is incorrect\n", permutation);
+    printf(RED "Permutation %d is incorrect" RESET "\n", permutation);
   }
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   return result;
@@ -32,7 +33,8 @@ int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
 
 #ifdef DEBUG
   printf("Serial - Testing loop permutations - matrix size: %d\n", a.size);
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   Matrix reference;
@@ -52,7 +54,8 @@ int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
   printf("Serial - Test completed - matrix size: %d\n", a.size);
   printf("Correct count: %d\n", correct_count);
   printf("Total permutations: %d\n", LOOP_PERMUTATIONS - 1);
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   return correct_count == LOOP_PERMUTATIONS - 1;
@@ -71,11 +74,12 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
 
 #ifdef DEBUG
   if (result) {
-    printf("Permutation %d is correct\n", permutation);
+    printf(GREEN "Permutation %d is correct" RESET "\n", permutation);
   } else {
-    printf("Permutation %d is incorrect\n", permutation);
+    printf(RED "Permutation %d is incorrect" RESET "\n", permutation);
   }
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   return result;
@@ -88,7 +92,8 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   printf("Parallel - Testing loop permutations - matrix size: %d, threads: %d, "
          "chunk: %d\n",
          a.size, thread_count, chunk_size);
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   // set the IJK permutation as reference
@@ -113,7 +118,8 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
       a.size, thread_count, chunk_size);
   printf("Correct count: %d\n", correct_count);
   printf("Total permutations: %d\n", LOOP_PERMUTATIONS - 1);
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   return correct_count == LOOP_PERMUTATIONS - 1;
@@ -137,7 +143,8 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
 #ifdef DEBUG
   printf("Classic vs Improved - Test completed - matrix size: %d, chunk: %d\n",
          a.size, chunk);
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   return 0;
@@ -157,7 +164,8 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 #endif
 
 #ifdef DEBUG
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   time_results[2] = serial_multiply_tiled(a, b, c, block_size);
@@ -168,14 +176,17 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
 #ifdef DEBUG
   if (validate(reference, c)) {
-    printf("Serial - tiled - matrix size: %d, block size: %d - completed - "
-           "time: %f\n",
+    printf(GREEN "Serial - tiled - matrix size: %d, block size: %d - "
+                 "completed - "
+                 "time: %f" RESET "\n",
            a.size, block_size, time_results[2]);
   } else {
-    printf("INCORRECT - Serial - tiled - matrix size: %d, block size: %d\n",
+    printf(RED "INCORRECT - Serial - tiled - matrix size: %d, block "
+               "size: %d" RESET "\n",
            a.size, block_size);
   }
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   time_results[3] =
@@ -187,15 +198,18 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
 #ifdef DEBUG
   if (validate(reference, c)) {
-    printf("Parallel - tiled - matrix size: %d, threads: %d, chunk: %d, block "
-           "size: %d - completed - time: %f\n",
+    printf(GREEN "Parallel - tiled - matrix size: %d, threads: %d, chunk: "
+                 "%d, block "
+                 "size: %d - completed - time: %f" RESET "\n",
            a.size, thread_count, chunk_size, block_size, time_results[3]);
   } else {
-    printf("INCORRECT - Parallel - tiled - matrix size: %d, threads: %d, "
-           "chunk: %d, block size: %d\n",
+    printf(RED "INCORRECT - Parallel - tiled - matrix size: %d, threads: "
+               "%d, "
+               "chunk: %d, block size: %d" RESET "\n",
            a.size, thread_count, chunk_size, block_size);
   }
-  printf("------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
 #endif
 
   matrix_destroy(reference);

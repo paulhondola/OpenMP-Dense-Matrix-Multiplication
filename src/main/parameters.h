@@ -11,7 +11,7 @@
 #define UNIFORM_MAX 10
 
 // benchmark parameters
-#define MATRIX_SIZES {500, 750, 1000, 1250, 1500, 1750, 2000}
+#define MATRIX_SIZES {500}
 #define THREAD_COUNT 10
 #define CHUNK_SIZES {1}
 #define BLOCK_SIZES {2, 4}
@@ -20,6 +20,11 @@
 #define CLASSIC_VS_IMPROVED_TESTS 8
 #define LOOP_PERMUTATIONS 6
 #define TILED_TESTS 4
+
+// test colors
+#define GREEN "\033[0;32m"
+#define RED "\033[0;31m"
+#define RESET "\033[0m"
 
 // threshold value for validation
 #define EPSILON 1e-6
