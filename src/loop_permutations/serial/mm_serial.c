@@ -1,8 +1,6 @@
 #include "mm_serial.h"
-#include "../../common/matrix.h"
 #include "../../main/parameters.h"
 #include <omp.h>
-#include <stdio.h>
 
 serial_loop_benchmark serial_loop_benchmark_functions[] = {
     serial_multiply_ijk, serial_multiply_ikj, serial_multiply_jik,
@@ -22,7 +20,8 @@ double serial_multiply_ijk(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ijk - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - ijk - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;
@@ -46,7 +45,8 @@ double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ikj - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - ikj - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;
@@ -68,7 +68,8 @@ double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jik - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - jik - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;
@@ -92,7 +93,8 @@ double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jki - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - jki - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;
@@ -116,7 +118,8 @@ double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kij - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - kij - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;
@@ -140,7 +143,8 @@ double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kji - matrix size: %d - completed - time: %f\n", a.size, result);
+  printf("Serial - kji - matrix size: %d - completed - time: %f\n", a.size,
+         result);
 #endif
 
   return result;

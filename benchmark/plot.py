@@ -201,7 +201,7 @@ class BenchmarkPlotter:
         plt.tight_layout()
 
         if save:
-            output_path = self.plots_dir / f"parallel_by_chunk.png"
+            output_path = self.plots_dir / f"parallel_permutations.png"
             plt.savefig(output_path, dpi=300, bbox_inches="tight")
             print(f"Plot saved to {output_path}")
 
@@ -308,125 +308,65 @@ class BenchmarkPlotter:
             print("Skipping tiled plot - data file not available")
             return False
 
-        # Aggregate by matrix size (averaging across block sizes)
-        agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
+        block_sizes = sorted(df["BLOCK_SIZE"].unique())
+        block_markers = ["o", "s", "^", "x", "D", "<", ">", "p", "h"]
+        block_linestyles = ["-", "--", "-.", ":", "-.", "--", "-", ":", "-."]
 
-        plt.figure(figsize=(12, 7))
+        # Aggregate by matrix size and block size
+        agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE", "BLOCK_SIZE"])
 
-        # Define colors and markers for each implementation
+        plt.figure(figsize=(14, 8))
+
+        # Define colors and base labels for each implementation
         implementations = [
-            ("SERIAL_IKJ", "Serial IKJ", "#1f77b4", "o", "-"),
-            ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e", "s", "--"),
-            ("SERIAL_TILED", "Serial Tiled", "#2ca02c", "^", "-."),
-            ("PARALLEL_TILED", "Parallel Tiled", "#d62728", "D", ":"),
+            ("SERIAL_IKJ", "Serial IKJ", "#1f77b4"),
+            ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e"),
+            ("SERIAL_TILED", "Serial Tiled", "#2ca02c"),
+            ("PARALLEL_TILED", "Parallel Tiled", "#d62728"),
         ]
 
-        # Plot each implementation
-        for col_name, label, color, marker, linestyle in implementations:
-            mean_col = (col_name, "mean")
-            std_col = (col_name, "std")
+        for col_name, base_label, base_color in implementations:
+            for block_idx, block_size in enumerate(block_sizes):
+                block_data = agg_df[agg_df["BLOCK_SIZE"] == block_size]
+                mean_col = (col_name, "mean")
+                std_col = (col_name, "std")
 
-            if mean_col not in agg_df.columns:
-                continue
+                if mean_col not in block_data.columns:
+                    continue
 
-            x = agg_df["MATRIX_SIZE"]
-            y = agg_df[mean_col]
-            yerr = agg_df[std_col]
+                x = block_data["MATRIX_SIZE"]
+                y = block_data[mean_col]
+                yerr = block_data[std_col]
 
-            plt.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                label=label,
-                color=color,
-                marker=marker,
-                linestyle=linestyle,
-                capsize=5,
-                linewidth=2,
-                markersize=6,
-            )
+                label = f"{base_label} (block={block_size})"
+                plt.errorbar(
+                    x,
+                    y,
+                    yerr=yerr,
+                    label=label,
+                    color=base_color,
+                    marker=block_markers[block_idx % len(block_markers)],
+                    linestyle=block_linestyles[block_idx % len(block_linestyles)],
+                    capsize=4,
+                    linewidth=2,
+                    markersize=6,
+                    alpha=0.8,
+                )
 
         plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
         plt.ylabel("Speedup", fontsize=12, fontweight="bold")
         plt.title(
-            "Tiled Matrix Multiplication: Speedup vs Matrix Size",
+            "Tiled Matrix Multiplication: Speedup vs Matrix Size by Block Size",
             fontsize=14,
             fontweight="bold",
             pad=20,
         )
-        plt.legend(loc="best", framealpha=0.9)
+        plt.legend(loc="best", framealpha=0.9, ncol=3, fontsize=9)
         plt.grid(True, alpha=0.3, linestyle="--")
         plt.tight_layout()
 
         if save:
             output_path = self.plots_dir / "tiled.png"
-            plt.savefig(output_path, dpi=300, bbox_inches="tight")
-            print(f"Plot saved to {output_path}")
-
-        if show:
-            plt.show()
-        else:
-            plt.close()
-
-        return True
-
-    def plot_tiled_by_block_size(self, save: bool = True, show: bool = False) -> bool:
-        df = self.load_csv("tiled.csv")
-        if df is None:
-            print("Skipping tiled_by_block_size plot - data file not available")
-            return False
-
-        # Aggregate by block size
-        agg_df = self.aggregate_by_matrix_size(df, ["BLOCK_SIZE"])
-
-        plt.figure(figsize=(12, 7))
-
-        # Define colors and markers for each implementation
-        implementations = [
-            ("SERIAL_IKJ", "Serial IKJ", "#1f77b4", "o", "-"),
-            ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e", "s", "--"),
-            ("SERIAL_TILED", "Serial Tiled", "#2ca02c", "^", "-."),
-            ("PARALLEL_TILED", "Parallel Tiled", "#d62728", "D", ":"),
-        ]
-
-        for col_name, label, color, marker, linestyle in implementations:
-            mean_col = (col_name, "mean")
-            std_col = (col_name, "std")
-
-            if mean_col not in agg_df.columns:
-                continue
-
-            x = agg_df["BLOCK_SIZE"]
-            y = agg_df[mean_col]
-            yerr = agg_df[std_col]
-
-            plt.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                label=label,
-                color=color,
-                marker=marker,
-                linestyle=linestyle,
-                capsize=5,
-                linewidth=2,
-                markersize=6,
-            )
-
-        plt.xlabel("Block Size", fontsize=12, fontweight="bold")
-        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
-        plt.title(
-            "Tiled Matrix Multiplication: Speedup vs Block Size",
-            fontsize=14,
-            fontweight="bold",
-            pad=20,
-        )
-        plt.legend(loc="best", framealpha=0.9)
-        plt.grid(True, alpha=0.3, linestyle="--")
-        plt.tight_layout()
-
-        if save:
-            output_path = self.plots_dir / "tiled_by_block_size.png"
             plt.savefig(output_path, dpi=300, bbox_inches="tight")
             print(f"Plot saved to {output_path}")
 
@@ -485,16 +425,6 @@ def main():
             plots_skipped += 1
     except Exception as e:
         print(f"Error creating tiled plot: {e}", file=sys.stderr)
-        plots_skipped += 1
-
-    print("Creating tiled by block size plot...")
-    try:
-        if plotter.plot_tiled_by_block_size():
-            plots_created += 1
-        else:
-            plots_skipped += 1
-    except Exception as e:
-        print(f"Error creating tiled by block size plot: {e}", file=sys.stderr)
         plots_skipped += 1
 
     print("-" * 50)

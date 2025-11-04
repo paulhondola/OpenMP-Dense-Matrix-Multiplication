@@ -13,7 +13,7 @@
 // benchmark parameters
 #define MATRIX_SIZES {500, 750, 1000, 1250, 1500, 1750, 2000}
 #define THREAD_COUNT 10
-#define CHUNK_SIZES {1, 2, 4, 8, 16}
+#define CHUNK_SIZES {1, 10, 50, 100}
 #define BLOCK_SIZES {2, 4, 8}
 
 // number of tests for each benchmark

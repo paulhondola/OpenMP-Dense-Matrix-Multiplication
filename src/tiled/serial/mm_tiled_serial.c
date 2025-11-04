@@ -29,12 +29,5 @@ double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size) {
     }
   }
 
-  double result = omp_get_wtime() - start;
-
-#ifdef DEBUG
-  printf("Serial - tiled - matrix size: %d, block size: %d - completed - time: %f\n",
-         a.size, block_size, result);
-#endif
-
-  return result;
+  return omp_get_wtime() - start;
 }
