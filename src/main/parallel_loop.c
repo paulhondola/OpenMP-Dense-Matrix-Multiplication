@@ -22,6 +22,19 @@ void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   fclose(csv_file);
 }
 
+void run_benchmark(int matrix_size, int thread_count, int chunk_size) {
+  Matrix a, b;
+  matrix_create(&a, matrix_size);
+  matrix_create(&b, matrix_size);
+  matrix_fill_random(a);
+  matrix_fill_random(b);
+
+  benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
+
+  matrix_destroy(a);
+  matrix_destroy(b);
+}
+
 int main(void) {
   srand(SEED);
 
@@ -36,17 +49,7 @@ int main(void) {
     int matrix_size = matrix_sizes[i];
     for (int j = 0; j < num_chunk_sizes; j++) {
       int chunk_size = chunk_sizes[j];
-
-      Matrix a, b;
-      matrix_create(&a, matrix_size);
-      matrix_create(&b, matrix_size);
-      matrix_fill_random(a);
-      matrix_fill_random(b);
-
-      benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
-
-      matrix_destroy(a);
-      matrix_destroy(b);
+      run_benchmark(matrix_size, thread_count, chunk_size);
     }
   }
 

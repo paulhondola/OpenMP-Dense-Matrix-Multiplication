@@ -22,6 +22,19 @@ void benchmark_serial_loop_permutations(Matrix a, Matrix b) {
   fclose(csv_file);
 }
 
+void run_benchmark(int matrix_size) {
+  Matrix a, b;
+  matrix_create(&a, matrix_size);
+  matrix_create(&b, matrix_size);
+  matrix_fill_random(a);
+  matrix_fill_random(b);
+
+  benchmark_serial_loop_permutations(a, b);
+
+  matrix_destroy(a);
+  matrix_destroy(b);
+}
+
 int main(void) {
   srand(SEED);
 
@@ -31,16 +44,7 @@ int main(void) {
 
   for (int i = 0; i < num_matrix_sizes; i++) {
     int matrix_size = matrix_sizes[i];
-    Matrix a, b;
-    matrix_create(&a, matrix_size);
-    matrix_create(&b, matrix_size);
-    matrix_fill_random(a);
-    matrix_fill_random(b);
-
-    benchmark_serial_loop_permutations(a, b);
-
-    matrix_destroy(a);
-    matrix_destroy(b);
+    run_benchmark(matrix_size);
   }
 
   return 0;
