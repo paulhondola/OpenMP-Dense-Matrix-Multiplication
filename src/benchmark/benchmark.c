@@ -2,6 +2,7 @@
 #include "../common/matrix.h"
 #include "../loop_permutations/parallel/mm_parallel.h"
 #include "../loop_permutations/serial/mm_serial.h"
+#include "../main/parameters.h"
 #include "../tiled/parallel/mm_tiled_parallel.h"
 #include "../tiled/serial/mm_tiled_serial.h"
 
@@ -81,7 +82,7 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
 }
 
 int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
-                                    int thread_count, int chunk) {
+                                    int thread_count, int chunk_size) {
 
 #ifdef DEBUG
   printf("Parallel - Testing loop "
@@ -91,13 +92,13 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   // set the IJK permutation as reference
   Matrix reference;
   matrix_create(&reference, a.size);
-  time_results[0] = parallel_loop_benchmark_functions[0](a, b, reference,
-                                                         thread_count, chunk);
+  time_results[0] = parallel_loop_benchmark_functions[0](
+      a, b, reference, thread_count, chunk_size);
 
   int correct_count = 0;
   for (int i = 1; i < LOOP_PERMUTATIONS; i++) {
     if (run_parallel_loop_permutation(time_results, a, b, reference,
-                                      thread_count, chunk, i)) {
+                                      thread_count, chunk_size, i)) {
       correct_count++;
     }
   }
@@ -138,7 +139,7 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
 }
 
 int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
-               int block_size) {
+               int chunk_size, int block_size) {
   Matrix reference, c;
   matrix_create(&reference, a.size);
   matrix_create(&c, a.size);
@@ -146,11 +147,19 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
   time_results[0] = serial_multiply_ikj(a, b, reference);
   time_results[1] = parallel_multiply_ikj(a, b, c, thread_count, block_size);
 
+#ifdef DEBUG_MATRIX
+  matrix_print(c);
+#endif
+
 #ifdef DEBUG
   printf("------------------------------------------\n");
 #endif
 
   time_results[2] = serial_multiply_tiled(a, b, c, block_size);
+
+#ifdef DEBUG_MATRIX
+  matrix_print(c);
+#endif
 
 #ifdef DEBUG
   if (validate(reference, c)) {
@@ -162,7 +171,12 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
   printf("------------------------------------------\n");
 #endif
 
-  time_results[3] = parallel_multiply_tiled(a, b, c, thread_count, block_size);
+  time_results[3] =
+      parallel_multiply_tiled(a, b, c, thread_count, chunk_size, block_size);
+
+#ifdef DEBUG_MATRIX
+  matrix_print(c);
+#endif
 
 #ifdef DEBUG
   if (validate(reference, c)) {

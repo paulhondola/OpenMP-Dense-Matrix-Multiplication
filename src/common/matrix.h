@@ -8,10 +8,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DEBUG 1
-#define SEED 42
-#define UNIFORM_MIN -100
-#define UNIFORM_MAX 100
 
 typedef struct {
   double** data;

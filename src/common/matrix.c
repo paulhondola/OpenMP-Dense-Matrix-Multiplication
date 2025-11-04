@@ -1,7 +1,6 @@
 #include "matrix.h"
+#include "../main/parameters.h"
 #include <math.h>
-
-#define EPSILON 1e-9
 
 void matrix_create(Matrix *matrix, int size) {
   matrix->data = (double **)malloc(size * sizeof(double *));

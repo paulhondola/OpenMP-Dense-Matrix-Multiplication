@@ -1,4 +1,5 @@
 #include "mm_parallel.h"
+#include "../../main/parameters.h"
 #include <omp.h>
 
 parallel_loop_benchmark parallel_loop_benchmark_functions[] = {

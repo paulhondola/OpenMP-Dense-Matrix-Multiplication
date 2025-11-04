@@ -45,8 +45,8 @@ int main(void) {
   int num_chunk_sizes = sizeof(chunk_sizes) / sizeof(chunk_sizes[0]);
 
   for (int i = 0; i < num_matrix_sizes; i++) {
-    int matrix_size = matrix_sizes[i];
     for (int j = 0; j < num_chunk_sizes; j++) {
+      int matrix_size = matrix_sizes[i];
       int chunk_size = chunk_sizes[j];
       run_benchmark(matrix_size, chunk_size);
     }

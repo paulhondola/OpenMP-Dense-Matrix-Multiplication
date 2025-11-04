@@ -1,4 +1,3 @@
-# Recursively find all .c files except in main directory
 SRC = $(shell find src -name "*.c" -type f ! -path "src/main/*")
 
 PARALLEL_LOOP_SRC = src/main/parallel_loop.c

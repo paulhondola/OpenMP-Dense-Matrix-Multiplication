@@ -1,4 +1,5 @@
 #include "mm_tiled_serial.h"
+#include "../../main/parameters.h"
 #include <omp.h>
 
 double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size) {

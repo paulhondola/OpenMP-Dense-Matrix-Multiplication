@@ -1,5 +1,6 @@
 #include "mm_serial.h"
 #include "../../common/matrix.h"
+#include "../../main/parameters.h"
 #include <omp.h>
 #include <stdio.h>
 
