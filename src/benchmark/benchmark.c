@@ -31,8 +31,8 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
 int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
 
 #ifdef DEBUG
-  printf("Serial - Testing loop "
-         "permutations\n------------------------------------------\n");
+  printf("Serial - Testing loop permutations - matrix size: %d\n", a.size);
+  printf("------------------------------------------\n");
 #endif
 
   Matrix reference;
@@ -49,7 +49,7 @@ int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
   matrix_destroy(reference);
 
 #ifdef DEBUG
-  printf("Serial - Test completed\n");
+  printf("Serial - Test completed - matrix size: %d\n", a.size);
   printf("Correct count: %d\n", correct_count);
   printf("Total permutations: %d\n", LOOP_PERMUTATIONS - 1);
   printf("------------------------------------------\n");
@@ -85,8 +85,10 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
                                     int thread_count, int chunk_size) {
 
 #ifdef DEBUG
-  printf("Parallel - Testing loop "
-         "permutations\n------------------------------------------\n");
+  printf("Parallel - Testing loop permutations - matrix size: %d, threads: %d, "
+         "chunk: %d\n",
+         a.size, thread_count, chunk_size);
+  printf("------------------------------------------\n");
 #endif
 
   // set the IJK permutation as reference
@@ -106,7 +108,9 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   matrix_destroy(reference);
 
 #ifdef DEBUG
-  printf("Parallel - Test completed\n");
+  printf(
+      "Parallel - Test completed - matrix size: %d, threads: %d, chunk: %d\n",
+      a.size, thread_count, chunk_size);
   printf("Correct count: %d\n", correct_count);
   printf("Total permutations: %d\n", LOOP_PERMUTATIONS - 1);
   printf("------------------------------------------\n");
@@ -131,7 +135,8 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
   matrix_destroy(c);
 
 #ifdef DEBUG
-  printf("Classic vs Improved - Test completed\n");
+  printf("Classic vs Improved - Test completed - matrix size: %d, chunk: %d\n",
+         a.size, chunk);
   printf("------------------------------------------\n");
 #endif
 
@@ -163,10 +168,12 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
 #ifdef DEBUG
   if (validate(reference, c)) {
-    printf("Serial - tiled - block size %d - completed - time: %f\n",
-           block_size, time_results[0]);
+    printf("Serial - tiled - matrix size: %d, block size: %d - completed - "
+           "time: %f\n",
+           a.size, block_size, time_results[2]);
   } else {
-    printf("INCORRECT - Serial - tiled - block size %d\n", block_size);
+    printf("INCORRECT - Serial - tiled - matrix size: %d, block size: %d\n",
+           a.size, block_size);
   }
   printf("------------------------------------------\n");
 #endif
@@ -180,10 +187,13 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
 #ifdef DEBUG
   if (validate(reference, c)) {
-    printf("Parallel - tiled - block size %d - completed - time: %f\n",
-           block_size, time_results[1]);
+    printf("Parallel - tiled - matrix size: %d, threads: %d, chunk: %d, block "
+           "size: %d - completed - time: %f\n",
+           a.size, thread_count, chunk_size, block_size, time_results[3]);
   } else {
-    printf("INCORRECT - Parallel - tiled - block size %d\n", block_size);
+    printf("INCORRECT - Parallel - tiled - matrix size: %d, threads: %d, "
+           "chunk: %d, block size: %d\n",
+           a.size, thread_count, chunk_size, block_size);
   }
   printf("------------------------------------------\n");
 #endif

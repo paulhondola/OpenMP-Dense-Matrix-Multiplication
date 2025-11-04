@@ -41,8 +41,8 @@ double parallel_multiply_tiled(Matrix a, Matrix b, Matrix c, int thread_count,
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Parallel - tiled - block size %d - completed - time: %f\n",
-         block_size, result);
+  printf("Parallel - tiled - matrix size: %d, threads: %d, chunk: %d, block size: %d - completed - time: %f\n",
+         a.size, thread_count, chunk_size, block_size, result);
 #endif
 
   return result;
