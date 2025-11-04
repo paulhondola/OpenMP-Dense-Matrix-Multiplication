@@ -1,5 +1,6 @@
 #include "../benchmark/benchmark.h"
 #include "../utils/utils.h"
+#include "parameters.h"
 
 void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
                                           int chunk) {
@@ -21,21 +22,33 @@ void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   fclose(csv_file);
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   srand(SEED);
 
-  int matrix_size, thread_count, chunk_size;
-  get_args(argc, argv, &matrix_size, &thread_count, &chunk_size);
+  int matrix_sizes[] = MATRIX_SIZES;
+  int chunk_sizes[] = CHUNK_SIZES;
+  int thread_count = THREAD_COUNT;
 
-  Matrix a, b;
-  matrix_create(&a, matrix_size);
-  matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  int num_matrix_sizes = sizeof(matrix_sizes) / sizeof(matrix_sizes[0]);
+  int num_chunk_sizes = sizeof(chunk_sizes) / sizeof(chunk_sizes[0]);
 
-  benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
+  for (int i = 0; i < num_matrix_sizes; i++) {
+    int matrix_size = matrix_sizes[i];
+    for (int j = 0; j < num_chunk_sizes; j++) {
+      int chunk_size = chunk_sizes[j];
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+      Matrix a, b;
+      matrix_create(&a, matrix_size);
+      matrix_create(&b, matrix_size);
+      matrix_fill_random(a);
+      matrix_fill_random(b);
+
+      benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
+
+      matrix_destroy(a);
+      matrix_destroy(b);
+    }
+  }
+
   return 0;
 }

@@ -157,7 +157,7 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
     printf("Serial - tiled - block size %d - completed - time: %f\n",
            block_size, time_results[0]);
   } else {
-    printf("Serial - tiled - INCORRECT\n");
+    printf("INCORRECT - Serial - tiled - block size %d\n", block_size);
   }
   printf("------------------------------------------\n");
 #endif
@@ -169,7 +169,7 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
     printf("Parallel - tiled - block size %d - completed - time: %f\n",
            block_size, time_results[1]);
   } else {
-    printf("Parallel - tiled - INCORRECT\n");
+    printf("INCORRECT - Parallel - tiled - block size %d\n", block_size);
   }
   printf("------------------------------------------\n");
 #endif

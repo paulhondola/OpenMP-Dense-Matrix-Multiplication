@@ -42,7 +42,7 @@ class BenchmarkPlotter:
         plt.figure(figsize=(12, 7))
 
         for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_SPEEDUP"
+            col_name = perm
             mean_col = (col_name, "mean")
             std_col = (col_name, "std")
 
@@ -85,77 +85,7 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
-    def plot_parallel_permutations(
-        self,
-        threads: Optional[int] = None,
-        chunk: Optional[int] = None,
-        save: bool = True,
-        show: bool = False,
-    ):
-        df = self.load_csv("parallel_permutations.csv")
-
-        title_parts = []
-        if threads is not None:
-            df = df[df["THREADS"] == threads]
-            title_parts.append(f"{threads} Threads")
-
-        title_suffix = (
-            f" ({', '.join(title_parts)})" if title_parts else " (All Configurations)"
-        )
-
-        groupby_cols = ["MATRIX_SIZE"]
-        if threads is None:
-            groupby_cols.append("THREADS")
-
-        agg_df = self.aggregate_by_matrix_size(df, groupby_cols)
-
-        plt.figure(figsize=(12, 7))
-
-        for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_SPEEDUP"
-            mean_col = (col_name, "mean")
-            std_col = (col_name, "std")
-
-            x = agg_df["MATRIX_SIZE"]
-            y = agg_df[mean_col]
-            yerr = agg_df[std_col]
-
-            plt.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                label=perm,
-                color=self.permutation_colors[idx],
-                marker="o",
-                linestyle="-",
-                capsize=5,
-                linewidth=2,
-                markersize=6,
-            )
-
-        plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
-        plt.title(
-            f"Parallel Loop Permutations: Speedup vs Matrix Size{title_suffix}",
-            fontsize=14,
-            fontweight="bold",
-            pad=20,
-        )
-        plt.legend(loc="best", framealpha=0.9)
-        plt.grid(True, alpha=0.3, linestyle="--")
-        plt.tight_layout()
-
-        if save:
-            output_path = self.plots_dir / f"parallel_permutations.png"
-            plt.savefig(output_path, dpi=300, bbox_inches="tight")
-            print(f"Plot saved to {output_path}")
-
-        if show:
-            plt.show()
-        else:
-            plt.close()
-
-    def plot_parallel_by_chunk(self, save: bool = True, show: bool = False):
+    def plot_parallel_permutations(self, save: bool = True, show: bool = False):
         df = self.load_csv("parallel_permutations.csv")
 
         chunk_sizes = sorted(df["CHUNK"].unique())
@@ -167,7 +97,7 @@ class BenchmarkPlotter:
         plt.figure(figsize=(14, 8))
 
         for idx, perm in enumerate(self.permutation_names):
-            col_name = f"{perm}_SPEEDUP"
+            col_name = perm
             base_color = self.permutation_colors[idx]
 
             for chunk_idx, chunk in enumerate(chunk_sizes):
@@ -225,7 +155,15 @@ class BenchmarkPlotter:
         ax1.plot(
             x,
             df["SERIAL_BASELINE"],
-            df["IMPROVED_SERIAL_SPEEDUP"],
+            label="Baseline (i-j-k)",
+            marker="o",
+            linewidth=2,
+            markersize=8,
+            color="#e41a1c",
+        )
+        ax1.plot(
+            x,
+            df["IMPROVED_SERIAL"],
             label="Improved (i-k-j)",
             marker="s",
             linewidth=2,
@@ -246,7 +184,7 @@ class BenchmarkPlotter:
         for idx, t in enumerate(thread_counts):
             ax2.plot(
                 x,
-                df[f"P{t}T_SPEEDUP"],
+                df[f"P{t}T"],
                 label=f"Classic {t}T",
                 marker="o",
                 linewidth=2,
@@ -256,7 +194,7 @@ class BenchmarkPlotter:
             )
             ax2.plot(
                 x,
-                df[f"IP{t}T_SPEEDUP"],
+                df[f"IP{t}T"],
                 label=f"Improved {t}T",
                 marker="s",
                 linewidth=2,
@@ -283,6 +221,131 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
+    def plot_tiled(self, save: bool = True, show: bool = False):
+        df = self.load_csv("tiled.csv")
+
+        # Aggregate by matrix size (averaging across block sizes)
+        agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
+
+        plt.figure(figsize=(12, 7))
+
+        # Define colors and markers for each implementation
+        implementations = [
+            ("SERIAL_IKJ", "Serial IKJ", "#1f77b4", "o", "-"),
+            ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e", "s", "--"),
+            ("SERIAL_TILED", "Serial Tiled", "#2ca02c", "^", "-."),
+            ("PARALLEL_TILED", "Parallel Tiled", "#d62728", "D", ":"),
+        ]
+
+        # Plot each implementation
+        for col_name, label, color, marker, linestyle in implementations:
+            mean_col = (col_name, "mean")
+            std_col = (col_name, "std")
+
+            if mean_col not in agg_df.columns:
+                continue
+
+            x = agg_df["MATRIX_SIZE"]
+            y = agg_df[mean_col]
+            yerr = agg_df[std_col]
+
+            plt.errorbar(
+                x,
+                y,
+                yerr=yerr,
+                label=label,
+                color=color,
+                marker=marker,
+                linestyle=linestyle,
+                capsize=5,
+                linewidth=2,
+                markersize=6,
+            )
+
+        plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
+        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
+        plt.title(
+            "Tiled Matrix Multiplication: Speedup vs Matrix Size",
+            fontsize=14,
+            fontweight="bold",
+            pad=20,
+        )
+        plt.legend(loc="best", framealpha=0.9)
+        plt.grid(True, alpha=0.3, linestyle="--")
+        plt.tight_layout()
+
+        if save:
+            output_path = self.plots_dir / "tiled.png"
+            plt.savefig(output_path, dpi=300, bbox_inches="tight")
+            print(f"Plot saved to {output_path}")
+
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_tiled_by_block_size(self, save: bool = True, show: bool = False):
+        df = self.load_csv("tiled.csv")
+
+        # Aggregate by block size
+        agg_df = self.aggregate_by_matrix_size(df, ["BLOCK_SIZE"])
+
+        plt.figure(figsize=(12, 7))
+
+        # Define colors and markers for each implementation
+        implementations = [
+            ("SERIAL_IKJ", "Serial IKJ", "#1f77b4", "o", "-"),
+            ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e", "s", "--"),
+            ("SERIAL_TILED", "Serial Tiled", "#2ca02c", "^", "-."),
+            ("PARALLEL_TILED", "Parallel Tiled", "#d62728", "D", ":"),
+        ]
+
+        for col_name, label, color, marker, linestyle in implementations:
+            mean_col = (col_name, "mean")
+            std_col = (col_name, "std")
+
+            if mean_col not in agg_df.columns:
+                continue
+
+            x = agg_df["BLOCK_SIZE"]
+            y = agg_df[mean_col]
+            yerr = agg_df[std_col]
+
+            plt.errorbar(
+                x,
+                y,
+                yerr=yerr,
+                label=label,
+                color=color,
+                marker=marker,
+                linestyle=linestyle,
+                capsize=5,
+                linewidth=2,
+                markersize=6,
+            )
+
+        plt.xlabel("Block Size", fontsize=12, fontweight="bold")
+        plt.ylabel("Speedup", fontsize=12, fontweight="bold")
+        plt.title(
+            "Tiled Matrix Multiplication: Speedup vs Block Size",
+            fontsize=14,
+            fontweight="bold",
+            pad=20,
+        )
+        plt.legend(loc="best", framealpha=0.9)
+        plt.grid(True, alpha=0.3, linestyle="--")
+        plt.tight_layout()
+
+        if save:
+            output_path = self.plots_dir / "tiled_by_block_size.png"
+            plt.savefig(output_path, dpi=300, bbox_inches="tight")
+            print(f"Plot saved to {output_path}")
+
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
 
 def main():
     plotter = BenchmarkPlotter()
@@ -296,11 +359,14 @@ def main():
     print("Creating parallel permutations plot...")
     plotter.plot_parallel_permutations()
 
-    print("Creating parallel by chunk plot...")
-    plotter.plot_parallel_by_chunk()
-
     print("Creating classic vs improved plot...")
     plotter.plot_classic_vs_improved()
+
+    print("Creating tiled plot...")
+    plotter.plot_tiled()
+
+    print("Creating tiled by block size plot...")
+    plotter.plot_tiled_by_block_size()
 
     print("-" * 50)
     print("All plots generated successfully!")

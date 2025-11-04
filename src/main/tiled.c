@@ -1,6 +1,7 @@
 #include "../benchmark/benchmark.h"
 #include "../common/matrix.h"
 #include "../utils/utils.h"
+#include "parameters.h"
 
 void benchmark_tiled(Matrix a, Matrix b, int thread_count, int block_size) {
   FILE *csv_file = open_csv_file(csv_tiled);
@@ -21,20 +22,31 @@ void benchmark_tiled(Matrix a, Matrix b, int thread_count, int block_size) {
   fclose(csv_file);
 }
 
-int main(int argc, char *argv[]) {
-
+int main(void) {
   srand(SEED);
 
-  int matrix_size, block_size, thread_count;
-  get_args(argc, argv, &matrix_size, &thread_count, &block_size);
+  int matrix_sizes[] = MATRIX_SIZES;
+  int block_sizes[] = BLOCK_SIZES;
+  int thread_count = 10;
 
-  Matrix a, b;
-  matrix_create(&a, matrix_size);
-  matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
-  benchmark_tiled(a, b, thread_count, block_size);
-  matrix_destroy(a);
-  matrix_destroy(b);
+  int num_matrix_sizes = sizeof(matrix_sizes) / sizeof(matrix_sizes[0]);
+  int num_block_sizes = sizeof(block_sizes) / sizeof(block_sizes[0]);
+
+  for (int i = 0; i < num_matrix_sizes; i++) {
+    int matrix_size = matrix_sizes[i];
+    for (int j = 0; j < num_block_sizes; j++) {
+      int block_size = block_sizes[j];
+
+      Matrix a, b;
+      matrix_create(&a, matrix_size);
+      matrix_create(&b, matrix_size);
+      matrix_fill_random(a);
+      matrix_fill_random(b);
+      benchmark_tiled(a, b, thread_count, block_size);
+      matrix_destroy(a);
+      matrix_destroy(b);
+    }
+  }
+
   return 0;
 }

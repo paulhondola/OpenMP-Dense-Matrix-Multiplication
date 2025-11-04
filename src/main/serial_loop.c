@@ -1,5 +1,6 @@
 #include "../benchmark/benchmark.h"
 #include "../utils/utils.h"
+#include "parameters.h"
 
 void benchmark_serial_loop_permutations(Matrix a, Matrix b) {
 
@@ -21,21 +22,26 @@ void benchmark_serial_loop_permutations(Matrix a, Matrix b) {
   fclose(csv_file);
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   srand(SEED);
 
-  int matrix_size, thread_count, chunk_size;
-  get_args(argc, argv, &matrix_size, &thread_count, &chunk_size);
+  int matrix_sizes[] = MATRIX_SIZES;
 
-  Matrix a, b;
-  matrix_create(&a, matrix_size);
-  matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  int num_matrix_sizes = sizeof(matrix_sizes) / sizeof(matrix_sizes[0]);
 
-  benchmark_serial_loop_permutations(a, b);
+  for (int i = 0; i < num_matrix_sizes; i++) {
+    int matrix_size = matrix_sizes[i];
+    Matrix a, b;
+    matrix_create(&a, matrix_size);
+    matrix_create(&b, matrix_size);
+    matrix_fill_random(a);
+    matrix_fill_random(b);
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+    benchmark_serial_loop_permutations(a, b);
+
+    matrix_destroy(a);
+    matrix_destroy(b);
+  }
+
   return 0;
 }
