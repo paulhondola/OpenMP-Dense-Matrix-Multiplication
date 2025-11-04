@@ -2,6 +2,8 @@
 #include "../common/matrix.h"
 #include "../loop_permutations/parallel/mm_parallel.h"
 #include "../loop_permutations/serial/mm_serial.h"
+#include "../tiled/parallel/mm_tiled_parallel.h"
+#include "../tiled/serial/mm_tiled_serial.h"
 
 int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
                                 Matrix reference, int permutation) {
@@ -35,10 +37,6 @@ int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
   Matrix reference;
   matrix_create(&reference, a.size);
   time_results[0] = serial_loop_benchmark_functions[0](a, b, reference);
-#ifdef DEBUG
-  printf("Time: %f seconds\n", time_results[0]);
-  printf("------------------------------------------\n");
-#endif
 
   int correct_count = 0;
   for (int i = 1; i < LOOP_PERMUTATIONS; i++) {
@@ -96,10 +94,6 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   time_results[0] = parallel_loop_benchmark_functions[0](a, b, reference,
                                                          thread_count, chunk);
 
-#ifdef DEBUG
-  printf("------------------------------------------\n");
-#endif
-
   int correct_count = 0;
   for (int i = 1; i < LOOP_PERMUTATIONS; i++) {
     if (run_parallel_loop_permutation(time_results, a, b, reference,
@@ -139,6 +133,49 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
   printf("Classic vs Improved - Test completed\n");
   printf("------------------------------------------\n");
 #endif
+
+  return 0;
+}
+
+int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
+               int block_size) {
+  Matrix reference, c;
+  matrix_create(&reference, a.size);
+  matrix_create(&c, a.size);
+
+  time_results[0] = serial_multiply_ikj(a, b, reference);
+  time_results[1] = parallel_multiply_ikj(a, b, c, thread_count, block_size);
+
+#ifdef DEBUG
+  printf("------------------------------------------\n");
+#endif
+
+  time_results[2] = serial_multiply_tiled(a, b, c, block_size);
+
+#ifdef DEBUG
+  if (validate(reference, c)) {
+    printf("Serial - tiled - block size %d - completed - time: %f\n",
+           block_size, time_results[0]);
+  } else {
+    printf("Serial - tiled - INCORRECT\n");
+  }
+  printf("------------------------------------------\n");
+#endif
+
+  time_results[3] = parallel_multiply_tiled(a, b, c, thread_count, block_size);
+
+#ifdef DEBUG
+  if (validate(reference, c)) {
+    printf("Parallel - tiled - block size %d - completed - time: %f\n",
+           block_size, time_results[1]);
+  } else {
+    printf("Parallel - tiled - INCORRECT\n");
+  }
+  printf("------------------------------------------\n");
+#endif
+
+  matrix_destroy(reference);
+  matrix_destroy(c);
 
   return 0;
 }

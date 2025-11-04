@@ -22,7 +22,8 @@ CSV_DATA csv_classic_vs_improved = {
 };
 
 CSV_DATA csv_tiled = {
-    .header = "MATRIX_SIZE,BLOCK_SIZE,SERIAL_BASELINE,P2T,P4T,P8T",
+    .header = "MATRIX_SIZE,THREADS,BLOCK_SIZE,SERIAL_IKJ,PARALLEL_IKJ,SERIAL_"
+              "TILED,PARALLEL_TILED",
     .filename = "benchmark/data/tiled.csv",
 };
 
