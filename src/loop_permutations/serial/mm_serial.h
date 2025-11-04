@@ -4,7 +4,7 @@
 #ifndef MM_SERIAL_H
 #define MM_SERIAL_H
 
-#include "../../common/matrix.h"
+#include "../../matrix/matrix.h"
 
 extern serial_loop_benchmark serial_loop_benchmark_functions[];
 

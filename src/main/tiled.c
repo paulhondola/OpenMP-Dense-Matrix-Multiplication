@@ -1,5 +1,4 @@
 #include "../benchmark/benchmark.h"
-#include "../common/matrix.h"
 #include "../utils/utils.h"
 #include "parameters.h"
 

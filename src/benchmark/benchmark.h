@@ -4,7 +4,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "../common/matrix.h"
+#include "../matrix/matrix.h"
 
 void compute_speedup(double time_results[], double speedup_results[], int size);
 int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b);

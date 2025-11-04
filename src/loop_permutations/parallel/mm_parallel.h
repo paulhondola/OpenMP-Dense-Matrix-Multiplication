@@ -4,7 +4,7 @@
 #ifndef MM_PARALLEL_H
 #define MM_PARALLEL_H
 
-#include "../../common/matrix.h"
+#include "../../matrix/matrix.h"
 
 extern parallel_loop_benchmark parallel_loop_benchmark_functions[];
 

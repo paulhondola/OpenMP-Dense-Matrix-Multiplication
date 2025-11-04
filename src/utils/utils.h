@@ -4,7 +4,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "../common/matrix.h"
+#include "../matrix/matrix.h"
 
 typedef struct {
   char *header;

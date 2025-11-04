@@ -2,8 +2,6 @@
 // ABOUTME: CSV writing and benchmarking data output helpers
 
 #include "utils.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 CSV_DATA csv_serial_permutations = {
     .header = "MATRIX_SIZE,IJK,IKJ,JIK,JKI,KIJ,KJI",

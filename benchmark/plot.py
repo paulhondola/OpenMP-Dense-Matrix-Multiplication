@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional
+import sys
 
 
 class BenchmarkPlotter:
@@ -13,7 +14,10 @@ class BenchmarkPlotter:
         script_dir = Path(__file__).parent
         self.data_dir = script_dir / data_dir
         self.plots_dir = script_dir / plots_dir
-        self.plots_dir.mkdir(exist_ok=True)
+
+        # Create directories if they don't exist
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.plots_dir.mkdir(parents=True, exist_ok=True)
 
         self.permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
         self.permutation_colors = [
@@ -25,17 +29,72 @@ class BenchmarkPlotter:
             "#ffff33",
         ]
 
-    def load_csv(self, filename: str) -> pd.DataFrame:
+    def load_csv(self, filename: str) -> Optional[pd.DataFrame]:
+        """
+        Load CSV file with robust error handling.
+
+        Args:
+            filename: Name of the CSV file to load
+
+        Returns:
+            DataFrame if file exists and is valid, None otherwise
+        """
         filepath = self.data_dir / filename
-        return pd.read_csv(filepath)
+
+        # Check if file exists
+        if not filepath.exists():
+            print(f"Warning: File not found: {filepath}", file=sys.stderr)
+            return None
+
+        # Check if file is readable
+        if not filepath.is_file():
+            print(f"Warning: Path is not a file: {filepath}", file=sys.stderr)
+            return None
+
+        # Check if file is empty
+        if filepath.stat().st_size == 0:
+            print(f"Warning: File is empty: {filepath}", file=sys.stderr)
+            return None
+
+        try:
+            df = pd.read_csv(filepath)
+
+            # Validate that DataFrame is not empty
+            if df.empty:
+                print(
+                    f"Warning: CSV file is empty or has no data: {filepath}",
+                    file=sys.stderr,
+                )
+                return None
+
+            return df
+
+        except pd.errors.EmptyDataError:
+            print(
+                f"Error: CSV file is empty or has no valid data: {filepath}",
+                file=sys.stderr,
+            )
+            return None
+        except pd.errors.ParserError as e:
+            print(f"Error: Failed to parse CSV file {filepath}: {e}", file=sys.stderr)
+            return None
+        except PermissionError:
+            print(f"Error: Permission denied when reading {filepath}", file=sys.stderr)
+            return None
+        except Exception as e:
+            print(f"Error: Unexpected error reading {filepath}: {e}", file=sys.stderr)
+            return None
 
     def aggregate_by_matrix_size(
         self, df: pd.DataFrame, groupby_cols: List[str]
     ) -> pd.DataFrame:
         return df.groupby(groupby_cols).agg(["mean", "std"]).reset_index()
 
-    def plot_serial_permutations(self, save: bool = True, show: bool = False):
+    def plot_serial_permutations(self, save: bool = True, show: bool = False) -> bool:
         df = self.load_csv("serial_permutations.csv")
+        if df is None:
+            print("Skipping serial_permutations plot - data file not available")
+            return False
 
         agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
 
@@ -85,8 +144,13 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
-    def plot_parallel_permutations(self, save: bool = True, show: bool = False):
+        return True
+
+    def plot_parallel_permutations(self, save: bool = True, show: bool = False) -> bool:
         df = self.load_csv("parallel_permutations.csv")
+        if df is None:
+            print("Skipping parallel_permutations plot - data file not available")
+            return False
 
         chunk_sizes = sorted(df["CHUNK"].unique())
         chunk_markers = ["o", "s", "^", "x", "D", "<", ">", "p", "h"]
@@ -146,15 +210,27 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
-    def plot_classic_vs_improved(self, save: bool = True, show: bool = False):
+        return True
+
+    def plot_classic_vs_improved(self, save: bool = True, show: bool = False) -> bool:
         df = self.load_csv("classic_vs_improved.csv")
+        if df is None:
+            print("Skipping classic_vs_improved plot - data file not available")
+            return False
+
+        # Aggregate by matrix size to average across different chunk sizes
+        # For serial data, chunk size shouldn't matter, but we average for consistency
+        agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
 
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
-        x = df["MATRIX_SIZE"]
+        x = agg_df["MATRIX_SIZE"]
+        baseline_mean = agg_df[("SERIAL_BASELINE", "mean")]
+        improved_mean = agg_df[("IMPROVED_SERIAL", "mean")]
+
         ax1.plot(
             x,
-            df["SERIAL_BASELINE"],
+            baseline_mean,
             label="Baseline (i-j-k)",
             marker="o",
             linewidth=2,
@@ -163,7 +239,7 @@ class BenchmarkPlotter:
         )
         ax1.plot(
             x,
-            df["IMPROVED_SERIAL"],
+            improved_mean,
             label="Improved (i-k-j)",
             marker="s",
             linewidth=2,
@@ -182,9 +258,12 @@ class BenchmarkPlotter:
         colors_improved = ["#377eb8", "#2d6a9e", "#235684"]
 
         for idx, t in enumerate(thread_counts):
+            classic_mean = agg_df[(f"P{t}T", "mean")]
+            improved_mean = agg_df[(f"IP{t}T", "mean")]
+
             ax2.plot(
                 x,
-                df[f"P{t}T"],
+                classic_mean,
                 label=f"Classic {t}T",
                 marker="o",
                 linewidth=2,
@@ -194,7 +273,7 @@ class BenchmarkPlotter:
             )
             ax2.plot(
                 x,
-                df[f"IP{t}T"],
+                improved_mean,
                 label=f"Improved {t}T",
                 marker="s",
                 linewidth=2,
@@ -221,8 +300,13 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
-    def plot_tiled(self, save: bool = True, show: bool = False):
+        return True
+
+    def plot_tiled(self, save: bool = True, show: bool = False) -> bool:
         df = self.load_csv("tiled.csv")
+        if df is None:
+            print("Skipping tiled plot - data file not available")
+            return False
 
         # Aggregate by matrix size (averaging across block sizes)
         agg_df = self.aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
@@ -284,8 +368,13 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
-    def plot_tiled_by_block_size(self, save: bool = True, show: bool = False):
+        return True
+
+    def plot_tiled_by_block_size(self, save: bool = True, show: bool = False) -> bool:
         df = self.load_csv("tiled.csv")
+        if df is None:
+            print("Skipping tiled_by_block_size plot - data file not available")
+            return False
 
         # Aggregate by block size
         agg_df = self.aggregate_by_matrix_size(df, ["BLOCK_SIZE"])
@@ -346,6 +435,8 @@ class BenchmarkPlotter:
         else:
             plt.close()
 
+        return True
+
 
 def main():
     plotter = BenchmarkPlotter()
@@ -353,23 +444,64 @@ def main():
     print("Generating plots...")
     print("-" * 50)
 
+    plots_created = 0
+    plots_skipped = 0
+
     print("Creating serial permutations plot...")
-    plotter.plot_serial_permutations()
+    try:
+        if plotter.plot_serial_permutations():
+            plots_created += 1
+        else:
+            plots_skipped += 1
+    except Exception as e:
+        print(f"Error creating serial permutations plot: {e}", file=sys.stderr)
+        plots_skipped += 1
 
     print("Creating parallel permutations plot...")
-    plotter.plot_parallel_permutations()
+    try:
+        if plotter.plot_parallel_permutations():
+            plots_created += 1
+        else:
+            plots_skipped += 1
+    except Exception as e:
+        print(f"Error creating parallel permutations plot: {e}", file=sys.stderr)
+        plots_skipped += 1
 
     print("Creating classic vs improved plot...")
-    plotter.plot_classic_vs_improved()
+    try:
+        if plotter.plot_classic_vs_improved():
+            plots_created += 1
+        else:
+            plots_skipped += 1
+    except Exception as e:
+        print(f"Error creating classic vs improved plot: {e}", file=sys.stderr)
+        plots_skipped += 1
 
     print("Creating tiled plot...")
-    plotter.plot_tiled()
+    try:
+        if plotter.plot_tiled():
+            plots_created += 1
+        else:
+            plots_skipped += 1
+    except Exception as e:
+        print(f"Error creating tiled plot: {e}", file=sys.stderr)
+        plots_skipped += 1
 
     print("Creating tiled by block size plot...")
-    plotter.plot_tiled_by_block_size()
+    try:
+        if plotter.plot_tiled_by_block_size():
+            plots_created += 1
+        else:
+            plots_skipped += 1
+    except Exception as e:
+        print(f"Error creating tiled by block size plot: {e}", file=sys.stderr)
+        plots_skipped += 1
 
     print("-" * 50)
-    print("All plots generated successfully!")
+    print(f"Plots created: {plots_created}")
+    if plots_skipped > 0:
+        print(f"Plots skipped: {plots_skipped}")
+    print("Plot generation complete!")
 
 
 if __name__ == "__main__":
