@@ -160,7 +160,6 @@ OpenMP-Dense-Matrix-Multiplication/
 ### Plotting (`benchmark/plot.py`)
 
 - Python script for visualizing benchmark results
-- Robust file handling with graceful error recovery
 - Generates plots for:
   - **Serial loop permutations**: Speedup vs matrix size for all 6 loop orderings
   - **Parallel loop permutations**: Speedup vs matrix size with multiple lines per chunk size (chunk=1, 2, 4, 8, 16, etc.)
@@ -168,4 +167,4 @@ OpenMP-Dense-Matrix-Multiplication/
   - **Tiled implementations**: Speedup vs matrix size with multiple lines per block size for each implementation (Serial IKJ, Parallel IKJ, Serial Tiled, Parallel Tiled)
 - Automatically aggregates data when multiple measurements per matrix size exist
 - Each plot uses different markers and linestyles to distinguish between parameter variations (chunk sizes, block sizes)
-- Plots saved as high-resolution PNG files (300 DPI) in `benchmark/plots/`
+- Plots saved as high-resolution PNG files in `benchmark/plots/`
