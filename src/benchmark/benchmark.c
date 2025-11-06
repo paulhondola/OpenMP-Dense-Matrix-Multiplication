@@ -150,7 +150,7 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
 }
 
 int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
-               int chunk_size, int block_size) {
+               int block_size) {
   Matrix reference, c;
   matrix_create(&reference, a.size);
   matrix_create(&c, a.size);
@@ -184,12 +184,9 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
                "size: %d" RESET "\n",
            a.size, block_size);
   }
-  printf("---------------------------------------------------------------------"
-         "---------------------------------------------------\n");
 #endif
 
-  time_results[3] =
-      parallel_multiply_tiled(a, b, c, thread_count, chunk_size, block_size);
+  time_results[3] = parallel_multiply_tiled(a, b, c, thread_count, block_size);
 
 #ifdef DEBUG_MATRIX
   matrix_print(c);
@@ -197,15 +194,13 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
 #ifdef DEBUG
   if (validate(reference, c)) {
-    printf(GREEN "Parallel - tiled - matrix size: %d, threads: %d, chunk: "
-                 "%d, block "
+    printf(GREEN "Parallel - tiled - matrix size: %d, threads: %d, block "
                  "size: %d - completed - time: %f" RESET "\n",
-           a.size, thread_count, chunk_size, block_size, time_results[3]);
+           a.size, thread_count, block_size, time_results[3]);
   } else {
     printf(RED "INCORRECT - Parallel - tiled - matrix size: %d, threads: "
-               "%d, "
-               "chunk: %d, block size: %d" RESET "\n",
-           a.size, thread_count, chunk_size, block_size);
+               "%d, block size: %d" RESET "\n",
+           a.size, thread_count, block_size);
   }
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");

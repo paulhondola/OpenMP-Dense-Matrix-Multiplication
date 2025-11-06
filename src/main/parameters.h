@@ -11,10 +11,10 @@
 #define UNIFORM_MAX 10
 
 // benchmark parameters
-#define MATRIX_SIZES {500, 750, 1000, 1250, 1500, 1750, 2000}
+#define MATRIX_SIZES {500, 750, 1000}
 #define THREAD_COUNT 10
-#define CHUNK_SIZES {1, 10, 50, 100}
-#define BLOCK_SIZES {2, 4, 8}
+#define CHUNK_SIZES {25, 50, 100, 150}
+#define BLOCK_SIZES {10, 25, 50}
 
 // number of tests for each benchmark
 #define CLASSIC_VS_IMPROVED_TESTS 8

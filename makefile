@@ -11,7 +11,8 @@ CLASSIC_VS_IMPROVED_TARGET = bin/classic_vs_improved.exe
 TILED_TARGET = bin/tiled.exe
 
 CC = gcc-15
-CFLAGS = -O3 -march=native -Wall -Wextra -fopenmp
+CFLAGS = -Wall -Wextra -fopenmp
+CFLAGS_OPT = -O3 -march=native $(CFLAGS) 
 
 clear:
 	rm -rf benchmark/data/*
@@ -19,58 +20,74 @@ clear:
 
 build:
 	@mkdir -p bin
-	@echo "Building serial loop..."
+	@echo "OPTIMIZATION LEVEL 0"
+	@echo "BUILDING SERIAL LOOP"
 	$(CC) $(CFLAGS) $(SERIAL_LOOP_SRC) $(SRC) -o $(SERIAL_LOOP_TARGET)
-	@echo "Building parallel loop..."
+	@echo "BUILDING PARALLEL LOOP"
 	$(CC) $(CFLAGS) $(PARALLEL_LOOP_SRC) $(SRC) -o $(PARALLEL_LOOP_TARGET)
-	@echo "Building classic vs improved..."
+	@echo "BUILDING CLASSIC VS IMPROVED"
 	$(CC) $(CFLAGS) $(CLASSIC_VS_IMPROVED_SRC) $(SRC) -o $(CLASSIC_VS_IMPROVED_TARGET)
-	@echo "Building tiled..."
+	@echo "BUILDING TILED"
 	$(CC) $(CFLAGS) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
-	@echo "Done building all executables."
+	@echo "TASK DONE"
+
+build_O3:
+	@mkdir -p bin
+	@echo "OPTIMIZATION LEVEL 3 + NATIVE SIMD"
+	@echo "BUILDING SERIAL LOOP"
+	$(CC) $(CFLAGS_OPT) $(SERIAL_LOOP_SRC) $(SRC) -o $(SERIAL_LOOP_TARGET)
+	@echo "BUILDING PARALLEL LOOP"
+	$(CC) $(CFLAGS_OPT) $(PARALLEL_LOOP_SRC) $(SRC) -o $(PARALLEL_LOOP_TARGET)
+	@echo "BUILDING CLASSIC VS IMPROVED"
+	$(CC) $(CFLAGS_OPT) $(CLASSIC_VS_IMPROVED_SRC) $(SRC) -o $(CLASSIC_VS_IMPROVED_TARGET)
+	@echo "BUILDING TILED"
+	$(CC) $(CFLAGS_OPT) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
+	@echo "TASK DONE"
 
 serial_loop:
 	@mkdir -p bin
-	@echo "Building serial loop..."
-	$(CC) $(CFLAGS) $(SERIAL_LOOP_SRC) $(SRC) -o $(SERIAL_LOOP_TARGET)
-	@echo "Running serial loop..."
+	@echo "RUNNING SERIAL LOOP"
 	./$(SERIAL_LOOP_TARGET)
-	@echo "Done running serial loop."
+	@echo "TASK DONE"
 
 parallel_loop:
 	@mkdir -p bin
-	@echo "Building parallel loop..."
-	$(CC) $(CFLAGS) $(PARALLEL_LOOP_SRC) $(SRC) -o $(PARALLEL_LOOP_TARGET)
-	@echo "Running parallel loop..."
+	@echo "RUNNING PARALLEL LOOP"
 	./$(PARALLEL_LOOP_TARGET)
-	@echo "Done running parallel loop."
+	@echo "TASK DONE"
 
 classic_vs_improved:
 	@mkdir -p bin
-	@echo "Building classic vs improved..."
-	$(CC) $(CFLAGS) $(CLASSIC_VS_IMPROVED_SRC) $(SRC) -o $(CLASSIC_VS_IMPROVED_TARGET)
-	@echo "Running classic vs improved..."
+	@echo "RUNNING CLASSIC VS IMPROVED"
 	./$(CLASSIC_VS_IMPROVED_TARGET)
-	@echo "Done running classic vs improved."
+	@echo "TASK DONE"
 
 tiled:
 	@mkdir -p bin
-	@echo "Building tiled..."
-	$(CC) $(CFLAGS) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
-	@echo "Running tiled..."
+	@echo "RUNNING TILED"
 	./$(TILED_TARGET)
-	@echo "Done running tiled."
+	@echo "TASK DONE"
 	
 all:
-	@echo "Building and running all executables..."
+	make build
+	@echo "RUNNING ALL EXECUTABLES"
 	make serial_loop
 	make parallel_loop
 	make classic_vs_improved
 	make tiled
-	@echo "Done building and running all executables."
+	@echo "TASK DONE"
+
+all_O3:
+	make build_O3
+	@echo "RUNNING ALL EXECUTABLES"
+	make serial_loop
+	make parallel_loop
+	make classic_vs_improved
+	make tiled
+	@echo "TASK DONE"
 
 plot:
-	@echo "Plotting benchmarks..."
+	@echo "PLOTTING BENCHMARKS"
 	python3 -m py_compile benchmark/plot.py
 	python3 benchmark/plot.py
-	@echo "Done plotting benchmarks."
+	@echo "TASK DONE"
