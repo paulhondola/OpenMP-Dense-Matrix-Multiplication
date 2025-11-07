@@ -24,9 +24,9 @@ Includes a blocked (tiled) algorithm in serial and with OpenMP to improve cache 
 
 ### Dataset
 
-- Square matrices N×N (typical N in the 1k–3k range for benchmarking)
+- Square matrices N×N (default sizes: 480, 960, 1920)
 - Values are generated at runtime with configurable seed (default: 42)
-- Matrix size N is configurable via command-line arguments
+- Random values range from -10 to 10 (configurable in `src/main/parameters.h`)
 
 ### Validation and Benchmarking
 
@@ -43,23 +43,27 @@ Results are exported to CSV files in `benchmark/data/` and can be visualized usi
 
 The project uses a Makefile with the following commands:
 
-### Build and Run Individual Benchmarks
+### Run Individual Benchmarks
 
-- `make serial_loop` - Build and run serial loop permutations benchmark
-- `make parallel_loop` - Build and run parallel loop permutations benchmark
-- `make classic_vs_improved` - Build and run classic vs improved comparison
-- `make tiled` - Build and run tiled/blocked benchmark
+**Note**: These targets run the executables. Build them first using `make build` or `make build_O3`.
 
-### Build All
+- `make serial_loop` - Run serial loop permutations benchmark
+- `make parallel_loop` - Run parallel loop permutations benchmark
+- `make classic_vs_improved` - Run classic vs improved comparison
+- `make tiled` - Run tiled/blocked benchmark
 
-- `make build` - Build all executables without running
-- `make all` - Build and run all benchmarks sequentially
+### Build Targets
+
+- `make build` - Build all executables without optimization (`-Wall -Wextra -fopenmp`)
+- `make build_O3` - Build all executables with optimization (`-O3 -march=native -Wall -Wextra -fopenmp`)
+- `make all` - Build (without optimization) and run all benchmarks sequentially
+- `make all_O3` - Build (with optimization) and run all benchmarks sequentially
 
 ### Plotting
 
 - `make plot` - Generate plots from benchmark data in `benchmark/data/`
   - Requires Python 3 with pandas and matplotlib
-  - Plots are saved to `benchmark/plots/`
+  - Plots are saved to `benchmark/plots/` as PNG files
 
 ### Cleanup
 
@@ -67,7 +71,10 @@ The project uses a Makefile with the following commands:
 
 **Recommended compiler**: gcc-15 with OpenMP support (`-fopenmp`).
 
-**Compiler flags**: `-O3 -march=native -Wall -Wextra -fopenmp`
+**Compiler flags**:
+
+- Basic build: `-Wall -Wextra -fopenmp`
+- Optimized build: `-O3 -march=native -Wall -Wextra -fopenmp`
 
 ## Repository Structure
 
@@ -157,14 +164,26 @@ OpenMP-Dense-Matrix-Multiplication/
 - Serial and parallel variants
 - Tunable block size parameter
 
+### Configuration (`src/main/parameters.h`)
+
+Centralized configuration for all benchmarks:
+
+- **Matrix sizes**: Default `{480, 960, 1920}` (configurable via `MATRIX_SIZES`)
+- **Thread count**: Default `10` (configurable via `THREAD_COUNT`)
+- **Chunk sizes**: Default `{25, 50, 100, 150}` for parallel scheduling (configurable via `CHUNK_SIZES`)
+- **Block sizes**: Default `{2, 8, 16, 32, 48}` for tiled multiplication (configurable via `BLOCK_SIZES`)
+- **Random seed**: Default `42` (configurable via `SEED`)
+- **Validation tolerance**: Default `1e-6` for floating-point comparison (configurable via `EPSILON`)
+- **Debug flags**: `DEBUG` and `DEBUG_MATRIX` for verbose output
+
 ### Plotting (`benchmark/plot.py`)
 
 - Python script for visualizing benchmark results
 - Generates plots for:
-  - **Serial loop permutations**: Speedup vs matrix size for all 6 loop orderings
-  - **Parallel loop permutations**: Speedup vs matrix size with multiple lines per chunk size (chunk=1, 2, 4, 8, 16, etc.)
+  - **Serial loop permutations**: Time vs matrix size for all 6 loop orderings
+  - **Parallel loop permutations**: Speedup vs matrix size with separate lines per chunk size
   - **Classic vs improved**: Comparison of i-j-k vs i-k-j implementations (serial and parallel with 2, 4, 8 threads)
-  - **Tiled implementations**: Speedup vs matrix size with multiple lines per block size for each implementation (Serial IKJ, Parallel IKJ, Serial Tiled, Parallel Tiled)
-- Automatically aggregates data when multiple measurements per matrix size exist
-- Each plot uses different markers and linestyles to distinguish between parameter variations (chunk sizes, block sizes)
-- Plots saved as high-resolution PNG files in `benchmark/plots/`
+  - **Tiled implementations**: Speedup vs matrix size with separate lines per block size
+- Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
+- Uses distinct markers and line styles for parameter variations (chunk sizes, block sizes)
+- Plots saved as high-resolution PNG files (300 DPI) in `benchmark/plots/`
