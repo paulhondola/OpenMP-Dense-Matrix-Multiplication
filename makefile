@@ -2,12 +2,12 @@ SRC = $(shell find src -name "*.c" -type f ! -path "src/main/*")
 
 PARALLEL_LOOP_SRC = src/main/parallel_loop.c
 SERIAL_LOOP_SRC = src/main/serial_loop.c
-CLASSIC_VS_IMPROVED_SRC = src/main/serial_vs_parallel.c
+SERIAL_PARALLEL_SCALING_SRC = src/main/serial-parallel-scaling.c
 TILED_SRC = src/main/tiled.c
 
 PARALLEL_LOOP_TARGET = bin/parallel_loop.exe
 SERIAL_LOOP_TARGET = bin/serial_loop.exe
-CLASSIC_VS_IMPROVED_TARGET = bin/classic_vs_improved.exe
+SERIAL_PARALLEL_SCALING_TARGET = bin/serial_parallel_scaling.exe
 TILED_TARGET = bin/tiled.exe
 
 CC = gcc-15
@@ -25,8 +25,8 @@ build:
 	$(CC) $(CFLAGS) $(SERIAL_LOOP_SRC) $(SRC) -o $(SERIAL_LOOP_TARGET)
 	@echo "BUILDING PARALLEL LOOP"
 	$(CC) $(CFLAGS) $(PARALLEL_LOOP_SRC) $(SRC) -o $(PARALLEL_LOOP_TARGET)
-	@echo "BUILDING CLASSIC VS IMPROVED"
-	$(CC) $(CFLAGS) $(CLASSIC_VS_IMPROVED_SRC) $(SRC) -o $(CLASSIC_VS_IMPROVED_TARGET)
+	@echo "BUILDING SERIAL PARALLEL SCALING"
+	$(CC) $(CFLAGS) $(SERIAL_PARALLEL_SCALING_SRC) $(SRC) -o $(SERIAL_PARALLEL_SCALING_TARGET)
 	@echo "BUILDING TILED"
 	$(CC) $(CFLAGS) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
 	@echo "TASK DONE"
@@ -38,8 +38,8 @@ build_O3:
 	$(CC) $(CFLAGS_OPT) $(SERIAL_LOOP_SRC) $(SRC) -o $(SERIAL_LOOP_TARGET)
 	@echo "BUILDING PARALLEL LOOP"
 	$(CC) $(CFLAGS_OPT) $(PARALLEL_LOOP_SRC) $(SRC) -o $(PARALLEL_LOOP_TARGET)
-	@echo "BUILDING CLASSIC VS IMPROVED"
-	$(CC) $(CFLAGS_OPT) $(CLASSIC_VS_IMPROVED_SRC) $(SRC) -o $(CLASSIC_VS_IMPROVED_TARGET)
+	@echo "BUILDING SERIAL PARALLEL SCALING"
+	$(CC) $(CFLAGS_OPT) $(SERIAL_PARALLEL_SCALING_SRC) $(SRC) -o $(SERIAL_PARALLEL_SCALING_TARGET)
 	@echo "BUILDING TILED"
 	$(CC) $(CFLAGS_OPT) $(TILED_SRC) $(SRC) -o $(TILED_TARGET)
 	@echo "TASK DONE"
@@ -56,10 +56,10 @@ parallel_loop:
 	./$(PARALLEL_LOOP_TARGET)
 	@echo "TASK DONE"
 
-classic_vs_improved:
+serial_parallel_scaling:
 	@mkdir -p bin
-	@echo "RUNNING CLASSIC VS IMPROVED"
-	./$(CLASSIC_VS_IMPROVED_TARGET)
+	@echo "RUNNING SERIAL PARALLEL SCALING"
+	./$(SERIAL_PARALLEL_SCALING_TARGET)
 	@echo "TASK DONE"
 
 tiled:
@@ -73,7 +73,7 @@ all:
 	@echo "RUNNING ALL EXECUTABLES"
 	make serial_loop
 	make parallel_loop
-	make classic_vs_improved
+	make serial_parallel_scaling
 	make tiled
 	@echo "TASK DONE"
 
@@ -82,7 +82,7 @@ all_O3:
 	@echo "RUNNING ALL EXECUTABLES"
 	make serial_loop
 	make parallel_loop
-	make classic_vs_improved
+	make serial_parallel_scaling
 	make tiled
 	@echo "TASK DONE"
 

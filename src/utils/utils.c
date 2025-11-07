@@ -13,10 +13,14 @@ CSV_DATA csv_parallel_permutations = {
     .filename = "benchmark/data/parallel_permutations.csv",
 };
 
-CSV_DATA csv_classic_vs_improved = {
-    .header = "MATRIX_SIZE,CHUNK,SERIAL_BASELINE,P2T,P4T,P8T,IMPROVED_SERIAL,"
-              "IP2T,IP4T,IP8T",
-    .filename = "benchmark/data/classic_vs_improved.csv",
+CSV_DATA csv_serial_parallel_scaling_classic = {
+    .header = "MATRIX_SIZE,CHUNK,SERIAL_BASELINE,P2T,P4T,P8T",
+    .filename = "benchmark/data/serial_parallel_scaling_classic.csv",
+};
+
+CSV_DATA csv_serial_parallel_scaling_improved = {
+    .header = "MATRIX_SIZE,CHUNK,SERIAL_BASELINE,P2T,P4T,P8T",
+    .filename = "benchmark/data/serial_parallel_scaling_improved.csv",
 };
 
 CSV_DATA csv_tiled = {

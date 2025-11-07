@@ -17,7 +17,7 @@
 #define BLOCK_SIZES {2, 8, 16, 32, 48}
 
 // number of tests for each benchmark
-#define CLASSIC_VS_IMPROVED_TESTS 8
+#define CLASSIC_VS_IMPROVED_TESTS 4
 #define LOOP_PERMUTATIONS 6
 #define TILED_TESTS 4
 

@@ -124,8 +124,8 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   return correct_count == LOOP_PERMUTATIONS - 1;
 }
 
-int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
-                             int chunk) {
+int test_serial_parallel_scaling_classic(double time_results[], Matrix a,
+                                         Matrix b, int chunk) {
 
   Matrix c;
   matrix_create(&c, a.size);
@@ -133,14 +133,30 @@ int test_classic_vs_improved(double time_results[], Matrix a, Matrix b,
   time_results[1] = parallel_multiply_ijk(a, b, c, 2, chunk);
   time_results[2] = parallel_multiply_ijk(a, b, c, 4, chunk);
   time_results[3] = parallel_multiply_ijk(a, b, c, 8, chunk);
-  time_results[4] = serial_multiply_ikj(a, b, c);
-  time_results[5] = parallel_multiply_ikj(a, b, c, 2, chunk);
-  time_results[6] = parallel_multiply_ikj(a, b, c, 4, chunk);
-  time_results[7] = parallel_multiply_ikj(a, b, c, 8, chunk);
   matrix_destroy(c);
 
 #ifdef DEBUG
-  printf("Classic vs Improved - Test completed - matrix size: %d, chunk: %d\n",
+  printf("Serial - parallel scaling - improved - matrix size: %d, chunk: %d\n",
+         a.size, chunk);
+  printf("---------------------------------------------------------------------"
+         "---------------------------------------------------\n");
+#endif
+
+  return 0;
+}
+
+int test_serial_parallel_scaling_improved(double time_results[], Matrix a,
+                                          Matrix b, int chunk) {
+  Matrix c;
+  matrix_create(&c, a.size);
+  time_results[0] = serial_multiply_ikj(a, b, c);
+  time_results[1] = parallel_multiply_ikj(a, b, c, 2, chunk);
+  time_results[2] = parallel_multiply_ikj(a, b, c, 4, chunk);
+  time_results[3] = parallel_multiply_ikj(a, b, c, 8, chunk);
+  matrix_destroy(c);
+
+#ifdef DEBUG
+  printf("Serial - parallel scaling - improved - matrix size: %d, chunk: %d\n",
          a.size, chunk);
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
