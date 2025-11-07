@@ -88,6 +88,6 @@ all_O3:
 
 plot:
 	@echo "PLOTTING BENCHMARKS"
-	python3 -m py_compile benchmark/plot.py
-	python3 benchmark/plot.py
+	python3 -m py_compile benchmark/src/main.py
+	python3 benchmark/src/main.py
 	@echo "TASK DONE"

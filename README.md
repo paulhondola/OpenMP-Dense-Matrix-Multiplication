@@ -49,7 +49,7 @@ The project uses a Makefile with the following commands:
 
 - `make serial_loop` - Run serial loop permutations benchmark
 - `make parallel_loop` - Run parallel loop permutations benchmark
-- `make classic_vs_improved` - Run classic vs improved comparison
+- `make serial_parallel_scaling` - Run serial vs parallel scaling comparison (classic and improved)
 - `make tiled` - Run tiled/blocked benchmark
 
 ### Build Targets
@@ -61,9 +61,11 @@ The project uses a Makefile with the following commands:
 
 ### Plotting
 
-- `make plot` - Generate plots from benchmark data in `benchmark/data/`
+- `make plot` - Generate all plots from benchmark data in `benchmark/data/`
   - Requires Python 3 with pandas and matplotlib
-  - Plots are saved to `benchmark/plots/` as PNG files
+  - Uses the wrapper script `benchmark/src/main.py` which calls individual plot scripts
+  - Individual scripts can also be run directly from `benchmark/src/`
+  - Plots are saved to `benchmark/plots/` as PNG files (300 DPI)
 
 ### Cleanup
 
@@ -84,18 +86,27 @@ OpenMP-Dense-Matrix-Multiplication/
 │   ├── data/                   # CSV benchmark data files
 │   │   ├── serial_permutations.csv
 │   │   ├── parallel_permutations.csv
-│   │   ├── classic_vs_improved.csv
+│   │   ├── serial_parallel_scaling_classic.csv
+│   │   ├── serial_parallel_scaling_improved.csv
 │   │   └── tiled.csv
-│   ├── plot.py                 # Python plotting script with robust file handling
-│   └── plots/                  # Generated plot images (PNG)
-│       ├── serial_permutations.png
-│       ├── parallel_permutations.png
-│       ├── classic_vs_improved.png
-│       └── tiled.png
+│   ├── plots/                  # Generated plot images (PNG)
+│   │   ├── serial_permutations.png
+│   │   ├── parallel_permutations.png
+│   │   ├── serial_parallel_scaling_classic.png
+│   │   ├── serial_parallel_scaling_improved.png
+│   │   └── tiled.png
+│   └── src/                    # Individual plot generation scripts
+│       ├── main.py             # Main script that calls all individual plot scripts
+│       ├── plot_serial_permutations.py
+│       ├── plot_parallel_permutations.py
+│       ├── plot_serial_parallel_scaling_classic.py
+│       ├── plot_serial_parallel_scaling_improved.py
+│       ├── plot_tiled.py
+│       └── utils.py            # Common utilities (CSV loading, aggregation, directory helpers)
 ├── bin/                        # Compiled executables
 │   ├── serial_loop.exe
 │   ├── parallel_loop.exe
-│   ├── classic_vs_improved.exe
+│   ├── serial_parallel_scaling.exe
 │   └── tiled.exe
 ├── docs/
 │   ├── DenseMatrix.pdf         # Problem description and theoretical background
@@ -114,7 +125,7 @@ OpenMP-Dense-Matrix-Multiplication/
 │   ├── main/                   # Entry point programs
 │   │   ├── serial_loop.c       # Serial loop permutations benchmark
 │   │   ├── parallel_loop.c     # Parallel loop permutations benchmark
-│   │   ├── serial_vs_parallel.c # Classic vs improved comparison
+│   │   ├── serial-parallel-scaling.c # Serial vs parallel scaling comparison
 │   │   ├── tiled.c             # Tiled/blocked benchmark
 │   │   └── parameters.h       # Shared parameters and constants
 │   ├── matrix/                 # Matrix utilities
@@ -176,14 +187,19 @@ Centralized configuration for all benchmarks:
 - **Validation tolerance**: Default `1e-6` for floating-point comparison (configurable via `EPSILON`)
 - **Debug flags**: `DEBUG` and `DEBUG_MATRIX` for verbose output
 
-### Plotting (`benchmark/plot.py`)
+### Plotting Scripts (`benchmark/src/`)
 
-- Python script for visualizing benchmark results
-- Generates plots for:
-  - **Serial loop permutations**: Time vs matrix size for all 6 loop orderings
-  - **Parallel loop permutations**: Speedup vs matrix size with separate lines per chunk size
-  - **Classic vs improved**: Comparison of i-j-k vs i-k-j implementations (serial and parallel with 2, 4, 8 threads)
-  - **Tiled implementations**: Speedup vs matrix size with separate lines per block size
-- Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
-- Uses distinct markers and line styles for parameter variations (chunk sizes, block sizes)
-- Plots saved as high-resolution PNG files (300 DPI) in `benchmark/plots/`
+Modular plotting system with individual scripts for each plot type:
+
+- **Modular design**: Five separate Python scripts, one per plot type:
+  - `plot_serial_permutations.py` - Serial loop permutations: Speedup vs matrix size for all 6 loop orderings
+  - `plot_parallel_permutations.py` - Parallel loop permutations: Speedup vs matrix size with separate lines per chunk size
+  - `plot_serial_parallel_scaling_classic.py` - Classic (i-j-k): Serial vs parallel scaling with 2, 4, 8 threads
+  - `plot_serial_parallel_scaling_improved.py` - Improved (i-k-j): Serial vs parallel scaling with 2, 4, 8 threads
+  - `plot_tiled.py` - Tiled implementations: Speedup vs matrix size with separate lines per block size
+- **Common utilities** (`utils.py`): Shared functions for CSV loading, data aggregation, and directory management
+- **Wrapper script** (`main.py`): Convenience script that runs all individual plot scripts sequentially
+- **Features**:
+  - Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
+  - Uses distinct markers and line styles for parameter variations (chunk sizes, block sizes)
+  - Plots saved as high-resolution PNG files in `benchmark/plots/`
