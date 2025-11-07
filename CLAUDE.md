@@ -15,10 +15,10 @@ The project uses a Makefile with the following commands:
 
 ```bash
 # Build and run individual benchmarks
-make serial_loop            # Serial loop permutations
-make parallel_loop          # Parallel loop permutations
-make classic_vs_improved    # Compare i-j-k vs i-k-j
-make tiled                  # Tiled/blocked implementations
+make serial_loop                # Serial loop permutations
+make parallel_loop              # Parallel loop permutations
+make serial_parallel_scaling    # Compare i-j-k vs i-k-j (serial and parallel scaling)
+make tiled                      # Tiled/blocked implementations
 
 # Build all without running
 make build
@@ -36,9 +36,11 @@ make clear
 **Compiler requirements:**
 
 - gcc-15 with OpenMP support
-- Compiler flags: `-O3 -march=native -Wall -Wextra -fopenmp`
+- Basic build flags: `-Wall -Wextra -fopenmp`
+- Optimized build flags: `-O3 -march=native -Wall -Wextra -fopenmp`
+- Use `make build` for basic build or `make build_O3` for optimized build
 - Output binaries go to `bin/` directory
-- Entry points: `src/main/serial_loop.c`, `src/main/parallel_loop.c`, `src/main/serial_vs_parallel.c`, `src/main/tiled.c`
+- Entry points: `src/main/serial_loop.c`, `src/main/parallel_loop.c`, `src/main/serial-parallel-scaling.c`, `src/main/tiled.c`
 
 ## Architecture
 
@@ -47,12 +49,13 @@ make clear
 **Configuration** (`src/main/parameters.h`):
 
 - Centralized compile-time configuration for all benchmarks
-- `MATRIX_SIZES`: Array of matrix sizes to test (default: 500, 750, 1000, 1250, 1500, 1750, 2000)
+- `MATRIX_SIZES`: Array of matrix sizes to test (default: 480, 960, 1920)
 - `THREAD_COUNT`: Number of OpenMP threads (default: 10)
-- `CHUNK_SIZES`: Array of chunk sizes for parallel scheduling (default: 1, 10, 50, 100)
-- `BLOCK_SIZES`: Array of block sizes for tiled multiplication (default: 2, 4, 8)
+- `CHUNK_SIZES`: Array of chunk sizes for parallel scheduling (default: 25, 50, 100, 150)
+- `BLOCK_SIZES`: Array of block sizes for tiled multiplication (default: 2, 8, 16, 32, 48)
 - `SEED`: Random number generation seed (default: 42)
 - `EPSILON`: Validation tolerance for floating-point comparison (default: 1e-6)
+- `UNIFORM_MIN`, `UNIFORM_MAX`: Range for random matrix values (default: -10 to 10)
 - Debug flags: `DEBUG` and `DEBUG_MATRIX`
 
 **Matrix utilities** (`src/matrix/matrix.{c,h}`):
@@ -69,7 +72,8 @@ make clear
 - Validation uses `validate()` function from `matrix.c` with epsilon comparison (configured in `parameters.h`)
 - `test_serial_loop_permutations()`: Validates all serial permutations against serial i-j-k, returns timing results
 - `test_parallel_loop_permutations()`: Validates all parallel permutations against parallel i-j-k, returns timing results
-- `test_classic_vs_improved()`: Compares i-j-k vs i-k-j implementations (serial and parallel with 2, 4, 8 threads)
+- `test_serial_parallel_scaling_classic()`: Tests i-j-k implementation (serial and parallel with 2, 4, 8 threads)
+- `test_serial_parallel_scaling_improved()`: Tests i-k-j implementation (serial and parallel with 2, 4, 8 threads)
 - `test_tiled()`: Validates tiled implementations against i-k-j baseline
 - `compute_speedup()`: Calculates speedup relative to baseline (first element in time_results array)
 
@@ -77,7 +81,7 @@ make clear
 
 - CSV file handling for benchmark data export
 - Functions to write benchmark results to CSV files in `benchmark/data/`
-- Output files: `serial_permutations.csv`, `parallel_permutations.csv`, `classic_vs_improved.csv`, `tiled.csv`
+- Output files: `serial_permutations.csv`, `parallel_permutations.csv`, `serial_parallel_scaling_classic.csv`, `serial_parallel_scaling_improved.csv`, `tiled.csv`
 
 ### Loop Permutation Implementations
 
@@ -143,12 +147,14 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 - Calls `test_parallel_loop_permutations()` for validation and timing
 - Writes results to `benchmark/data/parallel_permutations.csv`
 
-**`src/main/serial_vs_parallel.c`**:
+**`src/main/serial-parallel-scaling.c`**:
 
 - Compares i-j-k vs i-k-j implementations (serial and parallel with 2, 4, 8 threads)
-- Tests all matrix sizes from parameters
-- Calls `test_classic_vs_improved()` for validation and timing
-- Writes results to `benchmark/data/classic_vs_improved.csv`
+- Tests all matrix sizes and chunk sizes from parameters
+- Calls `test_serial_parallel_scaling_classic()` and `test_serial_parallel_scaling_improved()` for validation and timing
+- Writes results to TWO separate CSV files:
+  - `benchmark/data/serial_parallel_scaling_classic.csv` (for i-j-k)
+  - `benchmark/data/serial_parallel_scaling_improved.csv` (for i-k-j)
 
 **`src/main/tiled.c`**:
 
@@ -162,22 +168,27 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 **Data flow:**
 
 1. Configure parameters in `src/main/parameters.h` (matrix sizes, thread counts, chunk sizes, block sizes)
-2. Run `make all` to execute all benchmarks, or run individual targets
-3. Benchmark data written to CSV files in `benchmark/data/`
-4. Run `make plot` to generate visualizations with Python
-5. Plots saved to `benchmark/plots/` as PNG files (300 DPI)
+2. Build executables using `make build` (unoptimized) or `make build_O3` (optimized with -O3 -march=native)
+3. Run `make all` (unoptimized) or `make all_O3` (optimized) to execute all benchmarks, or run individual targets
+4. Benchmark data written to CSV files in `benchmark/data/`
+5. Run `make plot` to generate visualizations with Python
+6. Plots saved to `benchmark/plots/` as PNG files (300 DPI)
 
-**Plotting** (`benchmark/plot.py`):
+**Plotting** (`benchmark/src/`):
 
-- Python script using pandas and matplotlib
+- Modular Python plotting system with individual scripts for each plot type
+- Main entry point: `benchmark/src/main.py` (called by `make plot`)
+- Individual plotting scripts:
+  - `plot_serial_permutations.py`: Time vs matrix size for all 6 loop orderings
+  - `plot_parallel_permutations.py`: Speedup vs matrix size with separate lines per chunk size
+  - `plot_serial_parallel_scaling_classic.py`: i-j-k scaling (serial and parallel with 2, 4, 8 threads)
+  - `plot_serial_parallel_scaling_improved.py`: i-k-j scaling (serial and parallel with 2, 4, 8 threads)
+  - `plot_tiled.py`: Speedup vs matrix size with separate lines per block size
+- Shared utilities in `utils.py` for CSV loading and data aggregation
 - Robust error handling for missing or malformed CSV files
-- Generates four plot types:
-  - Serial loop permutations: Time vs matrix size for all 6 orderings
-  - Parallel loop permutations: Speedup vs matrix size with separate lines per chunk size
-  - Classic vs improved: Comparison of i-j-k vs i-k-j (serial and parallel with 2, 4, 8 threads)
-  - Tiled implementations: Speedup vs matrix size with separate lines per block size
 - Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
 - Uses distinct markers and line styles for parameter variations
+- Plots saved as 300 DPI PNG files in `benchmark/plots/`
 
 ## Development Notes
 
@@ -212,8 +223,9 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 - All benchmark parameters centralized in `src/main/parameters.h`
 - Define `DEBUG` for colored validation output (green/red for pass/fail)
 - Define `DEBUG_MATRIX` for matrix value printing (useful for small test cases)
-- Default matrix sizes: 500, 750, 1000, 1250, 1500, 1750, 2000
+- Default matrix sizes: 480, 960, 1920
 - Modify `parameters.h` and rebuild to change test configurations
+- Note: `DEBUG` is enabled by default in `parameters.h`
 
 ## Documentation
 
