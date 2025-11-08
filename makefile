@@ -68,23 +68,9 @@ tiled:
 	./$(TILED_TARGET)
 	@echo "TASK DONE"
 	
-all:
-	make build
-	@echo "RUNNING ALL EXECUTABLES"
-	make serial_loop
-	make parallel_loop
-	make serial_parallel_scaling
-	make tiled
-	@echo "TASK DONE"
+all: build serial_loop parallel_loop serial_parallel_scaling tiled
 
-all_O3:
-	make build_O3
-	@echo "RUNNING ALL EXECUTABLES"
-	make serial_loop
-	make parallel_loop
-	make serial_parallel_scaling
-	make tiled
-	@echo "TASK DONE"
+all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled
 
 plot:
 	@echo "PLOTTING BENCHMARKS"
