@@ -98,12 +98,13 @@ move_O3:
 	@if [ -f benchmark/plots/tiled.png ]; then mv benchmark/plots/tiled.png benchmark/plots/O3/; fi
 	@echo "Files moved to O3 subdirectories"
 
-all: build serial_loop parallel_loop serial_parallel_scaling tiled
-
-all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled
-
 plot:
 	@echo "PLOTTING BENCHMARKS"
 	python3 -m py_compile benchmark/src/main.py
 	python3 benchmark/src/main.py
 	@echo "TASK DONE"
+
+all: build serial_loop parallel_loop serial_parallel_scaling tiled plot move_O0
+
+all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled plot move_O3
+
