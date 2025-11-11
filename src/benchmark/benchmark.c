@@ -12,10 +12,9 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
   matrix_create(&c, a.size);
   time_results[permutation] =
       serial_loop_benchmark_functions[permutation](a, b, c);
-  int result = validate(reference, c);
-  matrix_destroy(c);
-
+  int result = 1;
 #ifdef DEBUG
+  result = validate(reference, c);
   if (result) {
     printf(GREEN "Permutation %d is correct" RESET "\n", permutation);
   } else {
@@ -25,6 +24,7 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
          "---------------------------------------------------\n");
 #endif
 
+  matrix_destroy(c);
   return result;
 }
 
@@ -68,10 +68,9 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
   matrix_create(&c, a.size);
   time_results[permutation] = parallel_loop_benchmark_functions[permutation](
       a, b, c, thread_count, chunk);
-  int result = validate(reference, c);
-  matrix_destroy(c);
-
+  int result = 1;
 #ifdef DEBUG
+  result = validate(reference, c);
   if (result) {
     printf(GREEN "Permutation %d is correct" RESET "\n", permutation);
   } else {
@@ -80,6 +79,7 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
 #endif
+  matrix_destroy(c);
 
   return result;
 }
@@ -174,6 +174,7 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
   time_results[0] = serial_multiply_ikj(a, b, reference);
   time_results[1] = parallel_multiply_ikj(a, b, c, thread_count, block_size);
 
+  int result = 1;
 #ifdef DEBUG_MATRIX
   matrix_print(c);
 #endif
@@ -190,7 +191,8 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 #endif
 
 #ifdef DEBUG
-  if (validate(reference, c)) {
+  result = validate(reference, c);
+  if (result) {
     printf(GREEN "Serial - tiled - matrix size: %d, block size: %d - "
                  "completed - "
                  "time: %f" RESET "\n",
@@ -209,7 +211,8 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 #endif
 
 #ifdef DEBUG
-  if (validate(reference, c)) {
+  result = validate(reference, c);
+  if (result) {
     printf(GREEN "Parallel - tiled - matrix size: %d, threads: %d, block "
                  "size: %d - completed - time: %f" RESET "\n",
            a.size, thread_count, block_size, time_results[3]);
@@ -225,7 +228,7 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
   matrix_destroy(reference);
   matrix_destroy(c);
 
-  return 0;
+  return result;
 }
 
 void compute_speedup(double time_results[], double speedup_results[],

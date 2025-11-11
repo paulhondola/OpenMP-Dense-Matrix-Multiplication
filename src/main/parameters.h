@@ -2,7 +2,7 @@
 #define PARAMETERS_H
 
 // debug parameters
-#define DEBUG
+//#define DEBUG
 //#define DEBUG_MATRIX
 
 // random number generation parameters
@@ -11,10 +11,10 @@
 #define UNIFORM_MAX 10
 
 // benchmark parameters
-#define MATRIX_SIZES {480, 960, 1920}
+#define MATRIX_SIZES {480, 640, 960, 1280, 1920}
 #define THREAD_COUNT 10
 #define CHUNK_SIZES {48, 96, 192}
-#define BLOCK_SIZES {32, 48, 96, 128}
+#define BLOCK_SIZES {48, 96, 128}
 
 // number of tests for each benchmark
 #define CLASSIC_VS_IMPROVED_TESTS 4

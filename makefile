@@ -68,6 +68,36 @@ tiled:
 	./$(TILED_TARGET)
 	@echo "TASK DONE"
 	
+move_O0:
+	@mkdir -p benchmark/data/O0
+	@mkdir -p benchmark/plots/O0
+	@if [ -f benchmark/data/serial_permutations.csv ]; then mv benchmark/data/serial_permutations.csv benchmark/data/O0/; fi
+	@if [ -f benchmark/data/parallel_permutations.csv ]; then mv benchmark/data/parallel_permutations.csv benchmark/data/O0/; fi
+	@if [ -f benchmark/data/serial_parallel_scaling_classic.csv ]; then mv benchmark/data/serial_parallel_scaling_classic.csv benchmark/data/O0/; fi
+	@if [ -f benchmark/data/serial_parallel_scaling_improved.csv ]; then mv benchmark/data/serial_parallel_scaling_improved.csv benchmark/data/O0/; fi
+	@if [ -f benchmark/data/tiled.csv ]; then mv benchmark/data/tiled.csv benchmark/data/O0/; fi
+	@if [ -f benchmark/plots/serial_permutations.png ]; then mv benchmark/plots/serial_permutations.png benchmark/plots/O0/; fi
+	@if [ -f benchmark/plots/parallel_permutations.png ]; then mv benchmark/plots/parallel_permutations.png benchmark/plots/O0/; fi
+	@if [ -f benchmark/plots/serial_parallel_scaling_classic.png ]; then mv benchmark/plots/serial_parallel_scaling_classic.png benchmark/plots/O0/; fi
+	@if [ -f benchmark/plots/serial_parallel_scaling_improved.png ]; then mv benchmark/plots/serial_parallel_scaling_improved.png benchmark/plots/O0/; fi
+	@if [ -f benchmark/plots/tiled.png ]; then mv benchmark/plots/tiled.png benchmark/plots/O0/; fi
+	@echo "Files moved to O0 subdirectories"
+
+move_O3:
+	@mkdir -p benchmark/data/O3
+	@mkdir -p benchmark/plots/O3
+	@if [ -f benchmark/data/serial_permutations.csv ]; then mv benchmark/data/serial_permutations.csv benchmark/data/O3/; fi
+	@if [ -f benchmark/data/parallel_permutations.csv ]; then mv benchmark/data/parallel_permutations.csv benchmark/data/O3/; fi
+	@if [ -f benchmark/data/serial_parallel_scaling_classic.csv ]; then mv benchmark/data/serial_parallel_scaling_classic.csv benchmark/data/O3/; fi
+	@if [ -f benchmark/data/serial_parallel_scaling_improved.csv ]; then mv benchmark/data/serial_parallel_scaling_improved.csv benchmark/data/O3/; fi
+	@if [ -f benchmark/data/tiled.csv ]; then mv benchmark/data/tiled.csv benchmark/data/O3/; fi
+	@if [ -f benchmark/plots/serial_permutations.png ]; then mv benchmark/plots/serial_permutations.png benchmark/plots/O3/; fi
+	@if [ -f benchmark/plots/parallel_permutations.png ]; then mv benchmark/plots/parallel_permutations.png benchmark/plots/O3/; fi
+	@if [ -f benchmark/plots/serial_parallel_scaling_classic.png ]; then mv benchmark/plots/serial_parallel_scaling_classic.png benchmark/plots/O3/; fi
+	@if [ -f benchmark/plots/serial_parallel_scaling_improved.png ]; then mv benchmark/plots/serial_parallel_scaling_improved.png benchmark/plots/O3/; fi
+	@if [ -f benchmark/plots/tiled.png ]; then mv benchmark/plots/tiled.png benchmark/plots/O3/; fi
+	@echo "Files moved to O3 subdirectories"
+
 all: build serial_loop parallel_loop serial_parallel_scaling tiled
 
 all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled
