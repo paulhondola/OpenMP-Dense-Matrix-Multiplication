@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def main():
-    script_dir = Path(__file__).parent / "src"
+    script_dir = Path(__file__).parent
     plot_scripts = [
         "plot_serial_permutations.py",
         "plot_parallel_permutations.py",
