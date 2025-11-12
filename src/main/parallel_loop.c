@@ -2,8 +2,9 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_parallel_loop_permutations(const Matrix *restrict a, const Matrix *restrict b, int thread_count,
-                                          int chunk) {
+void benchmark_parallel_loop_permutations(const Matrix *restrict a,
+                                          const Matrix *restrict b,
+                                          int thread_count, int chunk) {
   FILE *csv_file = open_csv_file(csv_parallel_permutations);
   if (csv_file == NULL) {
     perror(csv_parallel_permutations.filename);
@@ -15,8 +16,8 @@ void benchmark_parallel_loop_permutations(const Matrix *restrict a, const Matrix
   test_parallel_loop_permutations(time_results, a, b, thread_count, chunk);
   compute_speedup(time_results, speedup_results, LOOP_PERMUTATIONS);
 
-  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", a->size, thread_count, chunk,
-          speedup_results[0], speedup_results[1], speedup_results[2],
+  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", a->size, thread_count,
+          chunk, speedup_results[0], speedup_results[1], speedup_results[2],
           speedup_results[3], speedup_results[4], speedup_results[5]);
 
   fclose(csv_file);
@@ -39,8 +40,6 @@ int main(int argc, char *argv[]) {
   // Set output folder if provided as command line argument
   const char *folder_name = (argc > 1) ? argv[1] : NULL;
   set_output_folder(folder_name);
-
-  srand(SEED);
 
   int matrix_sizes[] = MATRIX_SIZES;
   int chunk_sizes[] = CHUNK_SIZES;

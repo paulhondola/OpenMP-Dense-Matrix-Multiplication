@@ -6,8 +6,8 @@ parallel_loop_benchmark parallel_loop_benchmark_functions[] = {
     parallel_multiply_ijk, parallel_multiply_ikj, parallel_multiply_jik,
     parallel_multiply_jki, parallel_multiply_kij, parallel_multiply_kji};
 
-double parallel_multiply_ijk(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_ijk(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int i, j, k, n = a->size;
   double temp;
@@ -39,8 +39,8 @@ double parallel_multiply_ijk(const Matrix *restrict a, const Matrix *restrict b,
   return result;
 }
 
-double parallel_multiply_ikj(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_ikj(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int i, j, k, n = a->size;
   double temp;
@@ -72,8 +72,8 @@ double parallel_multiply_ikj(const Matrix *restrict a, const Matrix *restrict b,
   return result;
 }
 
-double parallel_multiply_jik(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_jik(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int i, j, k, n = a->size;
   double temp;
@@ -105,8 +105,8 @@ double parallel_multiply_jik(const Matrix *restrict a, const Matrix *restrict b,
   return result;
 }
 
-double parallel_multiply_jki(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_jki(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int i, j, k, n = a->size;
   double temp;
@@ -138,8 +138,8 @@ double parallel_multiply_jki(const Matrix *restrict a, const Matrix *restrict b,
   return result;
 }
 
-double parallel_multiply_kij(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_kij(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int i, j, k, n = a->size;
   double temp;
@@ -150,7 +150,7 @@ double parallel_multiply_kij(const Matrix *restrict a, const Matrix *restrict b,
     private(i, j, k, temp), shared(a, b, c, chunk, n)
   {
     for (k = 0; k < n; k++) {
-#pragma omp for schedule(static, chunk)
+#pragma omp for schedule(static, chunk) nowait
       for (i = 0; i < n; i++) {
         temp = a->data[i][k];
         for (j = 0; j < n; j++) {
@@ -171,8 +171,8 @@ double parallel_multiply_kij(const Matrix *restrict a, const Matrix *restrict b,
   return result;
 }
 
-double parallel_multiply_kji(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
-                             int chunk) {
+double parallel_multiply_kji(const Matrix *restrict a, const Matrix *restrict b,
+                             Matrix *restrict c, int thread_count, int chunk) {
   matrix_fill_zero(c);
   int n = a->size;
   int i, j, k;
@@ -184,7 +184,7 @@ double parallel_multiply_kji(const Matrix *restrict a, const Matrix *restrict b,
     private(i, j, k, temp), shared(a, b, c, chunk, n)
   {
     for (k = 0; k < n; k++) {
-#pragma omp for schedule(static, chunk)
+#pragma omp for schedule(static, chunk) nowait
       for (j = 0; j < n; j++) {
         temp = b->data[k][j];
         for (i = 0; i < n; i++) {

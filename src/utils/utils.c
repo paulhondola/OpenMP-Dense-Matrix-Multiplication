@@ -2,6 +2,7 @@
 // ABOUTME: CSV writing and benchmarking data output helpers
 
 #include "utils.h"
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -89,7 +90,7 @@ void ensure_directory_exists(const char *path) {
 }
 
 FILE *open_csv_file(CSV_DATA csv_data) {
-  char full_path[512];
+  char full_path[PATH_MAX];
 
   // Construct the full path
   if (output_folder != NULL && strlen(output_folder) > 0) {
@@ -101,7 +102,7 @@ FILE *open_csv_file(CSV_DATA csv_data) {
   }
 
   // Ensure directory exists
-  char dir_path[512];
+  char dir_path[PATH_MAX];
   snprintf(dir_path, sizeof(dir_path), "%s", full_path);
   char *last_slash = strrchr(dir_path, '/');
   if (last_slash != NULL) {
@@ -124,7 +125,7 @@ FILE *open_csv_file(CSV_DATA csv_data) {
 }
 
 void clear_csv_file(CSV_DATA csv_data) {
-  char full_path[512];
+  char full_path[PATH_MAX];
 
   // Construct the full path
   if (output_folder != NULL && strlen(output_folder) > 0) {

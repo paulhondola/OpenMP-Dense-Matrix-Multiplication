@@ -2,7 +2,8 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_serial_loop_permutations(const Matrix *restrict a, const Matrix *restrict b) {
+void benchmark_serial_loop_permutations(const Matrix *restrict a,
+                                        const Matrix *restrict b) {
 
   FILE *csv_file = open_csv_file(csv_serial_permutations);
   if (csv_file == NULL) {
@@ -39,8 +40,6 @@ int main(int argc, char *argv[]) {
   // Set output folder if provided as command line argument
   const char *folder_name = (argc > 1) ? argv[1] : NULL;
   set_output_folder(folder_name);
-  
-  srand(SEED);
 
   int matrix_sizes[] = MATRIX_SIZES;
 

@@ -40,8 +40,6 @@ int main(int argc, char *argv[]) {
   const char *folder_name = (argc > 1) ? argv[1] : NULL;
   set_output_folder(folder_name);
 
-  srand(SEED);
-
   int matrix_sizes[] = MATRIX_SIZES;
   int block_sizes[] = BLOCK_SIZES;
   int thread_count = THREAD_COUNT;
