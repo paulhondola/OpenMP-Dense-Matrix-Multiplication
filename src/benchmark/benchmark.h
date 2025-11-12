@@ -1,8 +1,8 @@
 // ABOUTME: Validation and benchmarking functions for matrix multiplication
 // ABOUTME: Includes timing utilities and result comparison with epsilon tolerance
 
-#ifndef TEST_H
-#define TEST_H
+#ifndef BENCHMARK_H
+#define BENCHMARK_H
 
 #include "../matrix/matrix.h"
 
@@ -15,4 +15,4 @@ int test_serial_parallel_scaling_improved(double time_results[], Matrix a, Matri
 int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
                 int block_size);
 
-#endif // TEST_H
+#endif // BENCHMARK_H

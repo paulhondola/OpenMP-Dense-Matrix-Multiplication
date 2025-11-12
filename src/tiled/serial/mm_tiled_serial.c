@@ -17,12 +17,11 @@ double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size) {
         int k_end = (block_k + block_size > n) ? n : (block_k + block_size);
 
         for (int i = block_i; i < i_end; i++) {
-          for (int j = block_j; j < j_end; j++) {
-            temp = 0;
-            for (int k = block_k; k < k_end; k++) {
-              temp += a.data[i][k] * b.data[k][j];
+          for (int k = block_k; k < k_end; k++) {
+            temp = a.data[i][k];
+            for (int j = block_j; j < j_end; j++) {
+              c.data[i][j] += temp * b.data[k][j];
             }
-            c.data[i][j] += temp;
           }
         }
       }

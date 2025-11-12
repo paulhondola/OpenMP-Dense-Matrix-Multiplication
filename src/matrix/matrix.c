@@ -47,14 +47,13 @@ void matrix_destroy(Matrix matrix) {
 }
 
 int validate(Matrix a, Matrix b) {
-  int result = 1;
-#pragma omp parallel for reduction(& : result)
+  double max_diff = 0.0;
+#pragma omp parallel for reduction(max : max_diff)
   for (int i = 0; i < a.size; i++) {
     for (int j = 0; j < a.size; j++) {
-      if (fabs(a.data[i][j] - b.data[i][j]) > EPSILON) {
-        result = 0;
-      }
+      double diff = fabs(a.data[i][j] - b.data[i][j]);
+      max_diff = (diff > max_diff) ? diff : max_diff;
     }
   }
-  return result;
+  return max_diff <= EPSILON;
 }

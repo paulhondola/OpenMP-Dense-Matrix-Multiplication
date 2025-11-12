@@ -155,10 +155,6 @@ void get_args(int argc, char *argv[], int *matrix_size, int *thread_count,
     usage(argv[0]);
   }
 
-  if (argc != 4) {
-    usage(argv[0]);
-  }
-
   *matrix_size = atoi(argv[1]);
   *thread_count = atoi(argv[2]);
   *chunk_size = atoi(argv[3]);

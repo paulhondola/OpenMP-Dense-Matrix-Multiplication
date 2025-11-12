@@ -221,8 +221,6 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
                "%d, block size: %d" RESET "\n",
            a.size, thread_count, block_size);
   }
-  printf("---------------------------------------------------------------------"
-         "---------------------------------------------------\n");
 #endif
 
   time_results[4] =
@@ -235,11 +233,11 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 #ifdef DEBUG
   result = validate(reference, c);
   if (result) {
-    printf(GREEN "Parallel - tiled - matrix size: %d, threads: %d, block "
+    printf(GREEN "Parallel - tiled tasks - matrix size: %d, threads: %d, block "
                  "size: %d - completed - time: %f" RESET "\n",
-           a.size, thread_count, block_size, time_results[3]);
+           a.size, thread_count, block_size, time_results[4]);
   } else {
-    printf(RED "INCORRECT - Parallel - tiled - matrix size: %d, threads: "
+    printf(RED "INCORRECT - Parallel - tiled tasks - matrix size: %d, threads: "
                "%d, block size: %d" RESET "\n",
            a.size, thread_count, block_size);
   }

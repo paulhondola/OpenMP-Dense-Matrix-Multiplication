@@ -2,7 +2,7 @@
 #define PARAMETERS_H
 
 // debug parameters
-//#define DEBUG
+#define DEBUG
 //#define DEBUG_MATRIX
 
 // random number generation parameters
