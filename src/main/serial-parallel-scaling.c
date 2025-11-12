@@ -4,8 +4,8 @@
 
 void benchmark_serial_parallel_scaling(
     Matrix a, Matrix b, int chunk, CSV_DATA csv_data,
-    int (*test_function)(double time_results[], Matrix a, Matrix b,
-                         int chunk)) {
+    void (*test_function)(double time_results[], Matrix a, Matrix b,
+                          int chunk)) {
   FILE *csv_file = open_csv_file(csv_data);
   if (csv_file == NULL) {
     perror(csv_data.filename);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   // Set output folder if provided as command line argument
   const char *folder_name = (argc > 1) ? argv[1] : NULL;
   set_output_folder(folder_name);
-  
+
   srand(SEED);
 
   int matrix_sizes[] = MATRIX_SIZES;

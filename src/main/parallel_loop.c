@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   // Set output folder if provided as command line argument
   const char *folder_name = (argc > 1) ? argv[1] : NULL;
   set_output_folder(folder_name);
-  
+
   srand(SEED);
 
   int matrix_sizes[] = MATRIX_SIZES;

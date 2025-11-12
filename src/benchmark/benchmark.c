@@ -28,7 +28,7 @@ int run_serial_loop_permutation(double time_results[], Matrix a, Matrix b,
   return result;
 }
 
-int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
+void test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
 
 #ifdef DEBUG
   printf("Serial - Testing loop permutations - matrix size: %d\n", a.size);
@@ -56,8 +56,6 @@ int test_serial_loop_permutations(double time_results[], Matrix a, Matrix b) {
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
 #endif
-
-  return correct_count == LOOP_PERMUTATIONS - 1;
 }
 
 int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
@@ -84,7 +82,7 @@ int run_parallel_loop_permutation(double time_results[], Matrix a, Matrix b,
   return result;
 }
 
-int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
+void test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
                                     int thread_count, int chunk_size) {
 
 #ifdef DEBUG
@@ -120,11 +118,9 @@ int test_parallel_loop_permutations(double time_results[], Matrix a, Matrix b,
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
 #endif
-
-  return correct_count == LOOP_PERMUTATIONS - 1;
 }
 
-int test_serial_parallel_scaling_classic(double time_results[], Matrix a,
+void test_serial_parallel_scaling_classic(double time_results[], Matrix a,
                                          Matrix b, int chunk) {
 
   Matrix c;
@@ -141,11 +137,9 @@ int test_serial_parallel_scaling_classic(double time_results[], Matrix a,
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
 #endif
-
-  return 0;
 }
 
-int test_serial_parallel_scaling_improved(double time_results[], Matrix a,
+void test_serial_parallel_scaling_improved(double time_results[], Matrix a,
                                           Matrix b, int chunk) {
   Matrix c;
   matrix_create(&c, a.size);
@@ -161,11 +155,9 @@ int test_serial_parallel_scaling_improved(double time_results[], Matrix a,
   printf("---------------------------------------------------------------------"
          "---------------------------------------------------\n");
 #endif
-
-  return 0;
 }
 
-int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
+void test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
                int block_size) {
   Matrix reference, c;
   matrix_create(&reference, a.size);
@@ -174,7 +166,6 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
   time_results[0] = serial_multiply_ikj(a, b, reference);
   time_results[1] = parallel_multiply_ikj(a, b, c, thread_count, block_size);
 
-  int result = 1;
 #ifdef DEBUG_MATRIX
   matrix_print(c);
 #endif
@@ -191,7 +182,7 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 #endif
 
 #ifdef DEBUG
-  result = validate(reference, c);
+  int result = validate(reference, c);
   if (result) {
     printf(GREEN "Serial - tiled - matrix size: %d, block size: %d - "
                  "completed - "
@@ -247,8 +238,6 @@ int test_tiled(double time_results[], Matrix a, Matrix b, int thread_count,
 
   matrix_destroy(reference);
   matrix_destroy(c);
-
-  return result;
 }
 
 void compute_speedup(double time_results[], double speedup_results[],
