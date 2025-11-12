@@ -6,7 +6,7 @@
 //#define DEBUG_MATRIX
 
 // random number generation parameters
-#define SEED 42
+#define SEED time(NULL)
 #define UNIFORM_MIN -10
 #define UNIFORM_MAX 10
 

@@ -2,10 +2,12 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_serial_parallel_scaling(
-    Matrix a, Matrix b, int chunk, CSV_DATA csv_data,
-    void (*test_function)(double time_results[], Matrix a, Matrix b,
-                          int chunk)) {
+typedef void (*test_function_t)(double time_results[], Matrix a, Matrix b,
+                                int chunk);
+
+void benchmark_serial_parallel_scaling(Matrix a, Matrix b, int chunk,
+                                       CSV_DATA csv_data,
+                                       test_function_t test_function) {
   FILE *csv_file = open_csv_file(csv_data);
   if (csv_file == NULL) {
     perror(csv_data.filename);
