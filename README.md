@@ -37,7 +37,7 @@ Each version is validated by comparing against the classical i-j-k implementatio
 - **Classic vs Improved**: Compares i-j-k vs i-k-j implementations
 - **Tiled validation**: Validates blocked implementations
 
-Results are exported to CSV files in `benchmark/data/` and can be visualized using the plotting script.
+Results are exported to CSV files in `benchmark/data/` (or `benchmark/data/{FOLDER}/` if a folder name is specified) and can be visualized using the plotting script.
 
 ## Building and Running
 
@@ -47,25 +47,33 @@ The project uses a Makefile with the following commands:
 
 **Note**: These targets run the executables. Build them first using `make build` or `make build_O3`.
 
-- `make serial_loop` - Run serial loop permutations benchmark
-- `make parallel_loop` - Run parallel loop permutations benchmark
-- `make serial_parallel_scaling` - Run serial vs parallel scaling comparison (classic and improved)
-- `make tiled` - Run tiled/blocked benchmark
+All benchmark targets accept an optional `FOLDER` variable to specify the output directory:
+
+- `make serial_loop FOLDER=O0` - Run serial loop permutations benchmark, save to `benchmark/data/O0/`
+- `make parallel_loop FOLDER=O3` - Run parallel loop permutations benchmark, save to `benchmark/data/O3/`
+- `make serial_parallel_scaling FOLDER=O0` - Run serial vs parallel scaling comparison, save to `benchmark/data/O0/`
+- `make tiled FOLDER=O3` - Run tiled/blocked benchmark, save to `benchmark/data/O3/`
+
+If `FOLDER` is not specified, files are written to `benchmark/data/` (root directory).
 
 ### Build Targets
 
 - `make build` - Build all executables without optimization (`-Wall -Wextra -fopenmp`)
 - `make build_O3` - Build all executables with optimization (`-O3 -march=native -Wall -Wextra -fopenmp`)
-- `make all` - Build (without optimization) and run all benchmarks sequentially
-- `make all_O3` - Build (with optimization) and run all benchmarks sequentially
+- `make all FOLDER=O0` - Build (without optimization) and run all benchmarks sequentially, save to `benchmark/data/O0/`
+- `make all_O3 FOLDER=O3` - Build (with optimization) and run all benchmarks sequentially, save to `benchmark/data/O3/`
+
+**Note**: The `FOLDER` variable is optional. If omitted, files are written to `benchmark/data/`.
 
 ### Plotting
 
-- `make plot` - Generate all plots from benchmark data in `benchmark/data/`
+- `make plot FOLDER=O0` - Generate all plots from benchmark data in `benchmark/data/O0/`
   - Requires Python 3 with pandas and matplotlib
   - Uses the wrapper script `benchmark/src/main.py` which calls individual plot scripts
-  - Individual scripts can also be run directly from `benchmark/src/`
-  - Plots are saved to `benchmark/plots/` as PNG files (300 DPI)
+  - Reads CSV files from `benchmark/data/{FOLDER}/` and saves plots to `benchmark/plots/{FOLDER}/`
+  - Individual scripts can also be run directly: `python3 benchmark/src/main.py O0`
+  - Plots are saved as PNG files (300 DPI)
+  - If `FOLDER` is not specified, uses root `benchmark/data/` and `benchmark/plots/` directories
 
 ### Cleanup
 
@@ -78,23 +86,79 @@ The project uses a Makefile with the following commands:
 - Basic build: `-Wall -Wextra -fopenmp`
 - Optimized build: `-O3 -march=native -Wall -Wextra -fopenmp`
 
+## Usage Examples
+
+### Organizing Benchmarks by Optimization Level
+
+A common workflow is to compare performance at different optimization levels:
+
+```bash
+# Build and run benchmarks without optimization, save to O0 folder
+make build
+make all FOLDER=O0
+
+# Build and run benchmarks with optimization, save to O3 folder
+make build_O3
+make all_O3 FOLDER=O3
+
+# Generate plots for both optimization levels
+make plot FOLDER=O0
+make plot FOLDER=O3
+```
+
+This creates separate directories:
+
+- `benchmark/data/O0/` - Contains CSV files from unoptimized builds
+- `benchmark/data/O3/` - Contains CSV files from optimized builds
+- `benchmark/plots/O0/` - Contains plots for O0 data
+- `benchmark/plots/O3/` - Contains plots for O3 data
+
+### Running Individual Benchmarks
+
+```bash
+# Run a single benchmark with folder organization
+make serial_loop FOLDER=O0
+make parallel_loop FOLDER=O3
+
+# Run without folder (saves to benchmark/data/ root)
+make serial_loop
+```
+
+### Direct Program Execution
+
+You can also run the executables directly with a folder argument:
+
+```bash
+./bin/serial_loop.exe O0
+./bin/parallel_loop.exe O3
+./bin/tiled.exe O0
+```
+
 ## Repository Structure
 
 ```text
 OpenMP-Dense-Matrix-Multiplication/
 ├── benchmark/
 │   ├── data/                   # CSV benchmark data files
-│   │   ├── serial_permutations.csv
-│   │   ├── parallel_permutations.csv
-│   │   ├── serial_parallel_scaling_classic.csv
-│   │   ├── serial_parallel_scaling_improved.csv
-│   │   └── tiled.csv
+│   │   ├── O0/                 # Optimization level 0 data (optional subdirectory)
+│   │   │   ├── serial_permutations.csv
+│   │   │   ├── parallel_permutations.csv
+│   │   │   ├── serial_parallel_scaling_classic.csv
+│   │   │   ├── serial_parallel_scaling_improved.csv
+│   │   │   └── tiled.csv
+│   │   ├── O3/                 # Optimization level 3 data (optional subdirectory)
+│   │   │   └── *.png
+│   │   └── *.csv               # Root-level CSV files (if FOLDER not specified)
 │   ├── plots/                  # Generated plot images (PNG)
-│   │   ├── serial_permutations.png
-│   │   ├── parallel_permutations.png
-│   │   ├── serial_parallel_scaling_classic.png
-│   │   ├── serial_parallel_scaling_improved.png
-│   │   └── tiled.png
+│   │   ├── O0/                 # Optimization level 0 plots (optional subdirectory)
+│   │   │   ├── serial_permutations.png
+│   │   │   ├── parallel_permutations.png
+│   │   │   ├── serial_parallel_scaling_classic.png
+│   │   │   ├── serial_parallel_scaling_improved.png
+│   │   │   └── tiled.png
+│   │   ├── O3/                 # Optimization level 3 plots (optional subdirectory)
+│   │   │   └── *.png
+│   │   └── *.png               # Root-level plots (if FOLDER not specified)
 │   └── src/                    # Individual plot generation scripts
 │       ├── main.py             # Main script that calls all individual plot scripts
 │       ├── plot_serial_permutations.py
@@ -187,6 +251,17 @@ Centralized configuration for all benchmarks:
 - **Validation tolerance**: Default `1e-6` for floating-point comparison (configurable via `EPSILON`)
 - **Debug flags**: `DEBUG` and `DEBUG_MATRIX` for verbose output
 
+### Utilities (`src/utils/`)
+
+CSV file handling and output directory management:
+
+- **CSV file operations**: Functions to write benchmark results to CSV files with configurable output directory
+- **`set_output_folder()`**: Sets the output folder name (e.g., "O0", "O3") for organizing benchmark data by optimization level or other criteria
+- **`ensure_directory_exists()`**: Creates output directories recursively if they don't exist
+- **`open_csv_file()`**: Opens CSV files in `benchmark/data/{folder_name}/` or `benchmark/data/` if no folder specified
+- **Output files**: `serial_permutations.csv`, `parallel_permutations.csv`, `serial_parallel_scaling_classic.csv`, `serial_parallel_scaling_improved.csv`, `tiled.csv`
+- **Command line integration**: All C programs (`serial_loop`, `parallel_loop`, `serial-parallel-scaling`, `tiled`) accept an optional folder name as a command line argument to organize output files
+
 ### Plotting Scripts (`benchmark/src/`)
 
 Modular plotting system with individual scripts for each plot type:
@@ -198,8 +273,13 @@ Modular plotting system with individual scripts for each plot type:
   - `plot_serial_parallel_scaling_improved.py` - Improved (i-k-j): Serial vs parallel scaling with 2, 4, 8 threads
   - `plot_tiled.py` - Tiled implementations: Speedup vs matrix size with separate lines per block size
 - **Common utilities** (`utils.py`): Shared functions for CSV loading, data aggregation, and directory management
+  - `get_directories()`: Returns data and plots directories, optionally with folder name subdirectory
+  - `load_csv()`: Loads CSV files from the specified data directory (with optional folder name)
 - **Wrapper script** (`main.py`): Convenience script that runs all individual plot scripts sequentially
+  - Accepts optional folder name argument: `python3 benchmark/src/main.py O0`
+  - Passes folder name to all individual plot scripts
 - **Features**:
   - Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
   - Uses distinct markers and line styles for parameter variations (chunk sizes, block sizes)
-  - Plots saved as high-resolution PNG files in `benchmark/plots/`
+  - Plots saved as high-resolution PNG files in `benchmark/plots/{folder_name}/` or `benchmark/plots/`
+  - Supports organizing data and plots by optimization level (O0, O3) or other criteria via folder names

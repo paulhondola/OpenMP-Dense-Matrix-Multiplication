@@ -47,25 +47,37 @@ build_O3:
 serial_loop:
 	@mkdir -p bin
 	@echo "RUNNING SERIAL LOOP"
-	./$(SERIAL_LOOP_TARGET)
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
+	./$(SERIAL_LOOP_TARGET) $(FOLDER)
 	@echo "TASK DONE"
 
 parallel_loop:
 	@mkdir -p bin
 	@echo "RUNNING PARALLEL LOOP"
-	./$(PARALLEL_LOOP_TARGET)
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
+	./$(PARALLEL_LOOP_TARGET) $(FOLDER)
 	@echo "TASK DONE"
 
 serial_parallel_scaling:
 	@mkdir -p bin
 	@echo "RUNNING SERIAL PARALLEL SCALING"
-	./$(SERIAL_PARALLEL_SCALING_TARGET)
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
+	./$(SERIAL_PARALLEL_SCALING_TARGET) $(FOLDER)
 	@echo "TASK DONE"
 
 tiled:
 	@mkdir -p bin
 	@echo "RUNNING TILED"
-	./$(TILED_TARGET)
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
+	./$(TILED_TARGET) $(FOLDER)
 	@echo "TASK DONE"
 	
 move_O0:
@@ -109,6 +121,12 @@ plot:
 	@echo "TASK DONE"
 
 all: build serial_loop parallel_loop serial_parallel_scaling tiled plot
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
 
 all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled plot
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Files will be written to benchmark/data/"; \
+	fi
 

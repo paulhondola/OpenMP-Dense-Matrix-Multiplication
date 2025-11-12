@@ -41,7 +41,11 @@ void run_benchmark(int matrix_size, int chunk_size) {
   matrix_destroy(b);
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
+  // Set output folder if provided as command line argument
+  const char *folder_name = (argc > 1) ? argv[1] : NULL;
+  set_output_folder(folder_name);
+  
   srand(SEED);
 
   int matrix_sizes[] = MATRIX_SIZES;

@@ -14,20 +14,22 @@ Dense square matrix multiplication implementations in C using OpenMP. The projec
 The project uses a Makefile with the following commands:
 
 ```bash
-# Build and run individual benchmarks
-make serial_loop                # Serial loop permutations
-make parallel_loop              # Parallel loop permutations
-make serial_parallel_scaling    # Compare i-j-k vs i-k-j (serial and parallel scaling)
-make tiled                      # Tiled/blocked implementations
+# Build all executables
+make build                      # Build with basic flags: -Wall -Wextra -fopenmp
+make build_O3                   # Build with optimization: -O3 -march=native -Wall -Wextra -fopenmp
 
-# Build all without running
-make build
+# Run individual benchmarks (requires building first)
+make serial_loop FOLDER=O0      # Serial loop permutations
+make parallel_loop FOLDER=O3    # Parallel loop permutations
+make serial_parallel_scaling FOLDER=O0  # Compare i-j-k vs i-k-j scaling
+make tiled FOLDER=O3            # Tiled/blocked implementations
 
 # Build and run all benchmarks sequentially
-make all
+make all FOLDER=O0              # Build (without optimization) and run all
+make all_O3 FOLDER=O3           # Build (with optimization) and run all
 
 # Generate plots from benchmark data
-make plot
+make plot FOLDER=O0             # Generate plots from benchmark/data/O0/
 
 # Clean benchmark data and plots
 make clear
@@ -38,9 +40,15 @@ make clear
 - gcc-15 with OpenMP support
 - Basic build flags: `-Wall -Wextra -fopenmp`
 - Optimized build flags: `-O3 -march=native -Wall -Wextra -fopenmp`
-- Use `make build` for basic build or `make build_O3` for optimized build
 - Output binaries go to `bin/` directory
 - Entry points: `src/main/serial_loop.c`, `src/main/parallel_loop.c`, `src/main/serial-parallel-scaling.c`, `src/main/tiled.c`
+
+**FOLDER parameter:**
+
+- Optional parameter to organize benchmark data by optimization level or other criteria
+- If specified: Data written to `benchmark/data/{FOLDER}/`, plots to `benchmark/plots/{FOLDER}/`
+- If omitted: Data written to `benchmark/data/`, plots to `benchmark/plots/`
+- Example workflow: Use `FOLDER=O0` for unoptimized builds, `FOLDER=O3` for optimized builds
 
 ## Architecture
 
@@ -49,39 +57,48 @@ make clear
 **Configuration** (`src/main/parameters.h`):
 
 - Centralized compile-time configuration for all benchmarks
-- `MATRIX_SIZES`: Array of matrix sizes to test (default: 480, 960, 1920)
-- `THREAD_COUNT`: Number of OpenMP threads (default: 10)
-- `CHUNK_SIZES`: Array of chunk sizes for parallel scheduling (default: 25, 50, 100, 150)
-- `BLOCK_SIZES`: Array of block sizes for tiled multiplication (default: 2, 8, 16, 32, 48)
+- `MATRIX_SIZES`: Array of matrix sizes to test (current: 480, 640, 960, 1280, 1920)
+- `THREAD_COUNT`: Number of OpenMP threads (current: 10)
+- `CHUNK_SIZES`: Array of chunk sizes for parallel scheduling (current: 48, 96, 192)
+- `BLOCK_SIZES`: Array of block sizes for tiled multiplication (current: 48, 96, 128)
 - `SEED`: Random number generation seed (default: 42)
 - `EPSILON`: Validation tolerance for floating-point comparison (default: 1e-6)
 - `UNIFORM_MIN`, `UNIFORM_MAX`: Range for random matrix values (default: -10 to 10)
-- Debug flags: `DEBUG` and `DEBUG_MATRIX`
+- Debug flags: `DEBUG` and `DEBUG_MATRIX` (currently commented out)
 
 **Matrix utilities** (`src/matrix/matrix.{c,h}`):
 
 - Matrix allocation, initialization, deallocation
 - Random value generation with configurable seed
-- Helper functions used across all implementations
 - Uses `Matrix` struct with `double** data` and `int size` fields
+- Access pattern: `matrix.data[i][j]` or `matrix.size`
+- Must use `matrix_create()` to allocate and `matrix_destroy()` to deallocate
+- `matrix_fill_random()` populates with values in range [`UNIFORM_MIN`, `UNIFORM_MAX`]
+- `matrix_fill_zero()` initializes to zeros
+- `validate()` compares two matrices using epsilon tolerance
 - Function typedefs: `serial_loop_benchmark` and `parallel_loop_benchmark` for function pointer arrays
 
 **Benchmarking and validation** (`src/benchmark/benchmark.{c,h}`):
 
-- Compares results against reference i-j-k implementation
-- Validation uses `validate()` function from `matrix.c` with epsilon comparison (configured in `parameters.h`)
+- Compares results against reference implementations
+- Validation uses `validate()` function with epsilon comparison (configured in `parameters.h`)
 - `test_serial_loop_permutations()`: Validates all serial permutations against serial i-j-k, returns timing results
 - `test_parallel_loop_permutations()`: Validates all parallel permutations against parallel i-j-k, returns timing results
 - `test_serial_parallel_scaling_classic()`: Tests i-j-k implementation (serial and parallel with 2, 4, 8 threads)
 - `test_serial_parallel_scaling_improved()`: Tests i-k-j implementation (serial and parallel with 2, 4, 8 threads)
 - `test_tiled()`: Validates tiled implementations against i-k-j baseline
 - `compute_speedup()`: Calculates speedup relative to baseline (first element in time_results array)
+- All timing measurements use `omp_get_wtime()` and return seconds
 
 **Utilities** (`src/utils/utils.{c,h}`):
 
 - CSV file handling for benchmark data export
-- Functions to write benchmark results to CSV files in `benchmark/data/`
+- Functions to write benchmark results to CSV files
+- `set_output_folder()`: Sets the output folder name for organizing benchmark data
+- `ensure_directory_exists()`: Creates output directories recursively if they don't exist
+- `open_csv_file()`: Opens CSV files in appropriate directory (root or subfolder)
 - Output files: `serial_permutations.csv`, `parallel_permutations.csv`, `serial_parallel_scaling_classic.csv`, `serial_parallel_scaling_improved.csv`, `tiled.csv`
+- All C programs accept an optional folder name as command line argument
 
 ### Loop Permutation Implementations
 
@@ -101,7 +118,7 @@ Six permutations for each variant (serial and parallel):
 - Baseline implementations without parallelization
 - Functions: `serial_multiply_ijk()`, `serial_multiply_ikj()`, `serial_multiply_jik()`, `serial_multiply_jki()`, `serial_multiply_kij()`, `serial_multiply_kji()`
 - All functions return execution time in seconds (using `omp_get_wtime()`)
-- Accessed via `serial_f[]` function pointer array indexed 0-5
+- Accessed via `serial_loop_benchmark_functions[]` array indexed 0-5
 
 **Parallel** (`parallel/mm_parallel.{c,h}`):
 
@@ -109,9 +126,9 @@ Six permutations for each variant (serial and parallel):
 - Functions: `parallel_multiply_ijk()`, `parallel_multiply_ikj()`, `parallel_multiply_jik()`, `parallel_multiply_jki()`, `parallel_multiply_kij()`, `parallel_multiply_kji()`
 - All functions accept `thread_count` and `chunk` parameters
 - All functions return execution time in seconds
-- Accessed via `parallel_f[]` function pointer array indexed 0-5
+- Accessed via `parallel_loop_benchmark_functions[]` array indexed 0-5
 
-**Function pointer pattern**: Both serial and parallel implementations use function pointer arrays (`serial_loop_permutation_function` and `parallel_loop_permutation_function` typedefs) to allow dynamic selection of loop permutations at runtime via array indexing
+**Function pointer pattern**: Both serial and parallel implementations use function pointer arrays (typedefs: `serial_loop_benchmark` and `parallel_loop_benchmark`) to allow dynamic selection of loop permutations at runtime via array indexing.
 
 Reference: `docs/omp_matrix_mult.c` shows example i-j-k and i-k-j implementations
 
@@ -131,37 +148,37 @@ Key considerations:
 
 ### Entry Points
 
-All entry points read configuration from `src/main/parameters.h` and output CSV files to `benchmark/data/`.
+All entry points read configuration from `src/main/parameters.h` and output CSV files to `benchmark/data/` (or `benchmark/data/{FOLDER}/` if folder argument provided).
 
 **`src/main/serial_loop.c`**:
 
 - Benchmarks all six serial loop permutations
 - Tests all matrix sizes defined in `MATRIX_SIZES`
 - Calls `test_serial_loop_permutations()` for validation and timing
-- Writes results to `benchmark/data/serial_permutations.csv`
+- Writes results to `serial_permutations.csv`
 
 **`src/main/parallel_loop.c`**:
 
 - Benchmarks all six parallel loop permutations
 - Tests all matrix sizes and chunk sizes from parameters
 - Calls `test_parallel_loop_permutations()` for validation and timing
-- Writes results to `benchmark/data/parallel_permutations.csv`
+- Writes results to `parallel_permutations.csv`
 
 **`src/main/serial-parallel-scaling.c`**:
 
 - Compares i-j-k vs i-k-j implementations (serial and parallel with 2, 4, 8 threads)
 - Tests all matrix sizes and chunk sizes from parameters
-- Calls `test_serial_parallel_scaling_classic()` and `test_serial_parallel_scaling_improved()` for validation and timing
+- Calls `test_serial_parallel_scaling_classic()` and `test_serial_parallel_scaling_improved()`
 - Writes results to TWO separate CSV files:
-  - `benchmark/data/serial_parallel_scaling_classic.csv` (for i-j-k)
-  - `benchmark/data/serial_parallel_scaling_improved.csv` (for i-k-j)
+  - `serial_parallel_scaling_classic.csv` (for i-j-k)
+  - `serial_parallel_scaling_improved.csv` (for i-k-j)
 
 **`src/main/tiled.c`**:
 
 - Benchmarks tiled implementations with various block sizes
 - Tests serial i-k-j, parallel i-k-j, serial tiled, and parallel tiled
 - Calls `test_tiled()` for validation and timing
-- Writes results to `benchmark/data/tiled.csv`
+- Writes results to `tiled.csv`
 
 ## Benchmarking
 
@@ -169,26 +186,27 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 
 1. Configure parameters in `src/main/parameters.h` (matrix sizes, thread counts, chunk sizes, block sizes)
 2. Build executables using `make build` (unoptimized) or `make build_O3` (optimized with -O3 -march=native)
-3. Run `make all` (unoptimized) or `make all_O3` (optimized) to execute all benchmarks, or run individual targets
-4. Benchmark data written to CSV files in `benchmark/data/`
-5. Run `make plot` to generate visualizations with Python
-6. Plots saved to `benchmark/plots/` as PNG files (300 DPI)
+3. Run benchmarks individually or use `make all FOLDER=<name>` / `make all_O3 FOLDER=<name>` to execute all
+4. Benchmark data written to CSV files in `benchmark/data/` or `benchmark/data/{FOLDER}/`
+5. Run `make plot FOLDER=<name>` to generate visualizations with Python
+6. Plots saved to `benchmark/plots/` or `benchmark/plots/{FOLDER}/` as PNG files (300 DPI)
 
 **Plotting** (`benchmark/src/`):
 
 - Modular Python plotting system with individual scripts for each plot type
 - Main entry point: `benchmark/src/main.py` (called by `make plot`)
+- Accepts optional folder name argument: `python3 benchmark/src/main.py O0`
 - Individual plotting scripts:
   - `plot_serial_permutations.py`: Time vs matrix size for all 6 loop orderings
   - `plot_parallel_permutations.py`: Speedup vs matrix size with separate lines per chunk size
   - `plot_serial_parallel_scaling_classic.py`: i-j-k scaling (serial and parallel with 2, 4, 8 threads)
   - `plot_serial_parallel_scaling_improved.py`: i-k-j scaling (serial and parallel with 2, 4, 8 threads)
   - `plot_tiled.py`: Speedup vs matrix size with separate lines per block size
-- Shared utilities in `utils.py` for CSV loading and data aggregation
+- Shared utilities in `utils.py` for CSV loading, data aggregation, and directory management
 - Robust error handling for missing or malformed CSV files
 - Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
 - Uses distinct markers and line styles for parameter variations
-- Plots saved as 300 DPI PNG files in `benchmark/plots/`
+- Plots saved as 300 DPI PNG files
 
 ## Development Notes
 
@@ -223,9 +241,16 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 - All benchmark parameters centralized in `src/main/parameters.h`
 - Define `DEBUG` for colored validation output (green/red for pass/fail)
 - Define `DEBUG_MATRIX` for matrix value printing (useful for small test cases)
-- Default matrix sizes: 480, 960, 1920
+- Current matrix sizes: 480, 640, 960, 1280, 1920
 - Modify `parameters.h` and rebuild to change test configurations
-- Note: `DEBUG` is enabled by default in `parameters.h`
+- Note: `DEBUG` is currently commented out in `parameters.h`
+
+**File structure convention:**
+
+- All source files must start with a 2-line ABOUTME comment
+- Format: `// ABOUTME: <brief description of what the file does>`
+- First line describes the file's purpose, second line provides additional context
+- Makes files easily greppable with `grep "ABOUTME"`
 
 ## Documentation
 
