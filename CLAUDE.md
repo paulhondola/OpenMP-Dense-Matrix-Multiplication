@@ -61,10 +61,10 @@ make clear
 - `THREAD_COUNT`: Number of OpenMP threads (current: 10)
 - `CHUNK_SIZES`: Array of chunk sizes for parallel scheduling (current: 48, 96, 192)
 - `BLOCK_SIZES`: Array of block sizes for tiled multiplication (current: 48, 96, 128)
-- `SEED`: Random number generation seed (default: 42)
+- `SEED`: Random number generation seed (default: time(NULL) for unique runs)
 - `EPSILON`: Validation tolerance for floating-point comparison (default: 1e-6)
 - `UNIFORM_MIN`, `UNIFORM_MAX`: Range for random matrix values (default: -10 to 10)
-- Debug flags: `DEBUG` and `DEBUG_MATRIX` (currently commented out)
+- Debug flags: `DEBUG` (enabled by default) and `DEBUG_MATRIX` (commented out)
 
 **Matrix utilities** (`src/matrix/matrix.{c,h}`):
 
@@ -243,7 +243,7 @@ All entry points read configuration from `src/main/parameters.h` and output CSV 
 - Define `DEBUG_MATRIX` for matrix value printing (useful for small test cases)
 - Current matrix sizes: 480, 640, 960, 1280, 1920
 - Modify `parameters.h` and rebuild to change test configurations
-- Note: `DEBUG` is currently commented out in `parameters.h`
+- Note: `DEBUG` is enabled by default in `parameters.h`
 
 **File structure convention:**
 

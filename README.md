@@ -24,18 +24,18 @@ Includes a blocked (tiled) algorithm in serial and with OpenMP to improve cache 
 
 ### Dataset
 
-- Square matrices N×N (default sizes: 480, 960, 1920)
-- Values are generated at runtime with configurable seed (default: 42)
+- Square matrices N×N (default sizes: 480, 640, 960, 1280, 1920)
+- Values are generated at runtime with configurable seed (default: `time(NULL)` for unique runs)
 - Random values range from -10 to 10 (configurable in `src/main/parameters.h`)
 
 ### Validation and Benchmarking
 
-Each version is validated by comparing against the classical i-j-k implementation using the benchmarking and validation utilities in `src/benchmark/`:
+Each version is validated by comparing against reference implementations using the benchmarking and validation utilities in `src/benchmark/`:
 
-- **Serial validation**: All serial permutations validated against serial i-j-k
-- **Parallel validation**: All parallel permutations validated against parallel i-j-k
-- **Classic vs Improved**: Compares i-j-k vs i-k-j implementations
-- **Tiled validation**: Validates blocked implementations
+- **Serial validation**: All serial permutations validated against serial i-j-k baseline
+- **Parallel validation**: All parallel permutations validated against parallel i-j-k baseline
+- **Serial vs Parallel scaling**: Compares serial baseline with parallel versions using 2, 4, and 8 threads for both i-j-k (classic) and i-k-j (improved) implementations
+- **Tiled validation**: Validates blocked implementations against serial i-k-j baseline (tests serial i-k-j, parallel i-k-j, serial tiled, parallel tiled, and task-based parallel tiled)
 
 Results are exported to CSV files in `benchmark/data/` (or `benchmark/data/{FOLDER}/` if a folder name is specified) and can be visualized using the plotting script.
 
@@ -131,6 +131,7 @@ You can also run the executables directly with a folder argument:
 ```bash
 ./bin/serial_loop.exe O0
 ./bin/parallel_loop.exe O3
+./bin/serial_parallel_scaling.exe O0
 ./bin/tiled.exe O0
 ```
 
@@ -236,20 +237,21 @@ OpenMP-Dense-Matrix-Multiplication/
 ### Tiled Implementations (`src/tiled/`)
 
 - Cache-blocked algorithms for improved performance
-- Serial and parallel variants
+- Serial and parallel variants (including task-based parallel implementation)
 - Tunable block size parameter
+- Uses i-k-j loop ordering for better cache locality
 
 ### Configuration (`src/main/parameters.h`)
 
 Centralized configuration for all benchmarks:
 
-- **Matrix sizes**: Default `{480, 960, 1920}` (configurable via `MATRIX_SIZES`)
+- **Matrix sizes**: Default `{480, 640, 960, 1280, 1920}` (configurable via `MATRIX_SIZES`)
 - **Thread count**: Default `10` (configurable via `THREAD_COUNT`)
-- **Chunk sizes**: Default `{25, 50, 100, 150}` for parallel scheduling (configurable via `CHUNK_SIZES`)
-- **Block sizes**: Default `{2, 8, 16, 32, 48}` for tiled multiplication (configurable via `BLOCK_SIZES`)
-- **Random seed**: Default `42` (configurable via `SEED`)
+- **Chunk sizes**: Default `{48, 96, 192}` for parallel scheduling (configurable via `CHUNK_SIZES`)
+- **Block sizes**: Default `{48, 96, 128}` for tiled multiplication (configurable via `BLOCK_SIZES`)
+- **Random seed**: Default `time(NULL)` for unique runs per execution (configurable via `SEED`)
 - **Validation tolerance**: Default `1e-6` for floating-point comparison (configurable via `EPSILON`)
-- **Debug flags**: `DEBUG` and `DEBUG_MATRIX` for verbose output
+- **Debug flags**: `DEBUG` (enabled by default) and `DEBUG_MATRIX` (commented out) for verbose output
 
 ### Utilities (`src/utils/`)
 
@@ -267,11 +269,11 @@ CSV file handling and output directory management:
 Modular plotting system with individual scripts for each plot type:
 
 - **Modular design**: Five separate Python scripts, one per plot type:
-  - `plot_serial_permutations.py` - Serial loop permutations: Speedup vs matrix size for all 6 loop orderings
-  - `plot_parallel_permutations.py` - Parallel loop permutations: Speedup vs matrix size with separate lines per chunk size
-  - `plot_serial_parallel_scaling_classic.py` - Classic (i-j-k): Serial vs parallel scaling with 2, 4, 8 threads
-  - `plot_serial_parallel_scaling_improved.py` - Improved (i-k-j): Serial vs parallel scaling with 2, 4, 8 threads
-  - `plot_tiled.py` - Tiled implementations: Speedup vs matrix size with separate lines per block size
+  - `plot_serial_permutations.py` - Serial loop permutations: Speedup vs matrix size for all 6 loop orderings (i-j-k baseline)
+  - `plot_parallel_permutations.py` - Parallel loop permutations: Speedup vs matrix size with separate lines per chunk size (parallel i-j-k baseline)
+  - `plot_serial_parallel_scaling_classic.py` - Classic (i-j-k): Speedup vs matrix size comparing serial baseline with parallel versions using 2, 4, 8 threads
+  - `plot_serial_parallel_scaling_improved.py` - Improved (i-k-j): Speedup vs matrix size comparing serial baseline with parallel versions using 2, 4, 8 threads
+  - `plot_tiled.py` - Tiled implementations: Speedup vs matrix size with separate lines per block size (serial i-k-j baseline)
 - **Common utilities** (`utils.py`): Shared functions for CSV loading, data aggregation, and directory management
   - `get_directories()`: Returns data and plots directories, optionally with folder name subdirectory
   - `load_csv()`: Loads CSV files from the specified data directory (with optional folder name)
