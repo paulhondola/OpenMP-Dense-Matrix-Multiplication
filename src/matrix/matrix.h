@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-
 typedef struct {
   double** data;
   int size;

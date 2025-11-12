@@ -7,8 +7,8 @@ import sys
 from utils import load_csv, aggregate_by_matrix_size, get_directories
 
 
-def plot_tiled(save: bool = True, show: bool = False) -> bool:
-    data_dir, plots_dir = get_directories(Path(__file__))
+def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
+    data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     df = load_csv(data_dir, "tiled.csv")
     if df is None:
@@ -86,9 +86,10 @@ def plot_tiled(save: bool = True, show: bool = False) -> bool:
 
 
 def main():
+    folder_name = sys.argv[1] if len(sys.argv) > 1 else None
     print("Creating tiled plot...")
     try:
-        plot_tiled()
+        plot_tiled(folder_name)
         print("Plot generation complete!")
     except Exception as e:
         print(f"Error creating tiled plot: {e}", file=sys.stderr)

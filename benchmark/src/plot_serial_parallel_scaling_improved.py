@@ -8,9 +8,9 @@ from utils import load_csv, aggregate_by_matrix_size, get_directories
 
 
 def plot_serial_parallel_scaling_improved(
-    save: bool = True, show: bool = False
+    folder_name: str = None, save: bool = True, show: bool = False
 ) -> bool:
-    data_dir, plots_dir = get_directories(Path(__file__))
+    data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     df_improved = load_csv(data_dir, "serial_parallel_scaling_improved.csv")
     if df_improved is None:
@@ -90,9 +90,10 @@ def plot_serial_parallel_scaling_improved(
 
 
 def main():
+    folder_name = sys.argv[1] if len(sys.argv) > 1 else None
     print("Creating serial parallel scaling improved plot...")
     try:
-        plot_serial_parallel_scaling_improved()
+        plot_serial_parallel_scaling_improved(folder_name)
         print("Plot generation complete!")
     except Exception as e:
         print(

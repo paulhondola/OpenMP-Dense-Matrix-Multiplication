@@ -7,10 +7,25 @@ This maintains backward compatibility with existing Makefiles and workflows.
 
 import subprocess
 import sys
+import argparse
 from pathlib import Path
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Generate plots from benchmark data",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "folder",
+        nargs="?",
+        default=None,
+        help="Subfolder name within benchmark/data/ and benchmark/plots/ (e.g., O0, O3). If not provided, uses root data/ and plots/ directories.",
+    )
+    
+    args = parser.parse_args()
+    folder_name = args.folder
+    
     script_dir = Path(__file__).parent
     plot_scripts = [
         "plot_serial_permutations.py",
@@ -21,6 +36,10 @@ def main():
     ]
 
     print("Generating plots...")
+    if folder_name:
+        print(f"Using folder: {folder_name}")
+    else:
+        print("Using root data/ and plots/ directories")
     print("-" * 50)
 
     plots_created = 0
@@ -35,8 +54,11 @@ def main():
 
         print(f"Running {script_name}...")
         try:
+            cmd = [sys.executable, str(script_path)]
+            if folder_name:
+                cmd.append(folder_name)
             result = subprocess.run(
-                [sys.executable, str(script_path)],
+                cmd,
                 cwd=str(script_dir),
                 capture_output=False,
                 text=True,

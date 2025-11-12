@@ -7,8 +7,8 @@ import sys
 from utils import load_csv, aggregate_by_matrix_size, get_directories
 
 
-def plot_parallel_permutations(save: bool = True, show: bool = False) -> bool:
-    data_dir, plots_dir = get_directories(Path(__file__))
+def plot_parallel_permutations(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
+    data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
     permutation_colors = [
@@ -87,9 +87,10 @@ def plot_parallel_permutations(save: bool = True, show: bool = False) -> bool:
 
 
 def main():
+    folder_name = sys.argv[1] if len(sys.argv) > 1 else None
     print("Creating parallel permutations plot...")
     try:
-        plot_parallel_permutations()
+        plot_parallel_permutations(folder_name)
         print("Plot generation complete!")
     except Exception as e:
         print(f"Error creating parallel permutations plot: {e}", file=sys.stderr)

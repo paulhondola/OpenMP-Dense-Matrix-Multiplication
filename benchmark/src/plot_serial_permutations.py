@@ -7,8 +7,8 @@ import sys
 from utils import load_csv, aggregate_by_matrix_size, get_directories
 
 
-def plot_serial_permutations(save: bool = True, show: bool = False) -> bool:
-    data_dir, plots_dir = get_directories(Path(__file__))
+def plot_serial_permutations(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
+    data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
     permutation_colors = [
@@ -77,9 +77,10 @@ def plot_serial_permutations(save: bool = True, show: bool = False) -> bool:
 
 
 def main():
+    folder_name = sys.argv[1] if len(sys.argv) > 1 else None
     print("Creating serial permutations plot...")
     try:
-        plot_serial_permutations()
+        plot_serial_permutations(folder_name)
         print("Plot generation complete!")
     except Exception as e:
         print(f"Error creating serial permutations plot: {e}", file=sys.stderr)

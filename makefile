@@ -100,11 +100,15 @@ move_O3:
 
 plot:
 	@echo "PLOTTING BENCHMARKS"
+	@if [ -z "$(FOLDER)" ]; then \
+		echo "Warning: No FOLDER specified. Using root data/ and plots/ directories."; \
+		echo "Usage: make plot FOLDER=<folder_name> (e.g., make plot FOLDER=O0)"; \
+	fi
 	python3 -m py_compile benchmark/src/main.py
-	python3 benchmark/src/main.py
+	python3 benchmark/src/main.py $(FOLDER)
 	@echo "TASK DONE"
 
-all: build serial_loop parallel_loop serial_parallel_scaling tiled plot move_O0
+all: build serial_loop parallel_loop serial_parallel_scaling tiled plot
 
-all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled plot move_O3
+all_O3: build_O3 serial_loop parallel_loop serial_parallel_scaling tiled plot
 

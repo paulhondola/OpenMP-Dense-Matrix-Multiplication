@@ -15,13 +15,13 @@ def load_csv(data_dir: Path, filename: str) -> Optional[pd.DataFrame]:
     Load CSV file with robust error handling.
 
     Args:
-        data_dir: Directory containing CSV files
+        data_dir: Full path to directory containing CSV files (already includes folder_name if applicable)
         filename: Name of the CSV file to load
 
     Returns:
         DataFrame if file exists and is valid, None otherwise
     """
-    filepath = Path(__file__).parent.parent / data_dir / filename
+    filepath = data_dir / filename
 
     # Check if file exists
     if not filepath.exists():
@@ -83,13 +83,14 @@ def aggregate_by_matrix_size(df: pd.DataFrame, groupby_cols: List[str]) -> pd.Da
     return df.groupby(groupby_cols).agg(["mean", "std"]).reset_index()
 
 
-def get_directories(script_path: Path) -> Tuple[Path, Path]:
+def get_directories(script_path: Path, folder_name: Optional[str] = None) -> Tuple[Path, Path]:
     """
     Get the data and plots directories relative to the script location.
     Assumes scripts are in benchmark/src/ and data/plots are in benchmark/.
 
     Args:
         script_path: Path to the script file (typically Path(__file__))
+        folder_name: Optional subfolder name (e.g., "O0", "O3") within data/ and plots/
 
     Returns:
         Tuple of (data_dir, plots_dir) Path objects
@@ -99,6 +100,11 @@ def get_directories(script_path: Path) -> Tuple[Path, Path]:
     benchmark_dir = script_dir.parent
     data_dir = benchmark_dir / "data"
     plots_dir = benchmark_dir / "plots"
+    
+    # If folder_name is provided, append it to both paths
+    if folder_name:
+        data_dir = data_dir / folder_name
+        plots_dir = plots_dir / folder_name
 
     # Create directories if they don't exist
     data_dir.mkdir(parents=True, exist_ok=True)
