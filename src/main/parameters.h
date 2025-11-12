@@ -19,7 +19,7 @@
 // number of tests for each benchmark
 #define CLASSIC_VS_IMPROVED_TESTS 4
 #define LOOP_PERMUTATIONS 6
-#define TILED_TESTS 4
+#define TILED_TESTS 5
 
 // test colors
 #define GREEN "\033[0;32m"

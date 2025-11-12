@@ -30,6 +30,7 @@ def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -
         ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e"),
         ("SERIAL_TILED", "Serial Tiled", "#2ca02c"),
         ("PARALLEL_TILED", "Parallel Tiled", "#d62728"),
+        ("PARALLEL_TILED_TASKS", "Parallel Tiled Tasks", "#9467bd"),
     ]
 
     for col_name, base_label, base_color in implementations:

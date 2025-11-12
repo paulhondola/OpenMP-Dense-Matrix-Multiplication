@@ -30,7 +30,7 @@ CSV_DATA csv_serial_parallel_scaling_improved = {
 
 CSV_DATA csv_tiled = {
     .header = "MATRIX_SIZE,THREADS,BLOCK_SIZE,SERIAL_IKJ,PARALLEL_IKJ,SERIAL_"
-              "TILED,PARALLEL_TILED",
+              "TILED,PARALLEL_TILED,PARALLEL_TILED_TASKS",
     .filename = "tiled.csv",
 };
 
