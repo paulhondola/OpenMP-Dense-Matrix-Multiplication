@@ -8,11 +8,11 @@
 
 extern serial_loop_benchmark serial_loop_benchmark_functions[];
 
-double serial_multiply_ijk(Matrix a, Matrix b, Matrix c);
-double serial_multiply_ikj(Matrix a, Matrix b, Matrix c);
-double serial_multiply_jik(Matrix a, Matrix b, Matrix c);
-double serial_multiply_jki(Matrix a, Matrix b, Matrix c);
-double serial_multiply_kij(Matrix a, Matrix b, Matrix c);
-double serial_multiply_kji(Matrix a, Matrix b, Matrix c);
+double serial_multiply_ijk(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+double serial_multiply_ikj(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+double serial_multiply_jik(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+double serial_multiply_jki(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+double serial_multiply_kij(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+double serial_multiply_kji(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
 
 #endif // MM_SERIAL_H

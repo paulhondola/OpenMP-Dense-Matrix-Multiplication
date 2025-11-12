@@ -13,14 +13,14 @@ typedef struct {
   int size;
 } Matrix;
 
-typedef double (*serial_loop_benchmark)(Matrix a, Matrix b, Matrix c);
-typedef double (*parallel_loop_benchmark)(Matrix a, Matrix b, Matrix c, int thread_count, int chunk_size);
+typedef double (*serial_loop_benchmark)(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c);
+typedef double (*parallel_loop_benchmark)(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count, int chunk_size);
 
 void matrix_create(Matrix* matrix, int size);
-void matrix_fill_random(Matrix matrix);
-void matrix_fill_zero(Matrix matrix);
-int validate(Matrix a, Matrix b);
-void matrix_print(Matrix matrix);
-void matrix_destroy(Matrix matrix);
+void matrix_fill_random(Matrix *restrict matrix);
+void matrix_fill_zero(Matrix *restrict matrix);
+int validate(const Matrix *restrict a, const Matrix *restrict b);
+void matrix_print(const Matrix *restrict matrix);
+void matrix_destroy(Matrix *restrict matrix);
 
 #endif // MATRIX_H

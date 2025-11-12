@@ -2,10 +2,10 @@
 #include "../../main/parameters.h"
 #include <omp.h>
 
-double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size) {
+double serial_multiply_tiled(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int block_size) {
   matrix_fill_zero(c);
-  int n = a.size;
-  double temp = 0;
+  int n = a->size;
+  double temp;
 
   double start = omp_get_wtime();
 
@@ -18,9 +18,9 @@ double serial_multiply_tiled(Matrix a, Matrix b, Matrix c, int block_size) {
 
         for (int i = block_i; i < i_end; i++) {
           for (int k = block_k; k < k_end; k++) {
-            temp = a.data[i][k];
+            temp = a->data[i][k];
             for (int j = block_j; j < j_end; j++) {
-              c.data[i][j] += temp * b.data[k][j];
+              c->data[i][j] += temp * b->data[k][j];
             }
           }
         }

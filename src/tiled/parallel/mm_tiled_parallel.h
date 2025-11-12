@@ -6,9 +6,9 @@
 
 #include "../../matrix/matrix.h"
 
-double parallel_multiply_tiled(Matrix a, Matrix b, Matrix c, int thread_count,
+double parallel_multiply_tiled(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c, int thread_count,
                                int block_size);
 
-double parallel_multiply_tiled_tasks(Matrix a, Matrix b, Matrix c,
+double parallel_multiply_tiled_tasks(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c,
                                      int thread_count, int block_size);
 #endif // MM_TILED_PARALLEL_H

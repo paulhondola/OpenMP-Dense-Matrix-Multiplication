@@ -2,10 +2,11 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-typedef void (*test_function_t)(double time_results[], Matrix a, Matrix b,
-                                int chunk);
+typedef void (*test_function_t)(double time_results[], const Matrix *restrict a,
+                                const Matrix *restrict b, int chunk);
 
-void benchmark_serial_parallel_scaling(Matrix a, Matrix b, int chunk,
+void benchmark_serial_parallel_scaling(const Matrix *restrict a,
+                                       const Matrix *restrict b, int chunk,
                                        CSV_DATA csv_data,
                                        test_function_t test_function) {
   FILE *csv_file = open_csv_file(csv_data);
@@ -19,7 +20,7 @@ void benchmark_serial_parallel_scaling(Matrix a, Matrix b, int chunk,
   test_function(time_results, a, b, chunk);
   compute_speedup(time_results, speedup_results, CLASSIC_VS_IMPROVED_TESTS);
 
-  fprintf(csv_file, "%d,%d,%f,%f,%f,%f\n", a.size, chunk, speedup_results[0],
+  fprintf(csv_file, "%d,%d,%f,%f,%f,%f\n", a->size, chunk, speedup_results[0],
           speedup_results[1], speedup_results[2], speedup_results[3]);
 
   fclose(csv_file);
@@ -29,18 +30,18 @@ void run_benchmark(int matrix_size, int chunk_size) {
   Matrix a, b;
   matrix_create(&a, matrix_size);
   matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  matrix_fill_random(&a);
+  matrix_fill_random(&b);
 
-  benchmark_serial_parallel_scaling(a, b, chunk_size,
+  benchmark_serial_parallel_scaling(&a, &b, chunk_size,
                                     csv_serial_parallel_scaling_classic,
                                     test_serial_parallel_scaling_classic);
-  benchmark_serial_parallel_scaling(a, b, chunk_size,
+  benchmark_serial_parallel_scaling(&a, &b, chunk_size,
                                     csv_serial_parallel_scaling_improved,
                                     test_serial_parallel_scaling_improved);
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+  matrix_destroy(&a);
+  matrix_destroy(&b);
 }
 
 int main(int argc, char *argv[]) {

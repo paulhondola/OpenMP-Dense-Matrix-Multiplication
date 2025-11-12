@@ -2,7 +2,7 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_serial_loop_permutations(Matrix a, Matrix b) {
+void benchmark_serial_loop_permutations(const Matrix *restrict a, const Matrix *restrict b) {
 
   FILE *csv_file = open_csv_file(csv_serial_permutations);
   if (csv_file == NULL) {
@@ -15,7 +15,7 @@ void benchmark_serial_loop_permutations(Matrix a, Matrix b) {
   test_serial_loop_permutations(time_results, a, b);
   compute_speedup(time_results, speedup_results, LOOP_PERMUTATIONS);
 
-  fprintf(csv_file, "%d,%f,%f,%f,%f,%f,%f\n", a.size, speedup_results[0],
+  fprintf(csv_file, "%d,%f,%f,%f,%f,%f,%f\n", a->size, speedup_results[0],
           speedup_results[1], speedup_results[2], speedup_results[3],
           speedup_results[4], speedup_results[5]);
 
@@ -26,13 +26,13 @@ void run_benchmark(int matrix_size) {
   Matrix a, b;
   matrix_create(&a, matrix_size);
   matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  matrix_fill_random(&a);
+  matrix_fill_random(&b);
 
-  benchmark_serial_loop_permutations(a, b);
+  benchmark_serial_loop_permutations(&a, &b);
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+  matrix_destroy(&a);
+  matrix_destroy(&b);
 }
 
 int main(int argc, char *argv[]) {

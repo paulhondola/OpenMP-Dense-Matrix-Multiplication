@@ -6,38 +6,38 @@ serial_loop_benchmark serial_loop_benchmark_functions[] = {
     serial_multiply_ijk, serial_multiply_ikj, serial_multiply_jik,
     serial_multiply_jki, serial_multiply_kij, serial_multiply_kji};
 
-double serial_multiply_ijk(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_ijk(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int i = 0; i < a.size; i++)
-    for (int j = 0; j < a.size; j++)
-      for (int k = 0; k < a.size; k++) {
-        c.data[i][j] += a.data[i][k] * b.data[k][j];
+  for (int i = 0; i < a->size; i++)
+    for (int j = 0; j < a->size; j++)
+      for (int k = 0; k < a->size; k++) {
+        c->data[i][j] += a->data[i][k] * b->data[k][j];
       }
 
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ijk - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - ijk - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 
   return result;
 }
 
-double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_ikj(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   double temp = 0.0;
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int i = 0; i < a.size; i++) {
-    for (int k = 0; k < a.size; k++) {
-      temp = a.data[i][k];
-      for (int j = 0; j < a.size; j++) {
-        c.data[i][j] += temp * b.data[k][j];
+  for (int i = 0; i < a->size; i++) {
+    for (int k = 0; k < a->size; k++) {
+      temp = a->data[i][k];
+      for (int j = 0; j < a->size; j++) {
+        c->data[i][j] += temp * b->data[k][j];
       }
     }
   }
@@ -45,22 +45,22 @@ double serial_multiply_ikj(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - ikj - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - ikj - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 
   return result;
 }
 
-double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_jik(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int j = 0; j < a.size; j++) {
-    for (int i = 0; i < a.size; i++) {
-      for (int k = 0; k < a.size; k++) {
-        c.data[i][j] += a.data[i][k] * b.data[k][j];
+  for (int j = 0; j < a->size; j++) {
+    for (int i = 0; i < a->size; i++) {
+      for (int k = 0; k < a->size; k++) {
+        c->data[i][j] += a->data[i][k] * b->data[k][j];
       }
     }
   }
@@ -68,24 +68,24 @@ double serial_multiply_jik(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jik - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - jik - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 
   return result;
 }
 
-double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_jki(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   double temp = 0.0;
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int j = 0; j < a.size; j++) {
-    for (int k = 0; k < a.size; k++) {
-      temp = b.data[k][j];
-      for (int i = 0; i < a.size; i++) {
-        c.data[i][j] += a.data[i][k] * temp;
+  for (int j = 0; j < a->size; j++) {
+    for (int k = 0; k < a->size; k++) {
+      temp = b->data[k][j];
+      for (int i = 0; i < a->size; i++) {
+        c->data[i][j] += a->data[i][k] * temp;
       }
     }
   }
@@ -93,24 +93,24 @@ double serial_multiply_jki(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - jki - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - jki - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 
   return result;
 }
 
-double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_kij(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   double temp = 0.0;
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int k = 0; k < a.size; k++) {
-    for (int i = 0; i < a.size; i++) {
-      temp = a.data[i][k];
-      for (int j = 0; j < a.size; j++) {
-        c.data[i][j] += temp * b.data[k][j];
+  for (int k = 0; k < a->size; k++) {
+    for (int i = 0; i < a->size; i++) {
+      temp = a->data[i][k];
+      for (int j = 0; j < a->size; j++) {
+        c->data[i][j] += temp * b->data[k][j];
       }
     }
   }
@@ -118,24 +118,24 @@ double serial_multiply_kij(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kij - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - kij - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 
   return result;
 }
 
-double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
+double serial_multiply_kji(const Matrix *restrict a, const Matrix *restrict b, Matrix *restrict c) {
   double temp = 0.0;
   matrix_fill_zero(c);
 
   double start = omp_get_wtime();
 
-  for (int k = 0; k < a.size; k++) {
-    for (int j = 0; j < a.size; j++) {
-      temp = b.data[k][j];
-      for (int i = 0; i < a.size; i++) {
-        c.data[i][j] += a.data[i][k] * temp;
+  for (int k = 0; k < a->size; k++) {
+    for (int j = 0; j < a->size; j++) {
+      temp = b->data[k][j];
+      for (int i = 0; i < a->size; i++) {
+        c->data[i][j] += a->data[i][k] * temp;
       }
     }
   }
@@ -143,7 +143,7 @@ double serial_multiply_kji(Matrix a, Matrix b, Matrix c) {
   double result = omp_get_wtime() - start;
 
 #ifdef DEBUG
-  printf("Serial - kji - matrix size: %d - completed - time: %f\n", a.size,
+  printf("Serial - kji - matrix size: %d - completed - time: %f\n", a->size,
          result);
 #endif
 

@@ -2,7 +2,8 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_tiled(Matrix a, Matrix b, int thread_count, int block_size) {
+void benchmark_tiled(const Matrix *restrict a, const Matrix *restrict b,
+                     int thread_count, int block_size) {
   FILE *csv_file = open_csv_file(csv_tiled);
   if (csv_file == NULL) {
     perror(csv_tiled.filename);
@@ -14,7 +15,7 @@ void benchmark_tiled(Matrix a, Matrix b, int thread_count, int block_size) {
   test_tiled(time_results, a, b, thread_count, block_size);
   compute_speedup(time_results, speedup_results, TILED_TESTS);
 
-  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f\n", a.size, thread_count,
+  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f\n", a->size, thread_count,
           block_size, speedup_results[0], speedup_results[1],
           speedup_results[2], speedup_results[3], speedup_results[4]);
 
@@ -25,13 +26,13 @@ void run_benchmark(int matrix_size, int thread_count, int block_size) {
   Matrix a, b;
   matrix_create(&a, matrix_size);
   matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  matrix_fill_random(&a);
+  matrix_fill_random(&b);
 
-  benchmark_tiled(a, b, thread_count, block_size);
+  benchmark_tiled(&a, &b, thread_count, block_size);
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+  matrix_destroy(&a);
+  matrix_destroy(&b);
 }
 
 int main(int argc, char *argv[]) {

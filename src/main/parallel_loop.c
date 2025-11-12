@@ -2,7 +2,7 @@
 #include "../utils/utils.h"
 #include "parameters.h"
 
-void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
+void benchmark_parallel_loop_permutations(const Matrix *restrict a, const Matrix *restrict b, int thread_count,
                                           int chunk) {
   FILE *csv_file = open_csv_file(csv_parallel_permutations);
   if (csv_file == NULL) {
@@ -15,7 +15,7 @@ void benchmark_parallel_loop_permutations(Matrix a, Matrix b, int thread_count,
   test_parallel_loop_permutations(time_results, a, b, thread_count, chunk);
   compute_speedup(time_results, speedup_results, LOOP_PERMUTATIONS);
 
-  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", a.size, thread_count, chunk,
+  fprintf(csv_file, "%d,%d,%d,%f,%f,%f,%f,%f,%f\n", a->size, thread_count, chunk,
           speedup_results[0], speedup_results[1], speedup_results[2],
           speedup_results[3], speedup_results[4], speedup_results[5]);
 
@@ -26,13 +26,13 @@ void run_benchmark(int matrix_size, int thread_count, int chunk_size) {
   Matrix a, b;
   matrix_create(&a, matrix_size);
   matrix_create(&b, matrix_size);
-  matrix_fill_random(a);
-  matrix_fill_random(b);
+  matrix_fill_random(&a);
+  matrix_fill_random(&b);
 
-  benchmark_parallel_loop_permutations(a, b, thread_count, chunk_size);
+  benchmark_parallel_loop_permutations(&a, &b, thread_count, chunk_size);
 
-  matrix_destroy(a);
-  matrix_destroy(b);
+  matrix_destroy(&a);
+  matrix_destroy(&b);
 }
 
 int main(int argc, char *argv[]) {

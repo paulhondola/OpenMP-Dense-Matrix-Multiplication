@@ -1,10 +1,12 @@
 #include "mm_tiled_parallel.h"
 #include <omp.h>
 
-double parallel_multiply_tiled_tasks(Matrix a, Matrix b, Matrix c,
-                                     int thread_count, int block_size) {
+double parallel_multiply_tiled_tasks(const Matrix *restrict a,
+                                     const Matrix *restrict b,
+                                     Matrix *restrict c, int thread_count,
+                                     int block_size) {
   matrix_fill_zero(c);
-  int n = a.size;
+  int n = a->size;
   int block_i, block_j, block_k, i, j, k;
   double temp;
 
@@ -24,10 +26,10 @@ double parallel_multiply_tiled_tasks(Matrix a, Matrix b, Matrix c,
 #pragma omp task
           for (i = block_i; i < i_end; i++) {
             for (k = block_k; k < k_end; k++) {
-              temp = a.data[i][k];
+              temp = a->data[i][k];
               for (j = block_j; j < j_end; j++) {
 #pragma omp atomic
-                c.data[i][j] += temp * b.data[k][j];
+                c->data[i][j] += temp * b->data[k][j];
               }
             }
           }
@@ -39,10 +41,11 @@ double parallel_multiply_tiled_tasks(Matrix a, Matrix b, Matrix c,
   return omp_get_wtime() - start;
 }
 
-double parallel_multiply_tiled(Matrix a, Matrix b, Matrix c, int thread_count,
-                               int block_size) {
+double parallel_multiply_tiled(const Matrix *restrict a,
+                               const Matrix *restrict b, Matrix *restrict c,
+                               int thread_count, int block_size) {
   matrix_fill_zero(c);
-  int n = a.size;
+  int n = a->size;
   int block_i, block_j, block_k, i, j, k;
   double temp;
 
@@ -61,9 +64,9 @@ double parallel_multiply_tiled(Matrix a, Matrix b, Matrix c, int thread_count,
           int k_end = (block_k + block_size > n) ? n : (block_k + block_size);
           for (i = block_i; i < i_end; i++) {
             for (k = block_k; k < k_end; k++) {
-              temp = a.data[i][k];
+              temp = a->data[i][k];
               for (j = block_j; j < j_end; j++) {
-                c.data[i][j] += temp * b.data[k][j];
+                c->data[i][j] += temp * b->data[k][j];
               }
             }
           }
