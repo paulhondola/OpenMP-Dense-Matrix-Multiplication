@@ -12,7 +12,7 @@ TILED_TARGET = bin/tiled.exe
 
 CC = gcc-15
 CFLAGS = -Wall -Wextra -fopenmp
-CFLAGS_OPT = -O3 -march=native $(CFLAGS) 
+CFLAGS_OPT = -Ofast -march=native $(CFLAGS) 
 
 clear:
 	rm -rf benchmark/data/*
