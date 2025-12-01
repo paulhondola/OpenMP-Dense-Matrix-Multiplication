@@ -86,6 +86,9 @@ If `FOLDER` is not specified, files are written to `benchmark/data/` (root direc
 - Basic build: `-Wall -Wextra -fopenmp`
 - Optimized build: `-O3 -march=native -Wall -Wextra -fopenmp`
 
+> [!TIP]
+> The Makefile defaults to `gcc-15`. You can override this by passing the `CC` variable to `make`, for example: `make build CC=gcc-14`.
+
 ## Usage Examples
 
 ### Organizing Benchmarks by Optimization Level
@@ -206,7 +209,7 @@ OpenMP-Dense-Matrix-Multiplication/
 │   └── utils/
 │       ├── utils.c             # CSV file handling utilities
 │       └── utils.h
-├── CLAUDE.md                   # Project documentation for AI assistants
+
 ├── Makefile                    # Build system
 └── README.md
 ```
