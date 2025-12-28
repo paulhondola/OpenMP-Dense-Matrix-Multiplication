@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pathlib import Path
 import sys
 
-from utils import load_csv, aggregate_by_matrix_size, get_directories, setup_plot_style
+from utils import load_csv, get_directories, setup_plot_style
 
 
 def plot_parallel_permutations(
@@ -13,70 +14,53 @@ def plot_parallel_permutations(
     setup_plot_style()
     data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
-    permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
-    permutation_colors = [
-        "#e41a1c",
-        "#377eb8",
-        "#4daf4a",
-        "#984ea3",
-        "#ff7f00",
-        "#ffff33",
-    ]
-
     df = load_csv(data_dir, "parallel_permutations.csv")
     if df is None:
         print("Skipping parallel_permutations plot - data file not available")
         return False
 
-    chunk_sizes = sorted(df["CHUNK"].unique())
-    chunk_markers = ["o", "s", "^", "x", "D", "<", ">", "p", "h"]
-    chunk_linestyles = ["-", "--", "-.", ":", "-.", "--", "-", ":", "-."]
+    permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
 
-    agg_df = aggregate_by_matrix_size(df, ["MATRIX_SIZE", "CHUNK"])
+    # Melt the dataframe
+    melted_df = df.melt(
+        id_vars=["MATRIX_SIZE", "CHUNK"],
+        value_vars=permutation_names,
+        var_name="Permutation",
+        value_name="Speedup",
+    )
 
     plt.figure(figsize=(14, 8))
 
-    for idx, perm in enumerate(permutation_names):
-        col_name = perm
-        base_color = permutation_colors[idx]
+    # Use seaborn lineplot with hue for permutation and style for chunk size
+    sns.lineplot(
+        data=melted_df,
+        x="MATRIX_SIZE",
+        y="Speedup",
+        hue="Permutation",
+        style="CHUNK",
+        markers=True,
+        dashes=False,
+        errorbar="sd",
+        linewidth=2,
+        markersize=7,
+        alpha=0.8,
+    )
 
-        for chunk_idx, chunk in enumerate(chunk_sizes):
-            chunk_data = agg_df[agg_df["CHUNK"] == chunk]
-            mean_col = (col_name, "mean")
-            std_col = (col_name, "std")
-
-            x = chunk_data["MATRIX_SIZE"]
-            y = chunk_data[mean_col]
-            yerr = chunk_data[std_col]
-
-            label = f"{perm} (chunk={chunk})"
-            plt.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                label=label,
-                color=base_color,
-                marker=chunk_markers[chunk_idx],
-                linestyle=chunk_linestyles[chunk_idx],
-                capsize=4,
-                linewidth=2,
-                markersize=6,
-                alpha=0.8,
-            )
-
-    plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-    plt.ylabel("Speedup", fontsize=12, fontweight="bold")
+    plt.xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
+    plt.ylabel("Speedup", fontsize=14, fontweight="bold")
     plt.title(
-        f"Parallel Loop Permutations by Chunk Size",
-        fontsize=14,
+        "Parallel Loop Permutations by Chunk Size",
+        fontsize=16,
         fontweight="bold",
         pad=20,
     )
-    plt.legend(loc="best", framealpha=0.9, ncol=3, fontsize=9)
+    plt.legend(
+        bbox_to_anchor=(1.02, 1), loc="upper left", borderaxespad=0, title="Legend"
+    )
     plt.tight_layout()
 
     if save:
-        output_path = plots_dir / f"parallel_permutations.png"
+        output_path = plots_dir / "parallel_permutations.png"
         plt.savefig(output_path, dpi=300, bbox_inches="tight")
         print(f"Plot saved to {output_path}")
 

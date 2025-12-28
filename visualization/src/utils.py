@@ -88,21 +88,6 @@ def load_csv(data_dir: Path, filename: str) -> Optional[pd.DataFrame]:
         return None
 
 
-def aggregate_by_matrix_size(df: pd.DataFrame, groupby_cols: List[str]) -> pd.DataFrame:
-    """
-    Aggregate DataFrame by matrix size and other specified columns.
-    Computes mean and standard deviation for all numeric columns.
-
-    Args:
-        df: DataFrame to aggregate
-        groupby_cols: List of column names to group by
-
-    Returns:
-        Aggregated DataFrame with mean and std columns
-    """
-    return df.groupby(groupby_cols).agg(["mean", "std"]).reset_index()
-
-
 def get_directories(
     script_path: Path, folder_name: Optional[str] = None
 ) -> Tuple[Path, Path]:

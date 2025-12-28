@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pathlib import Path
 import sys
 
-from utils import load_csv, aggregate_by_matrix_size, get_directories, setup_plot_style
+from utils import load_csv, get_directories, setup_plot_style
 
 
 def plot_serial_permutations(
@@ -13,56 +14,45 @@ def plot_serial_permutations(
     setup_plot_style()
     data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
-    permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
-    permutation_colors = [
-        "#e41a1c",
-        "#377eb8",
-        "#4daf4a",
-        "#984ea3",
-        "#ff7f00",
-        "#ffff33",
-    ]
-
     df = load_csv(data_dir, "serial_permutations.csv")
     if df is None:
         print("Skipping serial_permutations plot - data file not available")
         return False
 
-    agg_df = aggregate_by_matrix_size(df, ["MATRIX_SIZE"])
+    permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
 
-    plt.figure(figsize=(12, 7))
+    # Melt the dataframe for seaborn
+    melted_df = df.melt(
+        id_vars=["MATRIX_SIZE"],
+        value_vars=permutation_names,
+        var_name="Permutation",
+        value_name="Speedup",
+    )
 
-    for idx, perm in enumerate(permutation_names):
-        col_name = perm
-        mean_col = (col_name, "mean")
-        std_col = (col_name, "std")
+    plt.figure(figsize=(12, 8))
 
-        x = agg_df["MATRIX_SIZE"]
-        y = agg_df[mean_col]
-        yerr = agg_df[std_col]
+    sns.lineplot(
+        data=melted_df,
+        x="MATRIX_SIZE",
+        y="Speedup",
+        hue="Permutation",
+        style="Permutation",
+        markers=True,
+        dashes=False,
+        errorbar="sd",
+        linewidth=2.5,
+        markersize=8,
+    )
 
-        plt.errorbar(
-            x,
-            y,
-            yerr=yerr,
-            label=perm,
-            color=permutation_colors[idx],
-            marker="o",
-            linestyle="-",
-            capsize=5,
-            linewidth=2,
-            markersize=6,
-        )
-
-    plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-    plt.ylabel("Speedup", fontsize=12, fontweight="bold")
+    plt.xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
+    plt.ylabel("Speedup", fontsize=14, fontweight="bold")
     plt.title(
         "Serial Loop Permutations: Speedup vs Matrix Size",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold",
         pad=20,
     )
-    plt.legend(loc="best", framealpha=0.9)
+    plt.legend(title="Permutation", loc="best", framealpha=0.9)
     plt.tight_layout()
 
     if save:

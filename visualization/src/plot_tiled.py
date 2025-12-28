@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 from pathlib import Path
 import sys
 
-from utils import load_csv, aggregate_by_matrix_size, get_directories, setup_plot_style
+from utils import load_csv, get_directories, setup_plot_style
 
 
 def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
@@ -16,61 +17,61 @@ def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -
         print("Skipping tiled plot - data file not available")
         return False
 
-    block_sizes = sorted(df["BLOCK_SIZE"].unique())
-    block_markers = ["o", "s", "^", "x", "D", "<", ">", "p", "h"]
-    block_linestyles = ["-", "--", "-.", ":", "-.", "--", "-", ":", "-."]
+    imp_cols = [
+        "SERIAL_IKJ",
+        "PARALLEL_IKJ",
+        "SERIAL_TILED",
+        "PARALLEL_TILED",
+        "PARALLEL_TILED_TASKS",
+    ]
+    # Filter only existing columns
+    imp_cols = [c for c in imp_cols if c in df.columns]
 
-    # Aggregate by matrix size and block size
-    agg_df = aggregate_by_matrix_size(df, ["MATRIX_SIZE", "BLOCK_SIZE"])
+    # Melt dataframe
+    melted_df = df.melt(
+        id_vars=["MATRIX_SIZE", "BLOCK_SIZE"],
+        value_vars=imp_cols,
+        var_name="Implementation",
+        value_name="Speedup",
+    )
+
+    # Rename implementations for better legend labels
+    rename_map = {
+        "SERIAL_IKJ": "Serial IKJ",
+        "PARALLEL_IKJ": "Parallel IKJ",
+        "SERIAL_TILED": "Serial Tiled",
+        "PARALLEL_TILED": "Parallel Tiled",
+        "PARALLEL_TILED_TASKS": "Parallel Tiled Tasks",
+    }
+    melted_df["Implementation"] = melted_df["Implementation"].replace(rename_map)
 
     plt.figure(figsize=(14, 8))
 
-    # Define colors and base labels for each implementation
-    implementations = [
-        ("SERIAL_IKJ", "Serial IKJ", "#1f77b4"),
-        ("PARALLEL_IKJ", "Parallel IKJ", "#ff7f0e"),
-        ("SERIAL_TILED", "Serial Tiled", "#2ca02c"),
-        ("PARALLEL_TILED", "Parallel Tiled", "#d62728"),
-        ("PARALLEL_TILED_TASKS", "Parallel Tiled Tasks", "#9467bd"),
-    ]
+    sns.lineplot(
+        data=melted_df,
+        x="MATRIX_SIZE",
+        y="Speedup",
+        hue="Implementation",
+        style="BLOCK_SIZE",
+        markers=True,
+        dashes=False,
+        errorbar="sd",
+        linewidth=2,
+        markersize=7,
+        alpha=0.8,
+    )
 
-    for col_name, base_label, base_color in implementations:
-        for block_idx, block_size in enumerate(block_sizes):
-            block_data = agg_df[agg_df["BLOCK_SIZE"] == block_size]
-            mean_col = (col_name, "mean")
-            std_col = (col_name, "std")
-
-            if mean_col not in block_data.columns:
-                continue
-
-            x = block_data["MATRIX_SIZE"]
-            y = block_data[mean_col]
-            yerr = block_data[std_col]
-
-            label = f"{base_label} (block={block_size})"
-            plt.errorbar(
-                x,
-                y,
-                yerr=yerr,
-                label=label,
-                color=base_color,
-                marker=block_markers[block_idx % len(block_markers)],
-                linestyle=block_linestyles[block_idx % len(block_linestyles)],
-                capsize=4,
-                linewidth=2,
-                markersize=6,
-                alpha=0.8,
-            )
-
-    plt.xlabel("Matrix Size (N)", fontsize=12, fontweight="bold")
-    plt.ylabel("Speedup", fontsize=12, fontweight="bold")
+    plt.xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
+    plt.ylabel("Speedup", fontsize=14, fontweight="bold")
     plt.title(
         "Tiled Matrix Multiplication: Speedup vs Matrix Size by Block Size",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold",
         pad=20,
     )
-    plt.legend(loc="best", framealpha=0.9, ncol=3, fontsize=9)
+    plt.legend(
+        bbox_to_anchor=(1.02, 1), loc="upper left", borderaxespad=0, title="Legend"
+    )
     plt.tight_layout()
 
     if save:
