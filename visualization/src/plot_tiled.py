@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 
-from utils import load_csv, aggregate_by_matrix_size, get_directories
+from utils import load_csv, aggregate_by_matrix_size, get_directories, setup_plot_style
 
 
 def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
+    setup_plot_style()
     data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     df = load_csv(data_dir, "tiled.csv")
@@ -70,7 +71,6 @@ def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -
         pad=20,
     )
     plt.legend(loc="best", framealpha=0.9, ncol=3, fontsize=9)
-    plt.grid(True, alpha=0.3, linestyle="--")
     plt.tight_layout()
 
     if save:

@@ -8,6 +8,26 @@ import pandas as pd
 from pathlib import Path
 from typing import List, Optional, Tuple
 import sys
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def setup_plot_style():
+    """
+    Configure seaborn theme for cleaner plots.
+    """
+    sns.set_theme(style="whitegrid", context="talk", palette="deep")
+    plt.rcParams.update(
+        {
+            "figure.figsize": (12, 8),
+            "axes.titlesize": 16,
+            "axes.labelsize": 14,
+            "xtick.labelsize": 12,
+            "ytick.labelsize": 12,
+            "legend.fontsize": 12,
+            "lines.linewidth": 2.5,
+        }
+    )
 
 
 def load_csv(data_dir: Path, filename: str) -> Optional[pd.DataFrame]:
@@ -83,7 +103,9 @@ def aggregate_by_matrix_size(df: pd.DataFrame, groupby_cols: List[str]) -> pd.Da
     return df.groupby(groupby_cols).agg(["mean", "std"]).reset_index()
 
 
-def get_directories(script_path: Path, folder_name: Optional[str] = None) -> Tuple[Path, Path]:
+def get_directories(
+    script_path: Path, folder_name: Optional[str] = None
+) -> Tuple[Path, Path]:
     """
     Get the data and plots directories relative to the script location.
     Assumes scripts are in benchmark/src/ and data/plots are in benchmark/.
@@ -96,11 +118,11 @@ def get_directories(script_path: Path, folder_name: Optional[str] = None) -> Tup
         Tuple of (data_dir, plots_dir) Path objects
     """
     script_dir = script_path.parent
-    # Go up one level from src/ to benchmark/, then access data/ and plots/
-    benchmark_dir = script_dir.parent
-    data_dir = benchmark_dir / "data"
-    plots_dir = benchmark_dir / "plots"
-    
+    # Go up two levels from src/ to visualization/ then to project root
+    project_root = script_dir.parent.parent
+    data_dir = project_root / "data" / "chrono"
+    plots_dir = project_root / "data" / "plots"
+
     # If folder_name is provided, append it to both paths
     if folder_name:
         data_dir = data_dir / folder_name

@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-Wrapper script that calls all individual plot scripts.
-This maintains backward compatibility with existing Makefiles and workflows.
-"""
-
 import subprocess
 import sys
 import argparse
@@ -22,11 +17,11 @@ def main():
         default=None,
         help="Subfolder name within benchmark/data/ and benchmark/plots/ (e.g., O0, O3). If not provided, uses root data/ and plots/ directories.",
     )
-    
+
     args = parser.parse_args()
     folder_name = args.folder
-    
-    script_dir = Path(__file__).parent
+
+    script_dir = Path(__file__).parent / "src"
     plot_scripts = [
         "plot_serial_permutations.py",
         "plot_parallel_permutations.py",

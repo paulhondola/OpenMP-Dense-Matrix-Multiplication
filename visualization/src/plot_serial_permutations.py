@@ -4,10 +4,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 
-from utils import load_csv, aggregate_by_matrix_size, get_directories
+from utils import load_csv, aggregate_by_matrix_size, get_directories, setup_plot_style
 
 
-def plot_serial_permutations(folder_name: str = None, save: bool = True, show: bool = False) -> bool:
+def plot_serial_permutations(
+    folder_name: str = None, save: bool = True, show: bool = False
+) -> bool:
+    setup_plot_style()
     data_dir, plots_dir = get_directories(Path(__file__), folder_name)
 
     permutation_names = ["IJK", "IKJ", "JIK", "JKI", "KIJ", "KJI"]
@@ -60,7 +63,6 @@ def plot_serial_permutations(folder_name: str = None, save: bool = True, show: b
         pad=20,
     )
     plt.legend(loc="best", framealpha=0.9)
-    plt.grid(True, alpha=0.3, linestyle="--")
     plt.tight_layout()
 
     if save:
@@ -89,4 +91,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
