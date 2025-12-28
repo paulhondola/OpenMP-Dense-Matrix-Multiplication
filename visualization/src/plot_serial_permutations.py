@@ -29,9 +29,7 @@ def plot_serial_permutations(
         value_name="Speedup",
     )
 
-    plt.figure(figsize=(12, 8))
-
-    sns.lineplot(
+    ax = sns.lineplot(
         data=melted_df,
         x="MATRIX_SIZE",
         y="Speedup",
@@ -44,20 +42,24 @@ def plot_serial_permutations(
         markersize=8,
     )
 
-    plt.xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
-    plt.ylabel("Speedup", fontsize=14, fontweight="bold")
-    plt.title(
+    ax.set_xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
+    ax.set_ylabel("Speedup", fontsize=14, fontweight="bold")
+    ax.set_title(
         "Serial Loop Permutations: Speedup vs Matrix Size",
         fontsize=16,
         fontweight="bold",
         pad=20,
     )
-    plt.legend(title="Permutation", loc="best", framealpha=0.9)
-    plt.tight_layout()
+    # Use ax.legend() or keep default, but explicit control is nice
+    ax.legend(title="Permutation", loc="best", framealpha=0.9)
+
+    # Use figure object for layout and saving
+    fig = ax.get_figure()
+    fig.tight_layout()
 
     if save:
         output_path = plots_dir / "serial_permutations.png"
-        plt.savefig(output_path, dpi=300, bbox_inches="tight")
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
         print(f"Plot saved to {output_path}")
 
     if show:

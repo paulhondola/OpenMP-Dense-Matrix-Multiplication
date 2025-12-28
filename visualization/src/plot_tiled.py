@@ -45,9 +45,7 @@ def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -
     }
     melted_df["Implementation"] = melted_df["Implementation"].replace(rename_map)
 
-    plt.figure(figsize=(14, 8))
-
-    sns.lineplot(
+    ax = sns.lineplot(
         data=melted_df,
         x="MATRIX_SIZE",
         y="Speedup",
@@ -61,22 +59,25 @@ def plot_tiled(folder_name: str = None, save: bool = True, show: bool = False) -
         alpha=0.8,
     )
 
-    plt.xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
-    plt.ylabel("Speedup", fontsize=14, fontweight="bold")
-    plt.title(
+    ax.set_xlabel("Matrix Size (N)", fontsize=14, fontweight="bold")
+    ax.set_ylabel("Speedup", fontsize=14, fontweight="bold")
+    ax.set_title(
         "Tiled Matrix Multiplication: Speedup vs Matrix Size by Block Size",
         fontsize=16,
         fontweight="bold",
         pad=20,
     )
-    plt.legend(
-        bbox_to_anchor=(1.02, 1), loc="upper left", borderaxespad=0, title="Legend"
+    sns.move_legend(
+        ax, "upper left", bbox_to_anchor=(1.02, 1), borderaxespad=0, title="Legend"
     )
-    plt.tight_layout()
+
+    # Use figure object for layout and saving
+    fig = ax.get_figure()
+    fig.tight_layout()
 
     if save:
         output_path = plots_dir / "tiled.png"
-        plt.savefig(output_path, dpi=300, bbox_inches="tight")
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
         print(f"Plot saved to {output_path}")
 
     if show:

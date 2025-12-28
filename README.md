@@ -6,7 +6,7 @@ This project provides multiple implementations of dense square matrix multiplica
 
 ### (i, j, k) loop permutations
 
-Implements all six permutations of (i, j, k) for square matrices:
+Implements all six permutations of (i, j, k) for square matrices (take C = A * B):
 
 - **i-j-k** (classic): Row-major access for C, column-major for B
 - **i-k-j**: Better cache locality for B
@@ -37,214 +37,185 @@ Each version is validated by comparing against reference implementations using t
 - **Serial vs Parallel scaling**: Compares serial baseline with parallel versions using 2, 4, and 8 threads for both i-j-k (classic) and i-k-j (improved) implementations
 - **Tiled validation**: Validates blocked implementations against serial i-k-j baseline (tests serial i-k-j, parallel i-k-j, serial tiled, parallel tiled, and task-based parallel tiled)
 
-Results are exported to CSV files in `benchmark/data/` (or `benchmark/data/{FOLDER}/` if a folder name is specified) and can be visualized using the plotting script.
+Results are exported to CSV files in `data/chrono/` (or `data/chrono/{FOLDER}/` if a folder name is specified) and can be visualized using the plotting script.
 
 ## Building and Running
 
-The project uses a Makefile with the following commands:
+The project uses **Meson** for building and managing the project.
 
-### Run Individual Benchmarks
+### Prerequisites
 
-**Note**: These targets run the executables. Build them first using `make build` or `make build_O3`.
+- **Meson**
+- **Ninja** (usually installed with Meson)
+- **GCC/Clang** (with OpenMP support)
+- **Python 3** (for visualization, with `pandas`, `seaborn`, `matplotlib`)
 
-All benchmark targets accept an optional `FOLDER` variable to specify the output directory:
+### Build Steps
 
-- `make serial_loop FOLDER=O0` - Run serial loop permutations benchmark, save to `benchmark/data/O0/`
-- `make parallel_loop FOLDER=O3` - Run parallel loop permutations benchmark, save to `benchmark/data/O3/`
-- `make serial_parallel_scaling FOLDER=O0` - Run serial vs parallel scaling comparison, save to `benchmark/data/O0/`
-- `make tiled FOLDER=O3` - Run tiled/blocked benchmark, save to `benchmark/data/O3/`
+1.  **Configure the build**:
+    ```bash
+    cd benchmark
+    meson setup build
+    ```
+    For an optimized build (recommended for benchmarking):
+    ```bash
+    meson setup build -Doptimization=3 -Ddebug=false
+    ```
 
-If `FOLDER` is not specified, files are written to `benchmark/data/` (root directory).
+2.  **Compile**:
+    ```bash
+    meson compile -C build
+    ```
 
-### Build Targets
+### Run Benchmarks
 
-- `make build` - Build all executables without optimization (`-Wall -Wextra -fopenmp`)
-- `make build_O3` - Build all executables with optimization (`-O3 -march=native -Wall -Wextra -fopenmp`)
-- `make all FOLDER=O0` - Build (without optimization) and run all benchmarks sequentially, save to `benchmark/data/O0/`
-- `make all_O3 FOLDER=O3` - Build (with optimization) and run all benchmarks sequentially, save to `benchmark/data/O3/`
+You can run benchmarks using Meson's `run_target` wrappers. These wrappers handle executing the binaries.
 
-**Note**: The `FOLDER` variable is optional. If omitted, files are written to `benchmark/data/`.
+- **Serial Loop**:
+  ```bash
+  meson compile -C build run_serial
+  ```
+- **Parallel Loop**:
+  ```bash
+  meson compile -C build run_parallel
+  ```
+- **Scaling Comparison**:
+  ```bash
+  meson compile -C build run_scaling
+  ```
+- **Tiled Multiplication**:
+  ```bash
+  meson compile -C build run_tiled
+  ```
+
+By default, these Meson run targets execute the benchmarks with the `O3` folder argument, saving data to `data/chrono/O3/`.
+
+**Direct Execution**:
+The compiled executables are located in `benchmark/build/`.
+```bash
+# Save results to data/chrono/O3/
+./benchmark/build/serial_loop O3
+./benchmark/build/parallel_loop O3
+```
 
 ### Plotting
 
-- `make plot FOLDER=O0` - Generate all plots from benchmark data in `benchmark/data/O0/`
-  - Requires Python 3 with pandas and matplotlib
-  - Uses the wrapper script `benchmark/src/main.py` which calls individual plot scripts
-  - Reads CSV files from `benchmark/data/{FOLDER}/` and saves plots to `benchmark/plots/{FOLDER}/`
-  - Individual scripts can also be run directly: `python3 benchmark/src/main.py O0`
-  - Plots are saved as PNG files (300 DPI)
-  - If `FOLDER` is not specified, uses root `benchmark/data/` and `benchmark/plots/` directories
+The visualization scripts are located in the `visualization/` directory.
+
+-   **Generate all plots**:
+    ```bash
+    cd visualization
+    uv run main.py
+    ```
+-   **Generate plots for a specific folder** (e.g., `O3`):
+    ```bash
+    cd visualization
+    uv run main.py O3
+    ```
+
+Plots are saved to `data/plots/` (or `data/plots/O3/`).
 
 ### Cleanup
 
-- `make clear` - Clear benchmark data and plot files
-
-**Recommended compiler**: gcc-15 with OpenMP support (`-fopenmp`).
-
-**Compiler flags**:
-
-- Basic build: `-Wall -Wextra -fopenmp`
-- Optimized build: `-O3 -march=native -Wall -Wextra -fopenmp`
-
-> [!TIP]
-> The Makefile defaults to `gcc-15`. You can override this by passing the `CC` variable to `make`, for example: `make build CC=gcc-14`.
+-   **Clean build directory**:
+    ```bash
+    cd benchmark
+    meson compile -C build --clean
+    ```
 
 ## Usage Examples
 
-### Organizing Benchmarks by Optimization Level
+### Workflow: Compare Optimization Levels
 
-A common workflow is to compare performance at different optimization levels:
+1.  **Build and run unoptimized (O0)**:
+    ```bash
+    cd benchmark
+    meson setup build_O0 -Doptimization=0
+    meson compile -C build_O0
+    
+    ../benchmark/build_O0/serial_loop O0
+    ../benchmark/build_O0/parallel_loop O0
+    ../benchmark/build_O0/serial_parallel_scaling O0
+    ../benchmark/build_O0/tiled O0
+    cd ..
+    ```
 
-```bash
-# Build and run benchmarks without optimization, save to O0 folder
-make build
-make all FOLDER=O0
+2.  **Build and run optimized (O3)**:
+    ```bash
+    cd benchmark
+    meson setup build_O3 -Doptimization=3
+    meson compile -C build_O3
 
-# Build and run benchmarks with optimization, save to O3 folder
-make build_O3
-make all_O3 FOLDER=O3
+    ../benchmark/build_O3/serial_loop O3
+    ../benchmark/build_O3/parallel_loop O3
+    # ... etc
+    cd ..
+    ```
 
-# Generate plots for both optimization levels
-make plot FOLDER=O0
-make plot FOLDER=O3
-```
-
-This creates separate directories:
-
-- `benchmark/data/O0/` - Contains CSV files from unoptimized builds
-- `benchmark/data/O3/` - Contains CSV files from optimized builds
-- `benchmark/plots/O0/` - Contains plots for O0 data
-- `benchmark/plots/O3/` - Contains plots for O3 data
-
-### Running Individual Benchmarks
-
-```bash
-# Run a single benchmark with folder organization
-make serial_loop FOLDER=O0
-make parallel_loop FOLDER=O3
-
-# Run without folder (saves to benchmark/data/ root)
-make serial_loop
-```
-
-### Direct Program Execution
-
-You can also run the executables directly with a folder argument:
-
-```bash
-./bin/serial_loop.exe O0
-./bin/parallel_loop.exe O3
-./bin/serial_parallel_scaling.exe O0
-./bin/tiled.exe O0
-```
+3.  **Generate Plots**:
+    ```bash
+    cd visualization
+    uv run main.py O0
+    uv run main.py O3
+    ```
 
 ## Repository Structure
 
 ```text
 OpenMP-Dense-Matrix-Multiplication/
 ├── benchmark/
-│   ├── data/                   # CSV benchmark data files
-│   │   ├── O0/                 # Optimization level 0 data (optional subdirectory)
-│   │   │   ├── serial_permutations.csv
-│   │   │   ├── parallel_permutations.csv
-│   │   │   ├── serial_parallel_scaling_classic.csv
-│   │   │   ├── serial_parallel_scaling_improved.csv
-│   │   │   └── tiled.csv
-│   │   ├── O3/                 # Optimization level 3 data (optional subdirectory)
-│   │   │   └── *.png
-│   │   └── *.csv               # Root-level CSV files (if FOLDER not specified)
-│   ├── plots/                  # Generated plot images (PNG)
-│   │   ├── O0/                 # Optimization level 0 plots (optional subdirectory)
-│   │   │   ├── serial_permutations.png
-│   │   │   ├── parallel_permutations.png
-│   │   │   ├── serial_parallel_scaling_classic.png
-│   │   │   ├── serial_parallel_scaling_improved.png
-│   │   │   └── tiled.png
-│   │   ├── O3/                 # Optimization level 3 plots (optional subdirectory)
-│   │   │   └── *.png
-│   │   └── *.png               # Root-level plots (if FOLDER not specified)
-│   └── src/                    # Individual plot generation scripts
-│       ├── main.py             # Main script that calls all individual plot scripts
-│       ├── plot_serial_permutations.py
-│       ├── plot_parallel_permutations.py
-│       ├── plot_serial_parallel_scaling_classic.py
-│       ├── plot_serial_parallel_scaling_improved.py
-│       ├── plot_tiled.py
-│       └── utils.py            # Common utilities (CSV loading, aggregation, directory helpers)
-├── bin/                        # Compiled executables
-│   ├── serial_loop.exe
-│   ├── parallel_loop.exe
-│   ├── serial_parallel_scaling.exe
-│   └── tiled.exe
-├── docs/
-│   ├── DenseMatrix.pdf         # Problem description and theoretical background
-│   └── omp_matrix_mult.c       # Reference implementation examples
-├── src/
-│   ├── benchmark/
-│   │   ├── benchmark.c         # Benchmarking and validation functions
-│   │   └── benchmark.h
-│   ├── loop_permutations/
-│   │   ├── parallel/
-│   │   │   ├── mm_parallel.c   # OpenMP implementations for all 6 permutations
-│   │   │   └── mm_parallel.h
-│   │   └── serial/
-│   │       ├── mm_serial.c     # Serial implementations for all 6 permutations
-│   │       └── mm_serial.h
-│   ├── main/                   # Entry point programs
-│   │   ├── serial_loop.c       # Serial loop permutations benchmark
-│   │   ├── parallel_loop.c     # Parallel loop permutations benchmark
-│   │   ├── serial-parallel-scaling.c # Serial vs parallel scaling comparison
-│   │   ├── tiled.c             # Tiled/blocked benchmark
-│   │   └── parameters.h       # Shared parameters and constants
-│   ├── matrix/                 # Matrix utilities
-│   │   ├── matrix.c            # Matrix allocation, initialization, validation
-│   │   └── matrix.h
-│   ├── tiled/
-│   │   ├── parallel/
-│   │   │   ├── mm_tiled_parallel.c  # OpenMP blocked/tiled implementation
-│   │   │   └── mm_tiled_parallel.h
-│   │   └── serial/
-│   │       ├── mm_tiled_serial.c    # Serial blocked/tiled implementation
-│   │       └── mm_tiled_serial.h
-│   └── utils/
-│       ├── utils.c             # CSV file handling utilities
-│       └── utils.h
-
-├── Makefile                    # Build system
-└── README.md
+│   ├── meson.build             # Meson build definition
+│   ├── src/
+│   │   ├── benchmark/          # Benchmarking & validation logic
+│   │   ├── loop_permutations/  # Serial & Parallel loop implementations
+│   │   ├── main/               # Executable entry points
+│   │   ├── matrix/             # Matrix utility functions
+│   │   ├── tiled/              # Tiled implementations
+│   │   └── utils/              # C utilities (file I/O)
+│   └── docs/                   # Documentation resources
+├── visualization/
+│   ├── main.py                 # Main plot generation script
+│   └── src/                    # Individual plotting scripts & utils
+│       ├── plot_*.py
+│       └── utils.py
+├── data/
+│   ├── chrono/                 # Benchmark CSV output
+│   └── plots/                  # Generated PNG plots
+├── README.md
+└── LICENSE
 ```
 
 ## Key Components
 
-### Matrix Utilities (`src/matrix/`)
+### Matrix Utilities (`benchmark/src/matrix/`)
 
 - Matrix allocation, initialization, and deallocation
 - Random value generation with configurable seed
 - Validation with epsilon comparison for floating-point values
 - Helper functions used across all implementations
 
-### Benchmarking (`src/benchmark/`)
+### Benchmarking (`benchmark/src/benchmark/`)
 
 - Validation functions comparing results against reference implementations
 - Timing measurements using `omp_get_wtime()`
 - Speedup calculations
 - Test functions for serial/parallel permutations, classic vs improved, and tiled algorithms
 
-### Loop Permutations (`src/loop_permutations/`)
+### Loop Permutations (`benchmark/src/loop_permutations/`)
 
 - **Serial**: Baseline implementations without parallelization
 - **Parallel**: OpenMP versions with configurable thread count and chunk size
 - All six loop orderings (i-j-k, i-k-j, j-i-k, j-k-i, k-i-j, k-j-i)
 - Function pointer arrays for dynamic selection
 
-### Tiled Implementations (`src/tiled/`)
+### Tiled Implementations (`benchmark/src/tiled/`)
 
 - Cache-blocked algorithms for improved performance
 - Serial and parallel variants (including task-based parallel implementation)
 - Tunable block size parameter
 - Uses i-k-j loop ordering for better cache locality
 
-### Configuration (`src/main/parameters.h`)
+### Configuration (`benchmark/src/main/parameters.h`)
 
 Centralized configuration for all benchmarks:
 
@@ -256,18 +227,18 @@ Centralized configuration for all benchmarks:
 - **Validation tolerance**: Default `1e-6` for floating-point comparison (configurable via `EPSILON`)
 - **Debug flags**: `DEBUG` (enabled by default) and `DEBUG_MATRIX` (commented out) for verbose output
 
-### Utilities (`src/utils/`)
+### Utilities (`benchmark/src/utils/`)
 
 CSV file handling and output directory management:
 
 - **CSV file operations**: Functions to write benchmark results to CSV files with configurable output directory
 - **`set_output_folder()`**: Sets the output folder name (e.g., "O0", "O3") for organizing benchmark data by optimization level or other criteria
 - **`ensure_directory_exists()`**: Creates output directories recursively if they don't exist
-- **`open_csv_file()`**: Opens CSV files in `benchmark/data/{folder_name}/` or `benchmark/data/` if no folder specified
+- **`open_csv_file()`**: Opens CSV files in `data/chrono/{folder_name}/` or `data/chrono/` if no folder specified
 - **Output files**: `serial_permutations.csv`, `parallel_permutations.csv`, `serial_parallel_scaling_classic.csv`, `serial_parallel_scaling_improved.csv`, `tiled.csv`
-- **Command line integration**: All C programs (`serial_loop`, `parallel_loop`, `serial-parallel-scaling`, `tiled`) accept an optional folder name as a command line argument to organize output files
+- **Command line integration**: All executables accept an optional folder name as a command line argument to organize output files
 
-### Plotting Scripts (`benchmark/src/`)
+### Plotting Scripts (`visualization/src/`)
 
 Modular plotting system with individual scripts for each plot type:
 
@@ -280,11 +251,11 @@ Modular plotting system with individual scripts for each plot type:
 - **Common utilities** (`utils.py`): Shared functions for CSV loading, data aggregation, and directory management
   - `get_directories()`: Returns data and plots directories, optionally with folder name subdirectory
   - `load_csv()`: Loads CSV files from the specified data directory (with optional folder name)
-- **Wrapper script** (`main.py`): Convenience script that runs all individual plot scripts sequentially
-  - Accepts optional folder name argument: `python3 benchmark/src/main.py O0`
+- **Wrapper script** (`visualization/main.py`): Convenience script that runs all individual plot scripts sequentially
+  - Run via uv: `cd visualization && uv run main.py O0`
   - Passes folder name to all individual plot scripts
 - **Features**:
   - Automatically aggregates duplicate measurements (averages when multiple runs per matrix size exist)
   - Uses distinct markers and line styles for parameter variations (chunk sizes, block sizes)
-  - Plots saved as high-resolution PNG files in `benchmark/plots/{folder_name}/` or `benchmark/plots/`
+  - Plots saved as high-resolution PNG files in `data/plots/{folder_name}/` or `data/plots/`
   - Supports organizing data and plots by optimization level (O0, O3) or other criteria via folder names

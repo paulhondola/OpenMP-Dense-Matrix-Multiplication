@@ -94,10 +94,11 @@ FILE *open_csv_file(CSV_DATA csv_data) {
 
   // Construct the full path
   if (output_folder != NULL && strlen(output_folder) > 0) {
-    snprintf(full_path, sizeof(full_path), "../data/%s/%s", output_folder,
-             csv_data.filename);
+    snprintf(full_path, sizeof(full_path), "../../data/chrono/%s/%s",
+             output_folder, csv_data.filename);
   } else {
-    snprintf(full_path, sizeof(full_path), "../data/%s", csv_data.filename);
+    snprintf(full_path, sizeof(full_path), "../../data/chrono/%s",
+             csv_data.filename);
   }
 
   // Ensure directory exists
@@ -128,10 +129,11 @@ void clear_csv_file(CSV_DATA csv_data) {
 
   // Construct the full path
   if (output_folder != NULL && strlen(output_folder) > 0) {
-    snprintf(full_path, sizeof(full_path), "../data/%s/%s", output_folder,
-             csv_data.filename);
+    snprintf(full_path, sizeof(full_path), "../../data/chrono/%s/%s",
+             output_folder, csv_data.filename);
   } else {
-    snprintf(full_path, sizeof(full_path), "../data/%s", csv_data.filename);
+    snprintf(full_path, sizeof(full_path), "../../data/chrono/%s",
+             csv_data.filename);
   }
 
   FILE *csv_file = fopen(full_path, "w");

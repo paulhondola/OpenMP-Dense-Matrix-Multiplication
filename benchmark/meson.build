@@ -56,17 +56,17 @@ tiled_exe = executable('tiled',
 # Run Targets
 
 run_target('run_serial',
-  command : [serial_loop_exe]
+  command : [serial_loop_exe, 'O3'],
 )
 
 run_target('run_parallel',
-  command : [parallel_loop_exe]
+  command : [parallel_loop_exe, 'O3'],
 )
 
 run_target('run_scaling',
-  command : [scaling_exe]
+  command : [scaling_exe, 'O3'],
 )
 
 run_target('run_tiled',
-  command : [tiled_exe]
+  command : [tiled_exe, 'O3'],
 )
