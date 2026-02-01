@@ -88,30 +88,44 @@ def load_csv(data_dir: Path, filename: str) -> Optional[pd.DataFrame]:
         return None
 
 
+def get_project_root() -> Path:
+    """
+    Get the project root directory by traversing up from the current file location.
+    Assumes visualization/src/utils.py structure.
+
+    Returns:
+        Path to project root directory
+    """
+    # Get the directory containing this utils.py file (visualization/src/)
+    current_file = Path(__file__).resolve()
+    # Go up two levels: src/ -> visualization/ -> project root
+    project_root = current_file.parent.parent.parent
+    return project_root
+
+
 def get_directories(
     script_path: Path, folder_name: Optional[str] = None
 ) -> Tuple[Path, Path]:
     """
-    Get the data and plots directories relative to the script location.
-    Assumes scripts are in benchmark/src/ and data/plots are in benchmark/.
+    Get the data and plots directories using a clean path structure.
+    Uses rootdir/data/chrono/{custom_dir} and rootdir/data/plots/{custom_dir}.
 
     Args:
         script_path: Path to the script file (typically Path(__file__))
-        folder_name: Optional subfolder name (e.g., "O0", "O3") within data/ and plots/
+        folder_name: Optional subfolder name (e.g., "O0", "O3") for custom directory
 
     Returns:
         Tuple of (data_dir, plots_dir) Path objects
     """
-    script_dir = script_path.parent
-    # Go up two levels from src/ to visualization/ then to project root
-    project_root = script_dir.parent.parent
-    data_dir = project_root / "data" / "chrono"
-    plots_dir = project_root / "data" / "plots"
-
-    # If folder_name is provided, append it to both paths
+    rootdir = get_project_root()
+    
+    # Build clean paths: rootdir/data/chrono/{custom_dir} and rootdir/data/plots/{custom_dir}
     if folder_name:
-        data_dir = data_dir / folder_name
-        plots_dir = plots_dir / folder_name
+        data_dir = rootdir / "data" / "chrono" / folder_name
+        plots_dir = rootdir / "data" / "plots" / folder_name
+    else:
+        data_dir = rootdir / "data" / "chrono"
+        plots_dir = rootdir / "data" / "plots"
 
     # Create directories if they don't exist
     data_dir.mkdir(parents=True, exist_ok=True)

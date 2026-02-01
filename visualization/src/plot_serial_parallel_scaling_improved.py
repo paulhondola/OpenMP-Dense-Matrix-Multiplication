@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+script_dir = Path(__file__).parent.parent
+if str(script_dir) not in sys.path:
+    sys.path.insert(0, str(script_dir))
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
-import sys
 
-from utils import load_csv, get_directories, setup_plot_style
+from src.utils import load_csv, get_directories, setup_plot_style
 
 
 def plot_serial_parallel_scaling_improved(

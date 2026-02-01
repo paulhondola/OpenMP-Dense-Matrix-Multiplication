@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
-import subprocess
 import sys
 import argparse
-from pathlib import Path
+from src.plot_serial_permutations import plot_serial_permutations
+from src.plot_parallel_permutations import plot_parallel_permutations
+from src.plot_serial_parallel_scaling_classic import (
+    plot_serial_parallel_scaling_classic,
+)
+from src.plot_serial_parallel_scaling_improved import (
+    plot_serial_parallel_scaling_improved,
+)
+from src.plot_tiled import plot_tiled
 
 
 def main():
@@ -21,13 +28,16 @@ def main():
     args = parser.parse_args()
     folder_name = args.folder
 
-    script_dir = Path(__file__).parent / "src"
-    plot_scripts = [
-        "plot_serial_permutations.py",
-        "plot_parallel_permutations.py",
-        "plot_serial_parallel_scaling_classic.py",
-        "plot_serial_parallel_scaling_improved.py",
-        "plot_tiled.py",
+    # Map script names to their plotting functions
+    plot_functions = [
+        ("plot_serial_permutations", plot_serial_permutations),
+        ("plot_parallel_permutations", plot_parallel_permutations),
+        ("plot_serial_parallel_scaling_classic", plot_serial_parallel_scaling_classic),
+        (
+            "plot_serial_parallel_scaling_improved",
+            plot_serial_parallel_scaling_improved,
+        ),
+        ("plot_tiled", plot_tiled),
     ]
 
     print("Generating plots...")
@@ -40,25 +50,11 @@ def main():
     plots_created = 0
     plots_skipped = 0
 
-    for script_name in plot_scripts:
-        script_path = script_dir / script_name
-        if not script_path.exists():
-            print(f"Warning: Script not found: {script_path}", file=sys.stderr)
-            plots_skipped += 1
-            continue
-
+    for script_name, plot_func in plot_functions:
         print(f"Running {script_name}...")
         try:
-            cmd = [sys.executable, str(script_path)]
-            if folder_name:
-                cmd.append(folder_name)
-            result = subprocess.run(
-                cmd,
-                cwd=str(script_dir),
-                capture_output=False,
-                text=True,
-            )
-            if result.returncode == 0:
+            success = plot_func(folder_name=folder_name, save=True, show=False)
+            if success:
                 plots_created += 1
             else:
                 plots_skipped += 1
