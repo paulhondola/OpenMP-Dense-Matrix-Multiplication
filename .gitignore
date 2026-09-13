@@ -3,3 +3,6 @@
 
 # Meson
 .cache
+
+# Python
+*/__pycache__/
